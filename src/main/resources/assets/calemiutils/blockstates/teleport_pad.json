@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "normal": {
+      "model": "calemiutils:teleport_pad"
+    }
+  }
+}

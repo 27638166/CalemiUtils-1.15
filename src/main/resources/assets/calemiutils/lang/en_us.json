@@ -1,0 +1,12 @@
+{
+    "item.calemiutils.raritanium": "Raritanium",
+
+    "item.calemiutils.coin_penny": "Coin",
+    "item.calemiutils.coin_nickel": "Coin",
+    "item.calemiutils.coin_quarter": "Coin",
+    "item.calemiutils.coin_dollar": "Coin",
+
+    "itemGroup.calemiutils.tabMain": "Calemi's Utils",
+
+    "block.calemiutils.raritanium_ore" : "Raritanium Ore"
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "calemiutils:blocks/storage_unit_side",
+    "up": "calemiutils:blocks/storage_unit_top",
+    "down": "calemiutils:blocks/storage_unit_side",
+    "north": "calemiutils:blocks/storage_unit_side",
+    "east": "calemiutils:blocks/storage_unit_side",
+    "south": "calemiutils:blocks/storage_unit_side",
+    "west": "calemiutils:blocks/storage_unit_side"
+  }
+}

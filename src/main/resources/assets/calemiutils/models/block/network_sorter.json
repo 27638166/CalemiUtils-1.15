@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "calemiutils:blocks/unit_side",
+    "up": "calemiutils:blocks/unit_side",
+    "down": "calemiutils:blocks/unit_side",
+    "north": "calemiutils:blocks/network_sorter_side",
+    "east": "calemiutils:blocks/network_sorter_side",
+    "south": "calemiutils:blocks/network_sorter_side",
+    "west": "calemiutils:blocks/network_sorter_side"
+  }
+}
