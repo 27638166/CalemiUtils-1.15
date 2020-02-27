@@ -10,6 +10,7 @@ public class CUConfig {
     public static final CategoryWorldGen worldGen = new CategoryWorldGen(BUILDER);
     public static final CategoryBlockScans blockScans = new CategoryBlockScans(BUILDER);
     public static final CategoryEconomy economy = new CategoryEconomy(BUILDER);
+    public static final CategoryWallet wallet = new CategoryWallet(BUILDER);
     public static final CategoryMisc misc = new CategoryMisc(BUILDER);
 
     public static final ForgeConfigSpec spec = BUILDER.build();
@@ -84,6 +85,26 @@ public class CUConfig {
         }
     }
 
+    public static class CategoryWallet {
+
+        public final ForgeConfigSpec.ConfigValue<Integer> walletCurrencyCapacity;
+        public final ForgeConfigSpec.ConfigValue<Boolean> startingWallet;
+        public final ForgeConfigSpec.ConfigValue<Boolean> keepWallet;
+        public final ForgeConfigSpec.ConfigValue<Boolean> walletOverlay;
+
+        public CategoryWallet(ForgeConfigSpec.Builder builder) {
+
+            builder.push("Wallet");
+
+            walletCurrencyCapacity = builder.comment("Wallet Currency Capacity", "The max amount of currency the Wallet can store.").define("walletCurrencyCapacity", 99999999);
+            startingWallet = builder.comment("Give Starting Wallet", "Enable this to give players a wallet the first time they join the world.").define("startingWallet", false);
+            keepWallet = builder.comment("Keep Wallets on Death", "Enable this to spawn any wallets at the player spawnpoint when they die.").define("keepWallet", false);
+            walletOverlay = builder.comment("Render Wallet Currency Overlay", "Enable this render an overlay on your game screen showing your wallet stats.").define("walletOverlay", true);
+
+            builder.pop();
+        }
+    }
+
     public static class CategoryMisc {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> useSecurity;
@@ -92,7 +113,7 @@ public class CUConfig {
 
             builder.push("Misc");
 
-            useSecurity = builder.comment("Use Security", "Disable this to allow everyone access to anyone's blocks.").define("currencyName", true);
+            useSecurity = builder.comment("Use Security", "Disable this to allow everyone access to anyone's blocks.").define("useSecurity", true);
 
             builder.pop();
         }

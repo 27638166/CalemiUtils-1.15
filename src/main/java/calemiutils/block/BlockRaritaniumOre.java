@@ -36,6 +36,6 @@ public class BlockRaritaniumOre extends BlockBase {
     @Override
     public int getExpDrop(BlockState state, IWorldReader world, BlockPos pos, int fortune, int silktouch) {
 
-        return rand.nextInt(3) + 1;
+        return silktouch == 0 ? rand.nextInt(3 + fortune) + 1 : 0;
     }
 }

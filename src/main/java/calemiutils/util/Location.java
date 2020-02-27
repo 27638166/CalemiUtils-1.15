@@ -155,19 +155,20 @@ public class Location {
         world.setBlockState(getBlockPos(), state.getBlockState());
     }
 
-    public void breakBlock(PlayerEntity player) {
+    public void breakBlock(PlayerEntity player, ItemStack heldItem) {
         SoundHelper.playBlockPlaceSound(world, player, getBlockState(), this);
-        if (!world.isRemote && (!player.isCreative())) ItemHelper.spawnItems(world, this, getDrops());
+        if (!world.isRemote && (!player.isCreative())) ItemHelper.spawnItems(world, this, getDrops(player, heldItem));
         if (!world.isRemote) setBlockToAir();
+
     }
 
     public Material getBlockMaterial() {
         return getBlock().getMaterial(getBlockState().getBlockState());
     }
 
-    public List<ItemStack> getDrops() {
+    public List<ItemStack> getDrops(PlayerEntity player, ItemStack heldStack) {
 
-        return getBlock().getDrops(getBlockState().getBlockState(), (ServerWorld) world, getBlockPos(), null);
+        return getBlock().getDrops(getBlockState().getBlockState(), (ServerWorld) world, getBlockPos(), null, player, heldStack);
     }
 
     public TileEntity getTileEntity() {

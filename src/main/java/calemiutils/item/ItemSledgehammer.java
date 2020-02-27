@@ -1,5 +1,6 @@
 package calemiutils.item;
 
+import calemiutils.init.InitEnchantments;
 import calemiutils.init.InitItems;
 import calemiutils.util.Location;
 import calemiutils.util.VeinScan;
@@ -11,7 +12,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
@@ -28,8 +28,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeBlockState;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -44,19 +42,20 @@ public class ItemSledgehammer extends PickaxeItem {
     private static final Set<Block> EFFECTIVE_ON = ImmutableSet.of(Blocks.ACTIVATOR_RAIL, Blocks.COAL_ORE, Blocks.COBBLESTONE, Blocks.DETECTOR_RAIL, Blocks.DIAMOND_BLOCK, Blocks.DIAMOND_ORE, Blocks.POWERED_RAIL, Blocks.GOLD_BLOCK, Blocks.GOLD_ORE, Blocks.ICE, Blocks.IRON_BLOCK, Blocks.IRON_ORE, Blocks.LAPIS_BLOCK, Blocks.LAPIS_ORE, Blocks.MOSSY_COBBLESTONE, Blocks.NETHERRACK, Blocks.PACKED_ICE, Blocks.BLUE_ICE, Blocks.RAIL, Blocks.REDSTONE_ORE, Blocks.SANDSTONE, Blocks.CHISELED_SANDSTONE, Blocks.CUT_SANDSTONE, Blocks.CHISELED_RED_SANDSTONE, Blocks.CUT_RED_SANDSTONE, Blocks.RED_SANDSTONE, Blocks.STONE, Blocks.GRANITE, Blocks.POLISHED_GRANITE, Blocks.DIORITE, Blocks.POLISHED_DIORITE, Blocks.ANDESITE, Blocks.POLISHED_ANDESITE, Blocks.STONE_SLAB, Blocks.SMOOTH_STONE_SLAB, Blocks.SANDSTONE_SLAB, Blocks.PETRIFIED_OAK_SLAB, Blocks.COBBLESTONE_SLAB, Blocks.BRICK_SLAB, Blocks.STONE_BRICK_SLAB, Blocks.NETHER_BRICK_SLAB, Blocks.QUARTZ_SLAB, Blocks.RED_SANDSTONE_SLAB, Blocks.PURPUR_SLAB, Blocks.SMOOTH_QUARTZ, Blocks.SMOOTH_RED_SANDSTONE, Blocks.SMOOTH_SANDSTONE, Blocks.SMOOTH_STONE, Blocks.STONE_BUTTON, Blocks.STONE_PRESSURE_PLATE, Blocks.POLISHED_GRANITE_SLAB, Blocks.SMOOTH_RED_SANDSTONE_SLAB, Blocks.MOSSY_STONE_BRICK_SLAB, Blocks.POLISHED_DIORITE_SLAB, Blocks.MOSSY_COBBLESTONE_SLAB, Blocks.END_STONE_BRICK_SLAB, Blocks.SMOOTH_SANDSTONE_SLAB, Blocks.SMOOTH_QUARTZ_SLAB, Blocks.GRANITE_SLAB, Blocks.ANDESITE_SLAB, Blocks.RED_NETHER_BRICK_SLAB, Blocks.POLISHED_ANDESITE_SLAB, Blocks.DIORITE_SLAB, Blocks.SHULKER_BOX, Blocks.BLACK_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX, Blocks.BROWN_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.GRAY_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX, Blocks.LIGHT_GRAY_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.WHITE_SHULKER_BOX, Blocks.YELLOW_SHULKER_BOX, Blocks.CLAY, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.FARMLAND, Blocks.GRASS_BLOCK, Blocks.GRAVEL, Blocks.MYCELIUM, Blocks.SAND, Blocks.RED_SAND, Blocks.SNOW_BLOCK, Blocks.SNOW, Blocks.SOUL_SAND, Blocks.GRASS_PATH, Blocks.WHITE_CONCRETE_POWDER, Blocks.ORANGE_CONCRETE_POWDER, Blocks.MAGENTA_CONCRETE_POWDER, Blocks.LIGHT_BLUE_CONCRETE_POWDER, Blocks.YELLOW_CONCRETE_POWDER, Blocks.LIME_CONCRETE_POWDER, Blocks.PINK_CONCRETE_POWDER, Blocks.GRAY_CONCRETE_POWDER, Blocks.LIGHT_GRAY_CONCRETE_POWDER, Blocks.CYAN_CONCRETE_POWDER, Blocks.PURPLE_CONCRETE_POWDER, Blocks.BLUE_CONCRETE_POWDER, Blocks.BROWN_CONCRETE_POWDER, Blocks.GREEN_CONCRETE_POWDER, Blocks.RED_CONCRETE_POWDER, Blocks.BLACK_CONCRETE_POWDER, Blocks.OAK_PLANKS, Blocks.SPRUCE_PLANKS, Blocks.BIRCH_PLANKS, Blocks.JUNGLE_PLANKS, Blocks.ACACIA_PLANKS, Blocks.DARK_OAK_PLANKS, Blocks.BOOKSHELF, Blocks.OAK_WOOD, Blocks.SPRUCE_WOOD, Blocks.BIRCH_WOOD, Blocks.JUNGLE_WOOD, Blocks.ACACIA_WOOD, Blocks.DARK_OAK_WOOD, Blocks.OAK_LOG, Blocks.SPRUCE_LOG, Blocks.BIRCH_LOG, Blocks.JUNGLE_LOG, Blocks.ACACIA_LOG, Blocks.DARK_OAK_LOG, Blocks.CHEST, Blocks.PUMPKIN, Blocks.CARVED_PUMPKIN, Blocks.JACK_O_LANTERN, Blocks.MELON, Blocks.LADDER, Blocks.SCAFFOLDING, Blocks.OAK_BUTTON, Blocks.SPRUCE_BUTTON, Blocks.BIRCH_BUTTON, Blocks.JUNGLE_BUTTON, Blocks.DARK_OAK_BUTTON, Blocks.ACACIA_BUTTON, Blocks.OAK_PRESSURE_PLATE, Blocks.SPRUCE_PRESSURE_PLATE, Blocks.BIRCH_PRESSURE_PLATE, Blocks.JUNGLE_PRESSURE_PLATE, Blocks.DARK_OAK_PRESSURE_PLATE, Blocks.ACACIA_PRESSURE_PLATE);
 
     private double attackSpeed, attackDamage;
+    public int baseChargeTime;
+    public int chargeTime;
 
-    public ItemSledgehammer(String name, Properties properties, IItemTier tier, float attackSpeed) {
+    public ItemSledgehammer(String name, Properties properties, IItemTier tier, int baseChargeTime, float attackSpeed) {
         super(tier, 0, attackSpeed, properties);
 
         String realName = "sledgehammer_" + name;
         setRegistryName(realName);
 
+        this.chargeTime = baseChargeTime;
+        this.baseChargeTime = baseChargeTime;
+
         this.attackSpeed = attackSpeed;
         this.attackDamage = 2 + tier.getAttackDamage();
-
-        if (this == InitItems.SLEDGEHAMMER_STARLIGHT) {
-            properties.defaultMaxDamage(0);
-        }
     }
 
     @Override
@@ -64,11 +63,16 @@ public class ItemSledgehammer extends PickaxeItem {
         LoreHelper.addInformationLore(tooltipList, "Need a pickaxe, axe, shovel and sword in one single tool? This is your best bet.");
         LoreHelper.addControlsLore(tooltipList, "Charge", LoreHelper.Type.USE, true);
         LoreHelper.addControlsLore(tooltipList, "Excavates, Mines Veins & Fells Trees", LoreHelper.Type.RELEASE_USE);
+
+        if (stack.isEnchanted()) {
+            LoreHelper.addBlankLine(tooltipList);
+        }
     }
 
     @Override
     public boolean hasEffect(ItemStack stack) {
-        return this == InitItems.SLEDGEHAMMER_STARLIGHT;
+
+        return this == InitItems.SLEDGEHAMMER_STARLIGHT || stack.isEnchanted();
     }
 
     @Override
@@ -82,17 +86,17 @@ public class ItemSledgehammer extends PickaxeItem {
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack stack, World world, LivingEntity e, int timeLeft) {
+    public void onPlayerStoppedUsing(ItemStack heldStack, World world, LivingEntity e, int timeLeft) {
 
         PlayerEntity player = (PlayerEntity)e;
 
         Hand hand = Hand.OFF_HAND;
 
-        if (ItemStack.areItemStacksEqual(player.getHeldItemMainhand(), stack)) {
+        if (ItemStack.areItemStacksEqual(player.getHeldItemMainhand(), heldStack)) {
             hand = Hand.MAIN_HAND;
         }
 
-        if (getUseDuration(stack) - timeLeft > 20) {
+        if (getUseDuration(heldStack) - timeLeft >= chargeTime) {
 
             player.swingArm(hand);
 
@@ -109,8 +113,6 @@ public class ItemSledgehammer extends PickaxeItem {
 
                 BlockPos pos = blockUseContext.getPos();
                 Location locationOffset = new Location(world, pos);
-                Material mat = locationOffset.getBlockMaterial();
-
                 player.spawnSweepParticles();
 
                 BlockPos difference = locationOffset.getBlockPos().subtract(itemUseContext.getPos());
@@ -119,31 +121,32 @@ public class ItemSledgehammer extends PickaxeItem {
                 Location locationReal = locationOffset.translate(blockSide.getOpposite(), 1);
 
                 if (Objects.requireNonNull(ItemTags.getCollection().get(oreTags)).contains(locationReal.getBlock().asItem())) {
-                    veinMine(stack, player, locationReal);
+
+                    veinMine(heldStack, player, locationReal);
                     return;
                 }
 
                 if (Objects.requireNonNull(ItemTags.getCollection().get(logTags)).contains(locationReal.getBlock().asItem())) {
-                    veinMine(stack, player, locationReal);
+                    veinMine(heldStack, player, locationReal);
                     return;
                 }
 
-                excavateRock(world, stack, player, locationReal, blockSide);
+                excavateRock(world, heldStack, player, locationReal, blockSide);
             }
         }
     }
 
-    private void excavateRock(World worldIn, ItemStack stack, PlayerEntity player, Location location, Direction face) {
+    private void excavateRock(World worldIn, ItemStack heldStack, PlayerEntity player, Location location, Direction face) {
 
-        int radius = 1;//EnchantmentHelper.getEnchantmentLevel(InitEnchantments.CRUSHING, stack) + 1;
+        int radius = EnchantmentHelper.getEnchantmentLevel(InitEnchantments.CRUSHING, heldStack) + 1;
 
         ArrayList<Location> locations = WorldEditHelper.selectFlatCubeFromFace(location, face, radius);
 
-        int damage = getDamage(stack);
+        int damage = getDamage(heldStack);
 
         for (Location nextLocation : locations) {
 
-            int maxDamage = getMaxDamage(stack);
+            int maxDamage = getMaxDamage(heldStack);
 
             if (damage > maxDamage && maxDamage > 0) {
                 return;
@@ -153,39 +156,42 @@ public class ItemSledgehammer extends PickaxeItem {
             int harvestLevel = nextLocation.getBlock().getHarvestLevel(nextLocation.getBlockState().getBlockState());
 
             if (hardness >= 0 && hardness <= 50 && getTier().getHarvestLevel() >= harvestLevel) {
-                nextLocation.breakBlock(player);
-                stack.damageItem(1, player, (p_220038_0_) -> {});
+                nextLocation.breakBlock(player, heldStack);
+                heldStack.damageItem(1, player, (p_220038_0_) -> {});
                 damage++;
             }
         }
     }
 
-    private void veinMine(ItemStack stack, PlayerEntity player, Location location) {
+    private void veinMine(ItemStack heldStack, PlayerEntity player, Location location) {
 
         IForgeBlockState state = location.getBlockState();
 
         VeinScan scan = new VeinScan(location, state.getBlockState().getBlock());
         scan.startScan(64, true);
 
-        int damage = getDamage(stack);
+        int damage = getDamage(heldStack);
 
         for (Location nextLocation : scan.buffer) {
 
-            int maxDamage = getMaxDamage(stack);
+            int maxDamage = getMaxDamage(heldStack);
 
-            if (damage > getMaxDamage(stack) && maxDamage > 0) {
+            if (damage > getMaxDamage(heldStack) && maxDamage > 0) {
                 return;
             }
 
-            nextLocation.breakBlock(player);
-            stack.damageItem(1, player, (p_220038_0_) -> {});
+            nextLocation.breakBlock(player, heldStack);
+            heldStack.damageItem(1, player, (p_220038_0_) -> {});
             damage++;
         }
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
+
         ItemStack itemstack = player.getHeldItem(hand);
+
+        chargeTime = Math.max(1, baseChargeTime - EnchantmentHelper.getEfficiencyModifier(player) * 3);
 
         player.setActiveHand(hand);
         return new ActionResult<>(ActionResultType.SUCCESS, itemstack);

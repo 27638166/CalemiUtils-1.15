@@ -12,10 +12,15 @@ import java.util.List;
 
 public class LoreHelper {
 
-    public static void addDisabledLore(List<String> tooltip, int value) {
+    public static void addBlankLine(List<ITextComponent> tooltip) {
+
+        tooltip.add(new StringTextComponent(""));
+    }
+
+    public static void addDisabledLore(List<ITextComponent> tooltip, int value) {
 
         if (value <= 0) {
-            tooltip.add(ChatFormatting.RED + "" + ChatFormatting.ITALIC + "Disabled by config!");
+            tooltip.add(new StringTextComponent(ChatFormatting.RED + "" + ChatFormatting.ITALIC + "Disabled by config!"));
         }
     }
 

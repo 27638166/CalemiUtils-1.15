@@ -8,14 +8,11 @@ import calemiutils.item.ItemSledgehammer;
 import calemiutils.item.base.ItemBase;
 import calemiutils.tool.SledgehammerTiers;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemTier;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Mod.EventBusSubscriber(modid = CUReference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @ObjectHolder(CUReference.MOD_ID)
@@ -67,12 +64,12 @@ public class InitItems {
         event.getRegistry().register(new ItemBase("knob_diamond", new Item.Properties().group(CalemiUtils.TAB)));
         event.getRegistry().register(new ItemBase("knob_starlight", new Item.Properties().group(CalemiUtils.TAB)));
 
-        event.getRegistry().register(new ItemSledgehammer("wood", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.WOOD, 1.4F));
-        event.getRegistry().register(new ItemSledgehammer("stone", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.STONE, 1.4F));
-        event.getRegistry().register(new ItemSledgehammer("iron", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.IRON, 1.4F));
-        event.getRegistry().register(new ItemSledgehammer("gold", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.GOLD, 1.4F));
-        event.getRegistry().register(new ItemSledgehammer("diamond", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.DIAMOND, 1.4F));
-        event.getRegistry().register(new ItemSledgehammer("starlight", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.STARLIGHT, 1.4F));
+        event.getRegistry().register(new ItemSledgehammer("wood", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.WOOD, 50, 1.4F));
+        event.getRegistry().register(new ItemSledgehammer("stone", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.STONE, 35, 1.4F));
+        event.getRegistry().register(new ItemSledgehammer("iron", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.IRON, 25, 1.4F));
+        event.getRegistry().register(new ItemSledgehammer("gold", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.GOLD, 15, 1.4F));
+        event.getRegistry().register(new ItemSledgehammer("diamond", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.DIAMOND, 20, 1.4F));
+        event.getRegistry().register(new ItemSledgehammer("starlight", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.STARLIGHT, 15, 1.4F));
 
         event.getRegistry().register(new ItemSecurityWrench(new Item.Properties().group(CalemiUtils.TAB)));
     }

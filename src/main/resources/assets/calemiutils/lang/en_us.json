@@ -27,5 +27,7 @@
 
     "itemGroup.calemiutils.tabMain": "Calemi's Utils",
 
-    "block.calemiutils.raritanium_ore" : "Raritanium Ore"
+    "block.calemiutils.raritanium_ore" : "Raritanium Ore",
+
+    "enchantment.calemiutils.crushing" : "Crushing"
 }
