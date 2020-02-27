@@ -1,10 +1,29 @@
 {
     "item.calemiutils.raritanium": "Raritanium",
 
-    "item.calemiutils.coin_penny": "Coin",
-    "item.calemiutils.coin_nickel": "Coin",
-    "item.calemiutils.coin_quarter": "Coin",
-    "item.calemiutils.coin_dollar": "Coin",
+    "item.calemiutils.coin_penny": "Penny",
+    "item.calemiutils.coin_nickel": "Nickel",
+    "item.calemiutils.coin_quarter": "Quarter",
+    "item.calemiutils.coin_dollar": "Dollar",
+
+    "item.calemiutils.gold_chip": "Gold Chip",
+    "item.calemiutils.motor": "Motor",
+
+    "item.calemiutils.knob_wood": "Wood Knob",
+    "item.calemiutils.knob_stone": "Stone Knob",
+    "item.calemiutils.knob_iron": "Iron Knob",
+    "item.calemiutils.knob_gold": "Gold Knob",
+    "item.calemiutils.knob_diamond": "Diamond Knob",
+    "item.calemiutils.knob_starlight": "Starlight Knob",
+
+    "item.calemiutils.sledgehammer_wood": "Wood Sledgehammer",
+    "item.calemiutils.sledgehammer_stone": "Stone Sledgehammer",
+    "item.calemiutils.sledgehammer_iron": "Iron Sledgehammer",
+    "item.calemiutils.sledgehammer_gold": "Gold Sledgehammer",
+    "item.calemiutils.sledgehammer_diamond": "Diamond Sledgehammer",
+    "item.calemiutils.sledgehammer_starlight": "Starlight Sledgehammer",
+
+    "item.calemiutils.security_wrench": "Security Wrench",
 
     "itemGroup.calemiutils.tabMain": "Calemi's Utils",
 

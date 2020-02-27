@@ -1,3 +1,6 @@
 {
-  "parent": "calemiutils:item/coin"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "calemiutils:items/coins/coin_nickel"
+  }
 }

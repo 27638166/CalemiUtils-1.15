@@ -2,11 +2,8 @@ package calemiutils.init;
 
 import calemiutils.CUReference;
 import calemiutils.CalemiUtils;
-import calemiutils.block.base.BlockBase;
-import calemiutils.block.base.BlockRaritaniumOre;
+import calemiutils.block.BlockRaritaniumOre;
 import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
