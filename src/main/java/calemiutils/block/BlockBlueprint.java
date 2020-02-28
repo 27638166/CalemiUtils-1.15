@@ -145,13 +145,18 @@ public class BlockBlueprint extends BlockColoredBase {
         return state.getMaterial() != Material.PLANTS && state.getMaterial() != Material.AIR && state.getMaterial() != Material.ANVIL && state.getMaterial() != Material.CACTUS && state.getMaterial() != Material.CAKE && state.getMaterial() != Material.CARPET && state.getMaterial() != Material.PORTAL;
     }
 
-    public int getMetaFromState(IForgeBlockState state) {
+    public int getIdFromState(IForgeBlockState state) {
 
         if (state.getBlockState().getBlock() instanceof BlockBlueprint) {
             return (state.getBlockState().get(COLOR)).getId();
         }
 
         return 0;
+    }
+
+    public IForgeBlockState getStateFromId(int id) {
+
+        return getDefaultState().with(COLOR, DyeColor.byId(id));
     }
 
     @Override
@@ -175,17 +180,14 @@ public class BlockBlueprint extends BlockColoredBase {
         return false;
     }
 
-
     @Override
     @OnlyIn(Dist.CLIENT)
-    public boolean isSideInvisible(BlockState p_200122_1_, BlockState p_200122_2_, Direction p_200122_3_) {
-        return p_200122_2_.getBlock() == this || super.isSideInvisible(p_200122_1_, p_200122_2_, p_200122_3_);
+    public boolean isSideInvisible(BlockState centerBlockState, BlockState otherStateBlock, Direction dir) {
+        return (otherStateBlock.getBlock() == this && centerBlockState.get(COLOR).getId() == otherStateBlock.get(COLOR).getId()) || super.isSideInvisible(centerBlockState, otherStateBlock, dir);
     }
 
     @Override
     public boolean canEntitySpawn(BlockState p_220067_1_, IBlockReader p_220067_2_, BlockPos p_220067_3_, EntityType<?> p_220067_4_) {
         return false;
     }
-
-
 }

@@ -8,7 +8,7 @@
   "key": {
 
     "S": {
-      "tag" : "forge:rods/wooden"
+      "item" : "minecraft:iron_ingot"
     },
 
     "K": {

@@ -1,5 +1,6 @@
 package calemiutils.item;
 
+import calemiutils.CalemiUtils;
 import calemiutils.config.CUConfig;
 import calemiutils.event.WrenchEvent;
 import calemiutils.item.base.ItemBase;
@@ -10,6 +11,7 @@ import calemiutils.util.helper.LoreHelper;
 import calemiutils.util.helper.SecurityHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
@@ -21,9 +23,9 @@ import java.util.List;
 
 public class ItemSecurityWrench extends ItemBase {
 
-    public ItemSecurityWrench(Properties properties) {
+    public ItemSecurityWrench() {
 
-        super("security_wrench", properties);
+        super("security_wrench", new Item.Properties().group(CalemiUtils.TAB).maxStackSize(1));
     }
 
     @Override

@@ -151,21 +151,22 @@ public class GuiHelper {
 
         Tessellator tessellator = RenderSystem.renderThreadTesselator();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         buffer.func_225582_a_((float)x, (float)maxY, 50);
         buffer.func_225583_a_(u * pixel, maxV * pixel).endVertex();
-
         buffer.func_225582_a_((float)maxX, (float)maxY, 50);
         buffer.func_225583_a_(maxU * pixel, maxV * pixel).endVertex();
-
         buffer.func_225582_a_((float)maxX, (float)y, 50);
         buffer.func_225583_a_(maxU * pixel, v * pixel).endVertex();
-
         buffer.func_225582_a_((float)x, (float)y, 50);
         buffer.func_225583_a_(u * pixel, v * pixel).endVertex();
-
         tessellator.draw();
+
+        RenderSystem.disableBlend();
     }
 
     public static void drawColoredRect(int x, int y, int zLevel, int width, int height, int hex, float alpha) {

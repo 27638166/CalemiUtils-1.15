@@ -39,7 +39,6 @@ public class ItemSledgehammer extends PickaxeItem {
 
     private static final ResourceLocation oreTags = new ResourceLocation(ForgeMod.getInstance().getModId(), "ores");
     private static final ResourceLocation logTags = new ResourceLocation("minecraft", "logs");
-    private static final Set<Block> EFFECTIVE_ON = ImmutableSet.of(Blocks.ACTIVATOR_RAIL, Blocks.COAL_ORE, Blocks.COBBLESTONE, Blocks.DETECTOR_RAIL, Blocks.DIAMOND_BLOCK, Blocks.DIAMOND_ORE, Blocks.POWERED_RAIL, Blocks.GOLD_BLOCK, Blocks.GOLD_ORE, Blocks.ICE, Blocks.IRON_BLOCK, Blocks.IRON_ORE, Blocks.LAPIS_BLOCK, Blocks.LAPIS_ORE, Blocks.MOSSY_COBBLESTONE, Blocks.NETHERRACK, Blocks.PACKED_ICE, Blocks.BLUE_ICE, Blocks.RAIL, Blocks.REDSTONE_ORE, Blocks.SANDSTONE, Blocks.CHISELED_SANDSTONE, Blocks.CUT_SANDSTONE, Blocks.CHISELED_RED_SANDSTONE, Blocks.CUT_RED_SANDSTONE, Blocks.RED_SANDSTONE, Blocks.STONE, Blocks.GRANITE, Blocks.POLISHED_GRANITE, Blocks.DIORITE, Blocks.POLISHED_DIORITE, Blocks.ANDESITE, Blocks.POLISHED_ANDESITE, Blocks.STONE_SLAB, Blocks.SMOOTH_STONE_SLAB, Blocks.SANDSTONE_SLAB, Blocks.PETRIFIED_OAK_SLAB, Blocks.COBBLESTONE_SLAB, Blocks.BRICK_SLAB, Blocks.STONE_BRICK_SLAB, Blocks.NETHER_BRICK_SLAB, Blocks.QUARTZ_SLAB, Blocks.RED_SANDSTONE_SLAB, Blocks.PURPUR_SLAB, Blocks.SMOOTH_QUARTZ, Blocks.SMOOTH_RED_SANDSTONE, Blocks.SMOOTH_SANDSTONE, Blocks.SMOOTH_STONE, Blocks.STONE_BUTTON, Blocks.STONE_PRESSURE_PLATE, Blocks.POLISHED_GRANITE_SLAB, Blocks.SMOOTH_RED_SANDSTONE_SLAB, Blocks.MOSSY_STONE_BRICK_SLAB, Blocks.POLISHED_DIORITE_SLAB, Blocks.MOSSY_COBBLESTONE_SLAB, Blocks.END_STONE_BRICK_SLAB, Blocks.SMOOTH_SANDSTONE_SLAB, Blocks.SMOOTH_QUARTZ_SLAB, Blocks.GRANITE_SLAB, Blocks.ANDESITE_SLAB, Blocks.RED_NETHER_BRICK_SLAB, Blocks.POLISHED_ANDESITE_SLAB, Blocks.DIORITE_SLAB, Blocks.SHULKER_BOX, Blocks.BLACK_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX, Blocks.BROWN_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.GRAY_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX, Blocks.LIGHT_GRAY_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.WHITE_SHULKER_BOX, Blocks.YELLOW_SHULKER_BOX, Blocks.CLAY, Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.PODZOL, Blocks.FARMLAND, Blocks.GRASS_BLOCK, Blocks.GRAVEL, Blocks.MYCELIUM, Blocks.SAND, Blocks.RED_SAND, Blocks.SNOW_BLOCK, Blocks.SNOW, Blocks.SOUL_SAND, Blocks.GRASS_PATH, Blocks.WHITE_CONCRETE_POWDER, Blocks.ORANGE_CONCRETE_POWDER, Blocks.MAGENTA_CONCRETE_POWDER, Blocks.LIGHT_BLUE_CONCRETE_POWDER, Blocks.YELLOW_CONCRETE_POWDER, Blocks.LIME_CONCRETE_POWDER, Blocks.PINK_CONCRETE_POWDER, Blocks.GRAY_CONCRETE_POWDER, Blocks.LIGHT_GRAY_CONCRETE_POWDER, Blocks.CYAN_CONCRETE_POWDER, Blocks.PURPLE_CONCRETE_POWDER, Blocks.BLUE_CONCRETE_POWDER, Blocks.BROWN_CONCRETE_POWDER, Blocks.GREEN_CONCRETE_POWDER, Blocks.RED_CONCRETE_POWDER, Blocks.BLACK_CONCRETE_POWDER, Blocks.OAK_PLANKS, Blocks.SPRUCE_PLANKS, Blocks.BIRCH_PLANKS, Blocks.JUNGLE_PLANKS, Blocks.ACACIA_PLANKS, Blocks.DARK_OAK_PLANKS, Blocks.BOOKSHELF, Blocks.OAK_WOOD, Blocks.SPRUCE_WOOD, Blocks.BIRCH_WOOD, Blocks.JUNGLE_WOOD, Blocks.ACACIA_WOOD, Blocks.DARK_OAK_WOOD, Blocks.OAK_LOG, Blocks.SPRUCE_LOG, Blocks.BIRCH_LOG, Blocks.JUNGLE_LOG, Blocks.ACACIA_LOG, Blocks.DARK_OAK_LOG, Blocks.CHEST, Blocks.PUMPKIN, Blocks.CARVED_PUMPKIN, Blocks.JACK_O_LANTERN, Blocks.MELON, Blocks.LADDER, Blocks.SCAFFOLDING, Blocks.OAK_BUTTON, Blocks.SPRUCE_BUTTON, Blocks.BIRCH_BUTTON, Blocks.JUNGLE_BUTTON, Blocks.DARK_OAK_BUTTON, Blocks.ACACIA_BUTTON, Blocks.OAK_PRESSURE_PLATE, Blocks.SPRUCE_PRESSURE_PLATE, Blocks.BIRCH_PRESSURE_PLATE, Blocks.JUNGLE_PRESSURE_PLATE, Blocks.DARK_OAK_PRESSURE_PLATE, Blocks.ACACIA_PRESSURE_PLATE);
 
     private double attackSpeed, attackDamage;
     public int baseChargeTime;
@@ -152,10 +151,7 @@ public class ItemSledgehammer extends PickaxeItem {
                 return;
             }
 
-            float hardness = nextLocation.getBlockState().getBlockState().getBlockHardness(worldIn, nextLocation.getBlockPos());
-            int harvestLevel = nextLocation.getBlock().getHarvestLevel(nextLocation.getBlockState().getBlockState());
-
-            if (hardness >= 0 && hardness <= 50 && getTier().getHarvestLevel() >= harvestLevel) {
+            if (canBreakBlock(nextLocation)) {
                 nextLocation.breakBlock(player, heldStack);
                 heldStack.damageItem(1, player, (p_220038_0_) -> {});
                 damage++;
@@ -165,25 +161,36 @@ public class ItemSledgehammer extends PickaxeItem {
 
     private void veinMine(ItemStack heldStack, PlayerEntity player, Location location) {
 
-        IForgeBlockState state = location.getBlockState();
+        if (canBreakBlock(location)) {
 
-        VeinScan scan = new VeinScan(location, state.getBlockState().getBlock());
-        scan.startScan(64, true);
+            IForgeBlockState state = location.getBlockState();
 
-        int damage = getDamage(heldStack);
+            VeinScan scan = new VeinScan(location, state.getBlockState().getBlock());
+            scan.startScan(64, true);
 
-        for (Location nextLocation : scan.buffer) {
+            int damage = getDamage(heldStack);
 
-            int maxDamage = getMaxDamage(heldStack);
+            for (Location nextLocation : scan.buffer) {
 
-            if (damage > getMaxDamage(heldStack) && maxDamage > 0) {
-                return;
+                int maxDamage = getMaxDamage(heldStack);
+
+                if (damage > getMaxDamage(heldStack) && maxDamage > 0) {
+                    return;
+                }
+
+                nextLocation.breakBlock(player, heldStack);
+                heldStack.damageItem(1, player, (p_220038_0_) -> {});
+                damage++;
             }
-
-            nextLocation.breakBlock(player, heldStack);
-            heldStack.damageItem(1, player, (p_220038_0_) -> {});
-            damage++;
         }
+    }
+
+    private boolean canBreakBlock(Location location) {
+
+        float hardness = location.getBlockState().getBlockState().getBlockHardness(location.world, location.getBlockPos());
+        int harvestLevel = location.getBlockState().getHarvestLevel();
+
+        return hardness >= 0 && hardness <= 50 && getTier().getHarvestLevel() >= harvestLevel;
     }
 
     @Override
@@ -219,17 +226,11 @@ public class ItemSledgehammer extends PickaxeItem {
 
     @Override
     public boolean canHarvestBlock(BlockState blockState) {
-        return EFFECTIVE_ON.contains(blockState.getBlock()) || super.canHarvestBlock(blockState);
+        return getTier().getHarvestLevel() >= blockState.getHarvestLevel();
     }
 
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState blockState) {
-
-        Material material = blockState.getMaterial();
-        if( material == Material.WOOD && material == Material.PLANTS) {
-            return this.efficiency;
-        }
-
-        return EFFECTIVE_ON.contains(blockState.getBlock()) ? this.efficiency : super.getDestroySpeed(stack, blockState);
+        return this.efficiency;
     }
 }

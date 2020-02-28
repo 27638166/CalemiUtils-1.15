@@ -62,14 +62,14 @@ public class OverlayEvent {
 
                     if (currentChargeTime < chargeTime) {
 
-                        GuiHelper.drawRect(midX - 6, midY - 11, 0, 87, 0, hammerIconWidth, 4);
-                        GuiHelper.drawRect(midX - 6, midY - 11, hammerIconWidth, 87, 5, scale, 4);
+                        GuiHelper.drawRect(midX - 7, midY - 11, 0, 87, 0, hammerIconWidth, 4);
+                        GuiHelper.drawRect(midX - 7, midY - 11, hammerIconWidth, 87, 5, scale, 4);
                     }
 
                     else {
 
                         if (player.world.getGameTime() % 5 > 1) {
-                            GuiHelper.drawRect(midX - 6, midY - 11, hammerIconWidth * 2, 87, 10, hammerIconWidth, 4);
+                            GuiHelper.drawRect(midX - 7, midY - 11, hammerIconWidth * 2, 87, 10, hammerIconWidth, 4);
                         }
                     }
                 }

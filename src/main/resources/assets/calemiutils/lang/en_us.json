@@ -25,9 +25,12 @@
 
     "item.calemiutils.security_wrench": "Security Wrench",
 
+    "item.calemiutils.pencil": "Pencil",
+
     "itemGroup.calemiutils.tabMain": "Calemi's Utils",
 
     "block.calemiutils.raritanium_ore" : "Raritanium Ore",
+    "block.calemiutils.blueprint" : "Blueprint",
 
     "enchantment.calemiutils.crushing" : "Crushing"
 }

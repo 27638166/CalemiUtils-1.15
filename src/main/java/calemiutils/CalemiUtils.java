@@ -3,8 +3,11 @@ package calemiutils;
 import calemiutils.config.CUConfig;
 import calemiutils.event.OverlayEvent;
 import calemiutils.event.WrenchEvent;
+import calemiutils.init.InitBlocks;
 import calemiutils.init.InitEnchantments;
 import calemiutils.world.WorldGenOre;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -40,13 +43,14 @@ public class CalemiUtils {
     private void setup(final FMLCommonSetupEvent event) {
 
         MinecraftForge.EVENT_BUS.register(new WrenchEvent());
-        //MinecraftForge.EVENT_BUS.register(new InitEnchantments());
 
         DeferredWorkQueue.runLater(WorldGenOre::onCommonSetup);
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
+
         MinecraftForge.EVENT_BUS.register(new OverlayEvent());
+        RenderTypeLookup.setRenderLayer(InitBlocks.BLUEPRINT, RenderType.func_228643_e_());
     }
 
     @SubscribeEvent

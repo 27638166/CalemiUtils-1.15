@@ -3,6 +3,7 @@ package calemiutils.init;
 import calemiutils.CUReference;
 import calemiutils.CalemiUtils;
 import calemiutils.item.ItemCurrency;
+import calemiutils.item.ItemPencil;
 import calemiutils.item.ItemSecurityWrench;
 import calemiutils.item.ItemSledgehammer;
 import calemiutils.item.base.ItemBase;
@@ -44,6 +45,8 @@ public class InitItems {
 
     public static final Item SECURITY_WRENCH = null;
 
+    public static final Item PENCIL = null;
+
     @SubscribeEvent
     public static void registerItems(final RegistryEvent.Register<Item> event) {
 
@@ -71,6 +74,7 @@ public class InitItems {
         event.getRegistry().register(new ItemSledgehammer("diamond", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.DIAMOND, 20, 1.4F));
         event.getRegistry().register(new ItemSledgehammer("starlight", new Item.Properties().group(CalemiUtils.TAB), SledgehammerTiers.STARLIGHT, 15, 1.4F));
 
-        event.getRegistry().register(new ItemSecurityWrench(new Item.Properties().group(CalemiUtils.TAB)));
+        event.getRegistry().register(new ItemSecurityWrench());
+        event.getRegistry().register(new ItemPencil());
     }
 }

@@ -1,6 +1,5 @@
 package calemiutils.item.base;
 
-import calemiutils.init.InitItems;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
