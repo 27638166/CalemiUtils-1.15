@@ -11,6 +11,7 @@ import calemiutils.util.helper.LoreHelper;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
@@ -77,7 +78,12 @@ public class ItemPencil extends ItemBase {
         Location location = new Location(world, pos);
 
         if (player.isCrouching()) {
-            return ActionResultType.FAIL;
+
+            if (world.isRemote) {
+                openGui(player, context.getItem(), hand);
+            }
+
+            return ActionResultType.SUCCESS;
         }
 
         if (!location.getBlock().getMaterial(location.getBlockState().getBlockState()).isReplaceable()) {
@@ -92,7 +98,7 @@ public class ItemPencil extends ItemBase {
         else {
 
             if (location.isBlockValidForPlacing(InitBlocks.BLUEPRINT)) {
-                location.setBlock(BLUEPRINT.getStateFromId(getColorId(player.getHeldItem(hand))));
+                location.setBlock(BLUEPRINT.getDefaultState().with(BlockBlueprint.COLOR, DyeColor.byId(getColorId(context.getItem()))));
             }
 
             return ActionResultType.SUCCESS;
@@ -104,8 +110,8 @@ public class ItemPencil extends ItemBase {
 
         ItemStack stack = player.getHeldItemMainhand();
 
-        if (world.isRemote && player.isCrouching() && !stack.isEmpty() && stack.getItem() instanceof ItemPencil) {
-            openGui(player, stack);
+        if (world.isRemote && player.isCrouching()) {
+            openGui(player, stack, hand);
             return new ActionResult<>(ActionResultType.SUCCESS, player.getHeldItem(hand));
         }
 
@@ -113,8 +119,8 @@ public class ItemPencil extends ItemBase {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private void openGui(PlayerEntity player, ItemStack stack) {
+    private void openGui(PlayerEntity player, ItemStack stack, Hand hand) {
 
-        Minecraft.getInstance().displayGuiScreen(new GuiPencil(player, stack));
+        Minecraft.getInstance().displayGuiScreen(new GuiPencil(player, stack, hand));
     }
 }

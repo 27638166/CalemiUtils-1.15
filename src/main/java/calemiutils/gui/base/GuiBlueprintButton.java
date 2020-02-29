@@ -3,6 +3,7 @@ package calemiutils.gui.base;
 import calemiutils.util.helper.GuiHelper;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -11,13 +12,15 @@ import org.lwjgl.opengl.GL11;
 @OnlyIn(Dist.CLIENT)
 public class GuiBlueprintButton extends Button {
 
+    private final int id;
     private final GuiRect rect;
     private final ItemStack stack;
     private final ItemRenderer itemRender;
 
-    public GuiBlueprintButton(int x, int y, ItemRenderer itemRender, ItemStack stack, Button.IPressable pressable) {
+    public GuiBlueprintButton(int id, int x, int y, ItemRenderer itemRender, ItemStack stack, Button.IPressable pressable) {
 
         super(x, y, 16, 16, "", pressable);
+        this.id = id;
         rect = new GuiRect(this.x, this.y, width, height);
         this.stack = stack;
         this.itemRender = itemRender;
@@ -30,16 +33,10 @@ public class GuiBlueprintButton extends Button {
 
             isHovered = rect.contains(mouseX, mouseY);
 
-            ItemStack icon = stack;
-
-            GuiHelper.drawItemStack(itemRender, icon, rect.x, rect.y);
-            GuiHelper.drawHoveringTextBox(mouseX, mouseY, 150, rect, icon.getDisplayName().getFormattedText());
-
-            setMessage(icon.getDisplayName().getFormattedText());
+            GuiHelper.drawItemStack(itemRender, stack, rect.x, rect.y);
+            GuiHelper.drawHoveringTextBox(mouseX, mouseY, 150, rect, DyeColor.byId(id).getName().toUpperCase());
 
             GL11.glColor4f(1, 1, 1, 1);
         }
-
-        super.renderButton(mouseX, mouseY, partialTicks);
     }
 }

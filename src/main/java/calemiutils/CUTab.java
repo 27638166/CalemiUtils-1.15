@@ -15,12 +15,7 @@ class CUTab extends ItemGroup {
     @Override
     public ItemStack createIcon() {
 
-        ItemStack stack = new ItemStack(InitItems.RARITANIUM);
-
-        /*if (CUConfig.itemUtils.pencil && CUConfig.blockUtils.blueprint) {
-            stack = new ItemStack(InitItems.PENCIL);
-        }*/
-
+        ItemStack stack = new ItemStack(InitItems.PENCIL);
         return stack;
     }
 }

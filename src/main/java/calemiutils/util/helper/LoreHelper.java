@@ -17,13 +17,6 @@ public class LoreHelper {
         tooltip.add(new StringTextComponent(""));
     }
 
-    public static void addDisabledLore(List<ITextComponent> tooltip, int value) {
-
-        if (value <= 0) {
-            tooltip.add(new StringTextComponent(ChatFormatting.RED + "" + ChatFormatting.ITALIC + "Disabled by config!"));
-        }
-    }
-
     public static void addInformationLore(List<ITextComponent> tooltip, String lore) {
 
         if (CUConfig.tooltips.showInfoOnTooltips.get()) {

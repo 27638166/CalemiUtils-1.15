@@ -38,17 +38,18 @@ public class BlockBlueprint extends BlockColoredBase {
         super("blueprint", Block.Properties.create(Material.GLASS).sound(SoundType.STONE).hardnessAndResistance(0.1F).harvestLevel(0).func_226896_b_().variableOpacity());
     }
 
-    public IForgeBlockState getStateByPrefix(String prefix) {
+    public int getIdFromState(IForgeBlockState state) {
 
-        DyeColor dye = DyeColor.BLUE;
-
-        for (DyeColor dyes : DyeColor.values()) {
-            if (dyes.getName().startsWith(prefix)) {
-                dye = dyes;
-            }
+        if (state.getBlockState().getBlock() instanceof BlockBlueprint) {
+            return (state.getBlockState().get(COLOR)).getId();
         }
 
-        return getDefaultState().with(COLOR, dye);
+        return 0;
+    }
+
+    public IForgeBlockState getStateFromId(int id) {
+
+        return getDefaultState().with(COLOR, DyeColor.byId(id));
     }
 
     @Override
@@ -143,20 +144,6 @@ public class BlockBlueprint extends BlockColoredBase {
         if (state.getBlock() instanceof ChestBlock) return false;
 
         return state.getMaterial() != Material.PLANTS && state.getMaterial() != Material.AIR && state.getMaterial() != Material.ANVIL && state.getMaterial() != Material.CACTUS && state.getMaterial() != Material.CAKE && state.getMaterial() != Material.CARPET && state.getMaterial() != Material.PORTAL;
-    }
-
-    public int getIdFromState(IForgeBlockState state) {
-
-        if (state.getBlockState().getBlock() instanceof BlockBlueprint) {
-            return (state.getBlockState().get(COLOR)).getId();
-        }
-
-        return 0;
-    }
-
-    public IForgeBlockState getStateFromId(int id) {
-
-        return getDefaultState().with(COLOR, DyeColor.byId(id));
     }
 
     @Override

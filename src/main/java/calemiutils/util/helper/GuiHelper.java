@@ -67,6 +67,7 @@ public class GuiHelper {
 
                 String str = text[i];
 
+                GL11.glTranslatef(0, 0, 100);
                 mc.fontRenderer.drawString(ChatFormatting.WHITE + str, (mouseX + 10), (mouseY - 10) + (i * 9), 0xFFFFFF);
             }
 
@@ -182,24 +183,24 @@ public class GuiHelper {
         int maxX = x + width;
         int maxY = y + height;
 
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_ALPHA);
+        RenderSystem.disableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.disableAlphaTest();
+        //RenderSystem.defaultBlendFunc();
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
-        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
+        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         bufferbuilder.func_225582_a_(x, maxY, zLevel).func_227885_a_(red, green, blue, alpha).endVertex();
         bufferbuilder.func_225582_a_(maxX, maxY, zLevel).func_227885_a_(red, green, blue, alpha).endVertex();
         bufferbuilder.func_225582_a_(maxX, y, zLevel).func_227885_a_(red, green, blue, alpha).endVertex();
         bufferbuilder.func_225582_a_(x, y, zLevel).func_227885_a_(red, green, blue, alpha).endVertex();
-
         tessellator.draw();
 
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_ALPHA);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        RenderSystem.disableBlend();
+        RenderSystem.enableAlphaTest();
+        RenderSystem.enableTexture();
     }
 
     public static void drawItemStack(ItemRenderer itemRender, ItemStack stack, int x, int y) {
