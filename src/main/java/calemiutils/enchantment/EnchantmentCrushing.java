@@ -1,7 +1,6 @@
 package calemiutils.enchantment;
 
 import calemiutils.CUReference;
-import calemiutils.init.InitEnchantments;
 import calemiutils.item.ItemSledgehammer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentType;
@@ -11,26 +10,22 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = CUReference.MOD_ID)
 public class EnchantmentCrushing extends Enchantment {
 
-    public static final EnchantmentType HAMMER = EnchantmentType.create("weapons", (item)->(item instanceof ItemSledgehammer));
+    public static final EnchantmentType HAMMER = EnchantmentType.create("weapons", (item) -> (item instanceof ItemSledgehammer));
 
-    public EnchantmentCrushing() {
-
-        super(Rarity.UNCOMMON, HAMMER, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
-        setRegistryName("crushing");
+    public EnchantmentCrushing () {
+        super(Rarity.UNCOMMON, HAMMER, new EquipmentSlotType[] {EquipmentSlotType.MAINHAND});
     }
 
     @Override
-    public int getMaxLevel() {
-
+    public int getMaxLevel () {
         return 2;
     }
 
-    public int getMinEnchantability(int enchantmentLevel)
-    {
+    public int getMinEnchantability (int enchantmentLevel) {
         return 15 + (enchantmentLevel - 1) * 9;
     }
-    public int getMaxEnchantability(int enchantmentLevel)
-    {
+
+    public int getMaxEnchantability (int enchantmentLevel) {
         return super.getMinEnchantability(enchantmentLevel) + 50;
     }
 }

@@ -1,7 +1,7 @@
 {
   "variants": {
-    "normal": {
-      "model": "calemiutils:trading_post"
+    "": {
+      "model": "calemiutils:block/trading_post"
     }
   }
 }

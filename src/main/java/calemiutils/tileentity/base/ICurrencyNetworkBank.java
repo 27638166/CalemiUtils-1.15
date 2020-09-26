@@ -2,9 +2,9 @@ package calemiutils.tileentity.base;
 
 public interface ICurrencyNetworkBank extends INetwork {
 
-    int getStoredCurrency();
+    int getStoredCurrency ();
 
-    int getMaxCurrency();
+    int getMaxCurrency ();
 
-    void setCurrency(int amount);
+    void setCurrency (int amount);
 }

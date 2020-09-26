@@ -1,8 +1,6 @@
 package calemiutils.util;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
@@ -11,13 +9,13 @@ public class UnitChatMessage {
     private final String unitName;
     private final Entity[] players;
 
-    public UnitChatMessage(String unitName, Entity... players) {
+    public UnitChatMessage (String unitName, Entity... players) {
 
         this.unitName = unitName;
         this.players = players;
     }
 
-    public void printMessage(TextFormatting format, String message) {
+    public void printMessage (TextFormatting format, String message) {
 
         for (Entity player : players) {
 
@@ -26,7 +24,7 @@ public class UnitChatMessage {
         }
     }
 
-    private String getUnitName() {
+    private String getUnitName () {
 
         return "[" + unitName + "] ";
     }

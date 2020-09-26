@@ -1,13 +1,18 @@
 package calemiutils.util.helper;
 
-import calemiutils.config.CUConfig;
+import calemiutils.CUConfig;
 
 import java.text.DecimalFormat;
 import java.util.List;
 
 public class StringHelper {
 
-    public static String printCommas(int amount) {
+    public static String printCurrency (int amount) {
+
+        return printCommas(amount) + CUConfig.economy.currencyName.get();
+    }
+
+    public static String printCommas (int amount) {
 
         String number = String.valueOf(amount);
         double amountD = Double.parseDouble(number);
@@ -16,12 +21,7 @@ public class StringHelper {
         return formatter.format(amountD);
     }
 
-    public static String printCurrency(int amount) {
-
-        return printCommas(amount) + CUConfig.economy.currencyName.get();
-    }
-
-    public static String[] getArrayFromList(List<String> list) {
+    public static String[] getArrayFromList (List<String> list) {
 
         String[] output = new String[list.size()];
 
@@ -32,7 +32,7 @@ public class StringHelper {
         return output;
     }
 
-    public static List<String> removeCharFromList(List<String> list, CharSequence... chSeq) {
+    public static List<String> removeCharFromList (List<String> list, CharSequence... chSeq) {
 
         for (int i = 0; i < list.size(); i++) {
 
@@ -62,7 +62,7 @@ public class StringHelper {
         return list;
     }*/
 
-    public static List<String> removeNullsFromList(List<String> list) {
+    public static List<String> removeNullsFromList (List<String> list) {
 
         for (int i = 0; i < list.size(); i++) {
 

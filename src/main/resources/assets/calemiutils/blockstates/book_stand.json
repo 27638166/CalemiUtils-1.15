@@ -5,7 +5,7 @@
         "facing": "north"
       },
       "apply": {
-        "model": "calemiutils:book_stand"
+        "model": "calemiutils:block/book_stand"
       }
     },
     {
@@ -13,7 +13,7 @@
         "facing": "south"
       },
       "apply": {
-        "model": "calemiutils:book_stand",
+        "model": "calemiutils:block/book_stand",
         "y": 180
       }
     },
@@ -22,7 +22,7 @@
         "facing": "west"
       },
       "apply": {
-        "model": "calemiutils:book_stand",
+        "model": "calemiutils:block/book_stand",
         "y": 270
       }
     },
@@ -31,7 +31,7 @@
         "facing": "east"
       },
       "apply": {
-        "model": "calemiutils:book_stand",
+        "model": "calemiutils:block/book_stand",
         "y": 90
       }
     }

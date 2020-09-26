@@ -1,5 +1,7 @@
 package calemiutils.util.helper;
 
+import calemiutils.CUConfig;
+import calemiutils.item.ItemWallet;
 import calemiutils.tileentity.base.ICurrencyNetworkBank;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -9,49 +11,30 @@ import java.util.List;
 
 public class CurrencyHelper {
 
-    public static ItemStack getCurrentWalletStack(PlayerEntity player) {
-        return getCurrentWalletStack(player, true);
-    }
+    public static ItemStack getCurrentWalletStack (PlayerEntity player) {
 
-    public static ItemStack getCurrentWalletStack(PlayerEntity player, boolean checkForActivity) {
-
-        /*if (checkForActivity) checkForActiveWallets(player);
-
-        if (player.getHeldItemMainhand().getItem() instanceof ItemWallet && (!checkForActivity || ItemWallet.isActive(player.getHeldItemMainhand()))) {
+        if (player.getHeldItemMainhand().getItem() instanceof ItemWallet) {
             return player.getHeldItemMainhand();
         }
 
-        if (player.getHeldItemOffhand().getItem() instanceof ItemWallet && (!checkForActivity || ItemWallet.isActive(player.getHeldItemOffhand()))) {
+        if (player.getHeldItemOffhand().getItem() instanceof ItemWallet) {
             return player.getHeldItemOffhand();
-        }
-
-        if (Loader.isModLoaded("baubles")) {
-
-            IBaublesItemHandler container = BaublesApi.getBaublesHandler(player);
-
-            for (int i = 0; i < container.getSlots(); i++) {
-
-                ItemStack stack = container.getStackInSlot(i);
-
-                if (stack.getItem() instanceof ItemWallet && (!checkForActivity || ItemWallet.isActive(stack))) {
-                    return stack;
-                }
-            }
         }
 
         for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 
             ItemStack stack = player.inventory.getStackInSlot(i);
 
-            if (stack.getItem() instanceof ItemWallet && (!checkForActivity || ItemWallet.isActive(stack))) {
+            if (stack.getItem() instanceof ItemWallet) {
                 return stack;
             }
-        }*/
+        }
 
         return ItemStack.EMPTY;
     }
 
-    public static List<ItemStack> checkForActiveWallets(PlayerEntity player) {
+    @SuppressWarnings("SameReturnValue")
+    public static List<ItemStack> checkForActiveWallets (PlayerEntity player) {
 
         List<ItemStack> walletList = new ArrayList<>();
 
@@ -97,7 +80,7 @@ public class CurrencyHelper {
         return null;
     }
 
-    private static void addWallet(List<ItemStack> walletList, ItemStack stackToAdd) {
+    private static void addWallet (List<ItemStack> walletList, ItemStack stackToAdd) {
 
         for (ItemStack stackInList : walletList) {
 
@@ -107,17 +90,17 @@ public class CurrencyHelper {
         }
     }
 
-    public static boolean canFitAddedCurrencyToNetwork(ICurrencyNetworkBank network, int addAmount) {
+    public static boolean canFitAddedCurrencyToNetwork (ICurrencyNetworkBank network, int addAmount) {
 
         return network.getStoredCurrency() + addAmount <= network.getMaxCurrency();
     }
 
-    public static boolean canFitAddedCurrencyToWallet(ItemStack walletStack, int addAmount) {
+    @SuppressWarnings("SameReturnValue")
+    public static boolean canFitAddedCurrencyToWallet (ItemStack walletStack, int addAmount) {
 
-        /*if (!walletStack.isEmpty() && walletStack.getItem() instanceof ItemWallet) {
-
-            return ItemWallet.getBalance(walletStack) + addAmount <= CUConfig.wallet.walletCurrencyCapacity;
-        }*/
+        if (walletStack.getItem() instanceof ItemWallet) {
+            return ItemWallet.getBalance(walletStack) + addAmount <= CUConfig.wallet.walletCurrencyCapacity.get();
+        }
 
         return false;
     }

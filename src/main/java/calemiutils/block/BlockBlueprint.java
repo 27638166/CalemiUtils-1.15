@@ -1,29 +1,27 @@
 package calemiutils.block;
 
+import calemiutils.CUConfig;
 import calemiutils.block.base.BlockColoredBase;
-import calemiutils.config.CUConfig;
-import calemiutils.init.InitBlocks;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
 import calemiutils.util.VeinScan;
 import calemiutils.util.helper.InventoryHelper;
 import calemiutils.util.helper.ItemHelper;
 import calemiutils.util.helper.SoundHelper;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -33,48 +31,72 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 public class BlockBlueprint extends BlockColoredBase {
 
-    public BlockBlueprint() {
-
-        super("blueprint", Block.Properties.create(Material.GLASS).sound(SoundType.STONE).hardnessAndResistance(0.1F).harvestLevel(0).func_226896_b_().variableOpacity());
-    }
-
-    public int getIdFromState(IForgeBlockState state) {
-
-        if (state.getBlockState().getBlock() instanceof BlockBlueprint) {
-            return (state.getBlockState().get(COLOR)).getId();
-        }
-
-        return 0;
-    }
-
-    public IForgeBlockState getStateFromId(int id) {
-
-        return getDefaultState().with(COLOR, DyeColor.byId(id));
+    public BlockBlueprint () {
+        super(Block.Properties.create(Material.GLASS).sound(SoundType.STONE).hardnessAndResistance(0.1F).harvestLevel(0).func_226896_b_().variableOpacity());
     }
 
     @Override
-    public void onBlockClicked(BlockState state, World world, BlockPos pos, PlayerEntity player) {
+    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
+        return false;
+    }
+
+    @Override
+    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean isSideInvisible (BlockState centerBlockState, BlockState otherStateBlock, Direction dir) {
+        return (otherStateBlock.getBlock() == this && centerBlockState.get(COLOR).getId() == otherStateBlock.get(COLOR).getId()) || super.isSideInvisible(centerBlockState, otherStateBlock, dir);
+    }
+
+    /*
+        Methods for Blocks that are not full and solid cubes.
+     */
+
+    @Override
+    public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
+        return true;
+    }
+
+    /**
+     * Handles the Blueprint's replacement system.
+     */
+    @Override
+    public void onBlockClicked (BlockState state, World world, BlockPos pos, PlayerEntity player) {
 
         Location location = new Location(world, pos);
-        ItemStack currentStack = player.getHeldItemMainhand();
+        ItemStack heldStack = player.getHeldItemMainhand();
         UnitChatMessage message = new UnitChatMessage("Blueprint", player);
 
+        //Creates a scanner which will search through multiple Blueprints.
         VeinScan scan = new VeinScan(location, location.getBlockState());
         scan.startScan();
 
-        if (!currentStack.isEmpty() && currentStack.getItem() != Item.getItemFromBlock(this)) {
+        //Checking if there the held stack exists and that it's not a Blueprint.
+        if (!heldStack.isEmpty() && heldStack.getItem() != Item.getItemFromBlock(this)) {
 
-            if (currentStack.getItem() instanceof BlockItem) {
-                replaceAllBlocks(world, player, state, location, currentStack, scan, message);
+            //Checking if the held stack is a Block.
+            if (heldStack.getItem() instanceof BlockItem) {
+                replaceAllBlocks(world, player, location, heldStack, scan, message);
             }
 
-            /*else if (currentStack.getItem() instanceof ItemBuildersKit) {
-                replaceAllBlocks(world, player, location, ((ItemBuildersKit) currentStack.getItem()).getBlockType(currentStack), scan, message);
+            //Support for the Builder's Kit.
+            /*else if (heldStack.getItem() instanceof ItemBuildersKit) {
+                replaceAllBlocks(world, player, location, ((ItemBuildersKit) heldStack.getItem()).getBlockType(heldStack), scan, message);
             }*/
         }
 
-        else if (!world.isRemote && player.isCrouching() && currentStack.isEmpty()) {
+        //Checking if the held stack is air and if the Player is crouching.
+        else if (!world.isRemote && player.isCrouching() && heldStack.isEmpty()) {
 
+            //Checking if the VeinScan list exceeds the config option. If so, print the max scan size.
             if (scan.buffer.size() >= CUConfig.blockScans.veinScanMaxSize.get()) {
                 message.printMessage(TextFormatting.GREEN, "There are " + CUConfig.blockScans.veinScanMaxSize + "+ connected Blueprints");
             }
@@ -83,39 +105,48 @@ public class BlockBlueprint extends BlockColoredBase {
         }
     }
 
-    private void replaceAllBlocks(World world, PlayerEntity player, BlockState blueprintState, Location location, ItemStack currentStack, VeinScan scan, UnitChatMessage message) {
+    /**
+     * Replaces all scanned Locations with a given held stack.
+     *
+     * @param location  The Location of the clicked Blueprint
+     * @param heldStack The held ItemStack (assumes its a Block).
+     * @param scan      used for its list of scanned Locations.
+     */
+    private void replaceAllBlocks (World world, PlayerEntity player, Location location, ItemStack heldStack, VeinScan scan, UnitChatMessage message) {
 
-        IForgeBlockState state = Block.getBlockFromItem(currentStack.getItem()).getDefaultState();
+        IForgeBlockState heldBlockState = Block.getBlockFromItem(heldStack.getItem()).getDefaultState();
 
-        if (canPlaceBlockInBlueprint(state)) {
+        //Checks if the held Block State can be placed within a Blueprint.
+        if (canPlaceBlockInBlueprint(heldBlockState)) {
 
+            //Handles replacing only one Block.
             if (player.isCrouching()) {
-                replaceBlock(location, player, state);
-                InventoryHelper.consumeItem(player.inventory, 1, true, currentStack);
-                SoundHelper.playBlockPlaceSound(world, player, Block.getBlockFromItem(currentStack.getItem()).getDefaultState(), location);
+                replaceBlock(location, player, heldBlockState);
+                InventoryHelper.consumeItem(player.inventory, 1, true, heldStack);
+                SoundHelper.playBlockPlaceSound(world, player, Block.getBlockFromItem(heldStack.getItem()).getDefaultState(), location);
             }
 
+            //Handles replacing every block in list.
             else {
 
-                int itemCount = InventoryHelper.countItems(player.inventory, true, false, currentStack);
+                int itemCount = InventoryHelper.countItems(player.inventory, true, false, heldStack);
 
                 if (itemCount >= scan.buffer.size()) {
 
                     int amountToConsume = 0;
 
                     for (Location nextLocation : scan.buffer) {
-
                         amountToConsume++;
-                        replaceBlock(nextLocation, player, state);
+                        replaceBlock(nextLocation, player, heldBlockState);
                     }
 
                     if (amountToConsume > 0) {
 
                         SoundHelper.playDing(player.world, player);
-                        SoundHelper.playBlockPlaceSound(world, player, Block.getBlockFromItem(currentStack.getItem()).getDefaultState(), location);
+                        SoundHelper.playBlockPlaceSound(world, player, Block.getBlockFromItem(heldStack.getItem()).getDefaultState(), location);
 
                         if (!world.isRemote) message.printMessage(TextFormatting.GREEN, "Placed " + ItemHelper.countByStacks(amountToConsume));
-                        InventoryHelper.consumeItem(player.inventory, amountToConsume, true, currentStack);
+                        InventoryHelper.consumeItem(player.inventory, amountToConsume, true, heldStack);
                     }
                 }
 
@@ -128,16 +159,12 @@ public class BlockBlueprint extends BlockColoredBase {
         }
     }
 
-    private void replaceBlock(Location location, PlayerEntity player, IForgeBlockState state) {
-
-        if (!player.world.isRemote) {
-
-            location.setBlock(state, player);
-            ForgeEventFactory.onBlockPlace(player, BlockSnapshot.getBlockSnapshot(player.world, location.getBlockPos()), Direction.UP);
-        }
-    }
-
-    private boolean canPlaceBlockInBlueprint(IForgeBlockState forgeState) {
+    /**
+     * Checks if the given Block State can be placed without any errors.
+     *
+     * @param forgeState The checked Block State.
+     */
+    private boolean canPlaceBlockInBlueprint (IForgeBlockState forgeState) {
 
         BlockState state = forgeState.getBlockState();
 
@@ -146,35 +173,23 @@ public class BlockBlueprint extends BlockColoredBase {
         return state.getMaterial() != Material.PLANTS && state.getMaterial() != Material.AIR && state.getMaterial() != Material.ANVIL && state.getMaterial() != Material.CACTUS && state.getMaterial() != Material.CAKE && state.getMaterial() != Material.CARPET && state.getMaterial() != Material.PORTAL;
     }
 
+    /**
+     * Replaces a single Blueprint with the given Block State.
+     *
+     * @param location The Location of the replacement.
+     * @param state    The Block State of that replaces the Blueprint.
+     */
+    private void replaceBlock (Location location, PlayerEntity player, IForgeBlockState state) {
+
+        if (!player.world.isRemote) {
+            location.setBlock(state, player);
+            ForgeEventFactory.onBlockPlace(player, BlockSnapshot.getBlockSnapshot(player.world, location.getBlockPos()), Direction.UP);
+        }
+    }
+
     @Override
     @OnlyIn(Dist.CLIENT)
-    public float func_220080_a(BlockState p_220080_1_, IBlockReader p_220080_2_, BlockPos p_220080_3_) {
+    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
         return 1.0F;
-    }
-
-    @Override
-    public boolean propagatesSkylightDown(BlockState p_200123_1_, IBlockReader p_200123_2_, BlockPos p_200123_3_) {
-        return true;
-    }
-
-    @Override
-    public boolean func_229869_c_(BlockState p_229869_1_, IBlockReader p_229869_2_, BlockPos p_229869_3_) {
-        return false;
-    }
-
-    @Override
-    public boolean isNormalCube(BlockState p_220081_1_, IBlockReader p_220081_2_, BlockPos p_220081_3_) {
-        return false;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public boolean isSideInvisible(BlockState centerBlockState, BlockState otherStateBlock, Direction dir) {
-        return (otherStateBlock.getBlock() == this && centerBlockState.get(COLOR).getId() == otherStateBlock.get(COLOR).getId()) || super.isSideInvisible(centerBlockState, otherStateBlock, dir);
-    }
-
-    @Override
-    public boolean canEntitySpawn(BlockState p_220067_1_, IBlockReader p_220067_2_, BlockPos p_220067_3_, EntityType<?> p_220067_4_) {
-        return false;
     }
 }

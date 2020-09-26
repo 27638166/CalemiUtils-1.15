@@ -1,7 +1,7 @@
 package calemiutils.block;
 
+import calemiutils.CUConfig;
 import calemiutils.block.base.BlockBase;
-import calemiutils.config.CUConfig;
 import calemiutils.util.helper.LoreHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,21 +21,19 @@ import java.util.Random;
 
 public class BlockRaritaniumOre extends BlockBase {
 
-    static Random rand = new Random();
+    static final Random rand = new Random();
 
-    public BlockRaritaniumOre() {
-        super("raritanium_ore", Block.Properties.create(Material.ROCK).sound(SoundType.STONE).hardnessAndResistance(3).harvestLevel(2).harvestTool(ToolType.PICKAXE));
+    public BlockRaritaniumOre () {
+        super(Block.Properties.create(Material.ROCK).sound(SoundType.STONE).hardnessAndResistance(3).harvestLevel(2).harvestTool(ToolType.PICKAXE));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable IBlockReader reader, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
-
+    public void addInformation (ItemStack stack, @Nullable IBlockReader reader, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
         LoreHelper.addInformationLore(tooltipList, "Found between Y levels " + CUConfig.worldGen.raritaniumOreGenMinY.get() + " and " + CUConfig.worldGen.raritaniumOreGenMaxY.get() + ".");
     }
 
     @Override
-    public int getExpDrop(BlockState state, IWorldReader world, BlockPos pos, int fortune, int silktouch) {
-
+    public int getExpDrop (BlockState state, IWorldReader world, BlockPos pos, int fortune, int silktouch) {
         return silktouch == 0 ? rand.nextInt(3 + fortune) + 1 : 0;
     }
 }

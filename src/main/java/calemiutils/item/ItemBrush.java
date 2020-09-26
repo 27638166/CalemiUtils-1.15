@@ -1,7 +1,6 @@
 package calemiutils.item;
 
 import calemiutils.CalemiUtils;
-import calemiutils.config.CUConfig;
 import calemiutils.item.base.ItemBase;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
@@ -16,6 +15,7 @@ import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -26,46 +26,49 @@ public class ItemBrush extends ItemBase {
 
     public Location location1, location2;
 
-    public ItemBrush() {
-
-        super("brush", new Item.Properties().group(CalemiUtils.TAB).maxStackSize(1));
-    }
-
-    public static UnitChatMessage getMessage(PlayerEntity player) {
-
-        return new UnitChatMessage("Brush", player);
+    public ItemBrush () {
+        super(new Item.Properties().group(CalemiUtils.TAB).maxStackSize(1));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
-        LoreHelper.addInformationLore(tooltipList, "Creates shapes of blueprint for all your building needs! Use /cu for commands.");
-        LoreHelper.addControlsLore(tooltipList, "Marks the first point", LoreHelper.Type.USE, true);
-        LoreHelper.addControlsLore(tooltipList, "Marks the second point", LoreHelper.Type.SNEAK_USE);
-    }
-
-    @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
+    public ActionResultType onItemUse (ItemUseContext context) {
 
         World world = context.getWorld();
         PlayerEntity player = context.getPlayer();
         BlockPos pos = context.getPos();
 
-        if (!player.isCrouching()) {
+        if (player != null) {
 
-            location1 = new Location(world, pos);
+            if (!player.isCrouching()) {
 
-            if (!world.isRemote) getMessage(player).printMessage(TextFormatting.GREEN, "First position set to coords: " + location1.x + ", " + location1.y + ", " + location1.z);
+                location1 = new Location(world, pos);
+                if (!world.isRemote) getMessage(player).printMessage(TextFormatting.GREEN, "First position set to coords: " + location1.x + ", " + location1.y + ", " + location1.z);
+            }
+
+            else {
+
+                location2 = new Location(world, pos);
+                if (!world.isRemote) getMessage(player).printMessage(TextFormatting.GREEN, "Second position set to coords: " + location2.x + ", " + location2.y + ", " + location2.z);
+            }
+
             SoundHelper.playClick(world, player);
+            return ActionResultType.SUCCESS;
         }
 
-        else {
+        return ActionResultType.FAIL;
+    }
 
-            location2 = new Location(world, pos);
+    public static UnitChatMessage getMessage (PlayerEntity player) {
+        return new UnitChatMessage("Brush", player);
+    }
 
-            if (!world.isRemote) getMessage(player).printMessage(TextFormatting.GREEN, "Second position set to coords: " + location2.x + ", " + location2.y + ", " + location2.z);
-            SoundHelper.playClick(world, player);
-        }
-
-        return ActionResultType.SUCCESS;
+    @Override
+    public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
+        LoreHelper.addInformationLore(tooltipList, "Creates shapes of blueprint for all your building needs! Use /cu for commands.");
+        LoreHelper.addControlsLore(tooltipList, "Marks the first point", LoreHelper.Type.USE, true);
+        LoreHelper.addControlsLore(tooltipList, "Marks the second point", LoreHelper.Type.SNEAK_USE);
+        LoreHelper.addBlankLine(tooltipList);
+        tooltipList.add(new StringTextComponent(ChatFormatting.GRAY + "Position 1: " + ChatFormatting.AQUA + (location1 != null ? location1.toString() : "Not set")));
+        tooltipList.add(new StringTextComponent(ChatFormatting.GRAY + "Position 2: " + ChatFormatting.AQUA + (location2 != null ? location2.toString() : "Not set")));
     }
 }

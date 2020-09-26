@@ -10,8 +10,7 @@
       "item": "calemiutils:gold_chip"
     },
     "I": {
-      "type": "forge:ore_dict",
-      "ore": "ingotIron"
+      "item" : "minecraft:iron_ingot"
     },
     "W": {
       "item": "calemiutils:wallet"

@@ -1,7 +1,7 @@
 {
   "variants": {
-    "normal": {
-      "model": "calemiutils:bank"
+    "": {
+      "model": "calemiutils:block/bank"
     }
   }
 }

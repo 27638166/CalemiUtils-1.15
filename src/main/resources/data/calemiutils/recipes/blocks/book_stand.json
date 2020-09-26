@@ -10,12 +10,10 @@
       "item": "calemiutils:gold_chip"
     },
     "W": {
-      "type": "forge:ore_dict",
-      "ore": "plankWood"
+      "tag" : "minecraft:planks"
     },
     "S": {
-      "type": "forge:ore_dict",
-      "ore": "stickWood"
+      "tag" : "forge:rods/wooden"
     }
   },
   "result": {

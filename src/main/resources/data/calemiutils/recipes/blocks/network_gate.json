@@ -17,7 +17,7 @@
     }
   },
   "result": {
-    "item": "calemiutils:network_gate_connected",
+    "item": "calemiutils:network_gate",
     "count": 1
   }
 }

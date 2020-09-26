@@ -2,8 +2,8 @@ package calemiutils.item;
 
 import calemiutils.CalemiUtils;
 import calemiutils.block.BlockBlueprint;
-import calemiutils.gui.GuiPencil;
-import calemiutils.init.InitBlocks;
+import calemiutils.gui.ScreenPencil;
+import calemiutils.init.InitItems;
 import calemiutils.item.base.ItemBase;
 import calemiutils.util.Location;
 import calemiutils.util.helper.ItemHelper;
@@ -11,7 +11,6 @@ import calemiutils.util.helper.LoreHelper;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
@@ -27,20 +26,18 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.loading.FMLClientLaunchProvider;
-import net.minecraftforge.fml.loading.FMLCommonLaunchHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemPencil extends ItemBase {
 
-    public ItemPencil() {
-        super("pencil", new Item.Properties().group(CalemiUtils.TAB).maxStackSize(1));
+    public ItemPencil () {
+        super(new Item.Properties().group(CalemiUtils.TAB).maxStackSize(1));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
+    public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
 
         LoreHelper.addInformationLore(tooltipList, "Places Blueprint. Blueprint can be used for mass building!");
         LoreHelper.addControlsLore(tooltipList, "Place Blueprint", LoreHelper.Type.USE, true);
@@ -49,7 +46,7 @@ public class ItemPencil extends ItemBase {
         tooltipList.add(new StringTextComponent(ChatFormatting.GRAY + "Color: " + ChatFormatting.AQUA + (DyeColor.byId(getColorId(stack)).getName()).toUpperCase()));
     }
 
-    public int getColorId(ItemStack stack) {
+    public int getColorId (ItemStack stack) {
 
         int meta = 11;
 
@@ -60,13 +57,12 @@ public class ItemPencil extends ItemBase {
         return meta;
     }
 
-    public void setColorById(ItemStack stack, int meta) {
-
+    public void setColorById (ItemStack stack, int meta) {
         ItemHelper.getNBT(stack).putInt("color", meta);
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
+    public ActionResultType onItemUse (ItemUseContext context) {
 
         World world = context.getWorld();
         BlockPos pos = context.getPos();
@@ -74,53 +70,59 @@ public class ItemPencil extends ItemBase {
         Direction dir = context.getFace();
         Hand hand = context.getHand();
 
-        BlockBlueprint BLUEPRINT = (BlockBlueprint) InitBlocks.BLUEPRINT;
+        BlockBlueprint BLUEPRINT = (BlockBlueprint) InitItems.BLUEPRINT.get();
         Location location = new Location(world, pos);
 
-        if (player.isCrouching()) {
+        if (player != null) {
 
-            if (world.isRemote) {
-                openGui(player, context.getItem(), hand);
+            if (player.isCrouching()) {
+
+                if (world.isRemote) {
+                    openGui(player, hand);
+                }
+
+                return ActionResultType.SUCCESS;
             }
 
-            return ActionResultType.SUCCESS;
-        }
+            if (!location.getBlock().getMaterial(location.getBlockState().getBlockState()).isReplaceable()) {
 
-        if (!location.getBlock().getMaterial(location.getBlockState().getBlockState()).isReplaceable()) {
+                location = new Location(location, dir);
 
-            location = new Location(location, dir);
-
-            if (!location.isBlockValidForPlacing(InitBlocks.BLUEPRINT)) return ActionResultType.FAIL;
-        }
-
-        if (!player.canPlayerEdit(pos, dir, player.getHeldItem(hand))) return ActionResultType.FAIL;
-
-        else {
-
-            if (location.isBlockValidForPlacing(InitBlocks.BLUEPRINT)) {
-                location.setBlock(BLUEPRINT.getDefaultState().with(BlockBlueprint.COLOR, DyeColor.byId(getColorId(context.getItem()))));
+                if (!location.isBlockValidForPlacing()) return ActionResultType.FAIL;
             }
 
-            return ActionResultType.SUCCESS;
+            if (!player.canPlayerEdit(pos, dir, player.getHeldItem(hand))) return ActionResultType.FAIL;
+
+            else {
+
+                if (location.isBlockValidForPlacing()) {
+                    location.setBlock(BLUEPRINT.getDefaultState().with(BlockBlueprint.COLOR, DyeColor.byId(getColorId(context.getItem()))));
+                }
+
+                return ActionResultType.SUCCESS;
+            }
         }
+
+        return ActionResultType.FAIL;
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
+    public ActionResult<ItemStack> onItemRightClick (World world, PlayerEntity player, Hand hand) {
 
-        ItemStack stack = player.getHeldItemMainhand();
+        ItemStack stack = player.getHeldItem(hand);
 
         if (world.isRemote && player.isCrouching()) {
-            openGui(player, stack, hand);
-            return new ActionResult<>(ActionResultType.SUCCESS, player.getHeldItem(hand));
+            openGui(player, hand);
+            return new ActionResult<>(ActionResultType.SUCCESS, stack);
         }
 
-        return new ActionResult<>(ActionResultType.FAIL, player.getHeldItem(hand));
+        return new ActionResult<>(ActionResultType.FAIL, stack);
     }
 
     @OnlyIn(Dist.CLIENT)
-    private void openGui(PlayerEntity player, ItemStack stack, Hand hand) {
-
-        Minecraft.getInstance().displayGuiScreen(new GuiPencil(player, stack, hand));
+    private void openGui (PlayerEntity player, Hand hand) {
+        Minecraft.getInstance().displayGuiScreen(new ScreenPencil(player, hand));
     }
+
+
 }

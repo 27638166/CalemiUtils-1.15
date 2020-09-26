@@ -9,9 +9,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
+import java.util.Objects;
+
 public class InventoryHelper {
 
-    public static boolean canInsertItem(ItemStack stack, IInventory inventory) {
+    public static boolean canInsertItem (ItemStack stack, IInventory inventory) {
 
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
 
@@ -27,7 +29,11 @@ public class InventoryHelper {
         return false;
     }
 
-    public static void insertItem(ItemStack stack, IInventory inventory, int slotOffset) {
+    public static void insertItem (ItemStack stack, IInventory inventory) {
+        insertItem(stack, inventory, 0);
+    }
+
+    public static void insertItem (ItemStack stack, IInventory inventory, int slotOffset) {
 
         for (int i = slotOffset; i < inventory.getSizeInventory(); i++) {
 
@@ -46,12 +52,7 @@ public class InventoryHelper {
         }
     }
 
-
-    public static void insertItem(ItemStack stack, IInventory inventory) {
-        insertItem(stack, inventory, 0);
-    }
-
-    public static boolean insertHeldItemIntoSlot(PlayerEntity player, Hand hand, Location location, IInventory inventory, int slot, boolean removeStack) {
+    public static boolean insertHeldItemIntoSlot (PlayerEntity player, Hand hand, Location location, IInventory inventory, int slot, boolean removeStack) {
 
         ItemStack stack = player.getHeldItem(hand);
         TileEntity te = location.getTileEntity();
@@ -79,7 +80,7 @@ public class InventoryHelper {
         return false;
     }
 
-    public static void breakInventory(World world, IInventory inventory, Location location) {
+    public static void breakInventory (World world, IInventory inventory, Location location) {
 
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
 
@@ -96,12 +97,12 @@ public class InventoryHelper {
         }
     }
 
-    public static void consumeItem(IInventory inventory, int amount, boolean suckFromBuildersKit, ItemStack... itemStack) {
+    public static void consumeItem (IInventory inventory, int amount, boolean suckFromBuildersKit, ItemStack... itemStack) {
 
         consumeItem(0, inventory, amount, suckFromBuildersKit, false, itemStack);
     }
 
-    public static void consumeItem(int slotOffset, IInventory inventory, int amount, boolean suckFromBuildersKit, boolean useNBT, ItemStack... itemStacks) {
+    public static void consumeItem (int slotOffset, IInventory inventory, int amount, boolean suckFromBuildersKit, boolean useNBT, ItemStack... itemStacks) {
 
         int amountLeft = amount;
 
@@ -117,9 +118,9 @@ public class InventoryHelper {
 
                 if (!stack.isEmpty()) {
 
-                    if (suckFromBuildersKit) {
+                    /*if (suckFromBuildersKit) {
 
-                        /*if (stack.getItem() instanceof ItemBuildersKit) {
+                        if (stack.getItem() instanceof ItemBuildersKit) {
 
                             ItemBuildersKit buildersKit = (ItemBuildersKit) stack.getItem();
 
@@ -149,8 +150,8 @@ public class InventoryHelper {
                                     }
                                 }
                             }
-                        }*/
-                    }
+                        }
+                    }*/
 
                     for (ItemStack itemStack : itemStacks) {
 
@@ -158,7 +159,7 @@ public class InventoryHelper {
 
                             if (useNBT && itemStack.hasTag()) {
 
-                                if (!stack.hasTag() || !stack.getTag().equals(itemStack.getTag())) {
+                                if (!stack.hasTag() || !Objects.equals(stack.getTag(), itemStack.getTag())) {
                                     continue;
                                 }
                             }
@@ -181,10 +182,9 @@ public class InventoryHelper {
                 }
             }
         }
-
     }
 
-    public static int countItems(IInventory inventory, boolean countFromBuildersKit, boolean useNBT, ItemStack... itemStacks) {
+    public static int countItems (IInventory inventory, boolean countFromBuildersKit, boolean useNBT, ItemStack... itemStacks) {
 
         int count = 0;
 
@@ -218,7 +218,7 @@ public class InventoryHelper {
 
                     if (useNBT && itemStack.hasTag()) {
 
-                        if (stack.hasTag() && stack.getTag().equals(itemStack.getTag())) {
+                        if (stack.hasTag() && Objects.equals(stack.getTag(), itemStack.getTag())) {
                             count += stack.getCount();
                         }
                     }

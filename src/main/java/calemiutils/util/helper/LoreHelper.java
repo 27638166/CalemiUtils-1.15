@@ -1,23 +1,26 @@
 package calemiutils.util.helper;
 
-import calemiutils.config.CUConfig;
+import calemiutils.CUConfig;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TextComponentUtils;
 
 import java.util.List;
 
 public class LoreHelper {
 
-    public static void addBlankLine(List<ITextComponent> tooltip) {
+    public static void addBlankLine (List<ITextComponent> tooltip) {
 
         tooltip.add(new StringTextComponent(""));
     }
 
-    public static void addInformationLore(List<ITextComponent> tooltip, String lore) {
+    public static void addInformationLore (List<ITextComponent> tooltip, String lore) {
+
+        addInformationLore(tooltip, lore, false);
+    }
+
+    public static void addInformationLore (List<ITextComponent> tooltip, String lore, boolean isFirst) {
 
         if (CUConfig.tooltips.showInfoOnTooltips.get()) {
 
@@ -25,16 +28,20 @@ public class LoreHelper {
                 tooltip.add(new StringTextComponent(ChatFormatting.GRAY + "" + ChatFormatting.ITALIC + lore));
             }
 
-            else tooltip.add(new StringTextComponent(getPlateText("Shift", ChatFormatting.AQUA) + " Info"));
+            else if (isFirst) tooltip.add(new StringTextComponent(getPlateText("Shift", ChatFormatting.AQUA) + ChatFormatting.GRAY + " Info"));
         }
     }
 
-    public static void addControlsLore(List<ITextComponent> tooltip, String lore, LoreHelper.Type type) {
+    private static String getPlateText (String text, ChatFormatting format) {
 
+        return ChatFormatting.GRAY + "[" + format + text + ChatFormatting.GRAY + "]";
+    }
+
+    public static void addControlsLore (List<ITextComponent> tooltip, String lore, LoreHelper.Type type) {
         addControlsLore(tooltip, lore, type, false);
     }
 
-    public static void addControlsLore(List<ITextComponent> tooltip, String lore, LoreHelper.Type type, boolean isFirst) {
+    public static void addControlsLore (List<ITextComponent> tooltip, String lore, LoreHelper.Type type, boolean isFirst) {
 
         if (CUConfig.tooltips.showControlsOnTooltips.get()) {
 
@@ -47,24 +54,19 @@ public class LoreHelper {
         }
     }
 
-    public static void addCurrencyLore(List<ITextComponent> tooltip, int currentCurrency) {
-
-        addCurrencyLore(tooltip, currentCurrency, 0);
-    }
-
-    public static void addCurrencyLore(List<ITextComponent> tooltip, int currentCurrency, int maxCurrency) {
-
-        tooltip.add(new StringTextComponent(ChatFormatting.GRAY + "Currency: " + ChatFormatting.GOLD + StringHelper.printCurrency(currentCurrency) + (maxCurrency != 0 ? (" / " + StringHelper.printCurrency(maxCurrency)) : "")));
-    }
-
-    private static void addActionLore(List<ITextComponent> tooltip, String lore, LoreHelper.Type type) {
+    private static void addActionLore (List<ITextComponent> tooltip, String lore, LoreHelper.Type type) {
 
         tooltip.add(new StringTextComponent(getPlateText(type.getName(), ChatFormatting.YELLOW) + ChatFormatting.GRAY + " " + lore));
     }
 
-    private static String getPlateText(String text, ChatFormatting format) {
+    public static void addCurrencyLore (List<ITextComponent> tooltip, int currentCurrency) {
 
-        return ChatFormatting.GRAY + "[" + format + text + ChatFormatting.GRAY + "]";
+        addCurrencyLore(tooltip, currentCurrency, 0);
+    }
+
+    public static void addCurrencyLore (List<ITextComponent> tooltip, int currentCurrency, int maxCurrency) {
+
+        tooltip.add(new StringTextComponent(ChatFormatting.GRAY + "Currency: " + ChatFormatting.GOLD + StringHelper.printCurrency(currentCurrency) + (maxCurrency != 0 ? (" / " + StringHelper.printCurrency(maxCurrency)) : "")));
     }
 
     public enum Type {
@@ -83,12 +85,12 @@ public class LoreHelper {
 
         private final String name;
 
-        Type(String name) {
+        Type (String name) {
 
             this.name = name;
         }
 
-        String getName() {
+        String getName () {
 
             return name;
         }

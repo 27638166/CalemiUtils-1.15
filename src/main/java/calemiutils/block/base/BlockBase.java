@@ -2,11 +2,15 @@ package calemiutils.block.base;
 
 import net.minecraft.block.Block;
 
+/**
+ * The base class for Blocks.
+ */
 public class BlockBase extends Block {
 
-    public BlockBase(String name, Properties properties) {
-
+    /**
+     * @param properties The specific properties for the Block. (Creative Tab, hardness, material, etc.)
+     */
+    public BlockBase (Properties properties) {
         super(properties);
-        setRegistryName(name);
     }
 }

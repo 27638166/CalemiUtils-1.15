@@ -1,80 +1,219 @@
 package calemiutils.command;
 
 import calemiutils.CUReference;
+import calemiutils.block.BlockBlueprint;
+import calemiutils.init.InitItems;
+import calemiutils.item.ItemBrush;
+import calemiutils.util.Location;
+import calemiutils.util.UnitChatMessage;
 import calemiutils.util.helper.ChatHelper;
-import com.google.common.base.Predicates;
+import calemiutils.util.helper.WorldEditHelper;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.mojang.realmsclient.gui.ChatFormatting;
+import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.BlockStateArgument;
-import net.minecraft.command.impl.TeleportCommand;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
-import net.minecraft.network.play.server.SPlayerPositionLookPacket;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.server.ServerWorld;
-import org.codehaus.plexus.util.cli.Commandline;
 
-import java.awt.*;
-import java.util.Collection;
-import java.util.EnumSet;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class CUCommandBase {
 
-    public static void register(CommandDispatcher<CommandSource> dispatcher) {
+    /**
+     * Registers all of the commands.
+     */
+    public static void register (CommandDispatcher<CommandSource> dispatcher) {
 
-        dispatcher.register(LiteralArgumentBuilder.<CommandSource>literal("cu")
-                .requires(Predicates.alwaysTrue())
-                .then(help())
-                .then(reload())
-                .then(cube())
-                .then(circle()));
+        dispatcher.register(LiteralArgumentBuilder.<CommandSource>literal("cu").requires(commandSource -> true).then(help()).then(reload()).then(brushWithHollow("fill")).then(recolor()).then(brush("walls")).then(brushCircular("circle")).then(brushCircular("cylinder")).then(brushCircular("sphere")).then(brushWithHollow("pyramid")));
     }
 
-    private static ArgumentBuilder<CommandSource, ?> help() {
+    /**
+     * The help command.
+     */
+    private static ArgumentBuilder<CommandSource, ?> help () {
 
-        return Commands.literal("reload").executes(ctx -> {
+        return Commands.literal("help").executes(ctx -> {
 
             String holdBrush = "[Hold Brush]";
-
             PlayerEntity player = ctx.getSource().asPlayer();
 
             ChatHelper.printModMessage(TextFormatting.GREEN, "----- Help for " + CUReference.MOD_NAME + " -----", player);
             ChatHelper.printModMessage(TextFormatting.GREEN, "() are optional arguments.", player);
             ChatHelper.printModMessage(TextFormatting.GREEN, " /cu reload - Reloads the MarketItems and MiningUnitCosts files.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu cube <color> (block) - Creates a cube of blueprint. <color> Color. (block) the block it replaces.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu circle <color> (block) - Creates a circle of blueprint. <color> Color. (block) the block it replaces.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu move - Moves the cube selection (Not implemented)", player);
-            return 0;
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu fill <color> (hollow) - Creates a cube of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu recolor <color1> <color2> - Replaces the first color with the second. <color1> - Color of the Blueprint to replace. <color2> - New color of the Blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu walls <color> - Creates walls of blueprint. <color> - Color of the Blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu circle <color> (hollow) - Creates a circle of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu cylinder <color> (hollow) - Creates a cylinder of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu sphere <color> (hollow) - Creates a sphere of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu pyramid <color> (hollow) - Creates a pyramid of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
+            return 1;
         });
     }
 
-    private static ArgumentBuilder<CommandSource, ?> reload() {
-
-        return Commands.literal("reload").executes(ctx -> {
-            return 0;
-        });
+    /**
+     * The reload command.
+     */
+    private static ArgumentBuilder<CommandSource, ?> reload () {
+        return Commands.literal("reload").executes(ctx -> 1);
     }
 
-    private static ArgumentBuilder<CommandSource, ?> cube() {
-
-        return Commands.literal("cube").executes(ctx -> {
-            return 0;
-        }).then(Commands.argument("color", new ColorArgument())).then(Commands.argument("block", BlockStateArgument.blockState()));
+    /**
+     * The Brush commands that have a "hollow" argument.
+     */
+    private static ArgumentBuilder<CommandSource, ?> brushWithHollow (String shape) {
+        return Commands.literal(shape).executes(ctx -> 0).then(Commands.argument("color", new DyeColorArgument()).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, false, 1)).then(Commands.literal("hollow").executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, true, 1))));
     }
 
-    private static ArgumentBuilder<CommandSource, ?> circle() {
+    /**
+     * The recolor command.
+     */
+    private static ArgumentBuilder<CommandSource, ?> recolor () {
+        return Commands.literal("recolor").executes(ctx -> 0).then(Commands.argument("color1", new DyeColorArgument()).executes(ctx -> 0).then(Commands.argument("color2", new DyeColorArgument()).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), "recolor", DyeColorArgument.getColor(ctx, "color1"), DyeColorArgument.getColor(ctx, "color2"), false, 1))));
+    }
 
-        return Commands.literal("circle").executes(ctx -> {
+    /**
+     * The Brush commands that have no extra arguments.
+     */
+    @SuppressWarnings("SameParameterValue")
+    private static ArgumentBuilder<CommandSource, ?> brush (String shape) {
+        return Commands.literal(shape).executes(ctx -> 0).then(Commands.argument("color", new DyeColorArgument()).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, false, 1)));
+    }
+
+    /**
+     * The circular Brush commands.
+     */
+    private static ArgumentBuilder<CommandSource, ?> brushCircular (String shape) {
+        return Commands.literal(shape).executes(ctx -> 0).then(Commands.argument("color", new DyeColorArgument()).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, false, 1)).then(Commands.literal("hollow").executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, true, 1)).then(Commands.argument("thickness", IntegerArgumentType.integer(1, 128)).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, true, IntegerArgumentType.getInteger(ctx, "thickness"))))));
+    }
+
+    /**
+     * Handles all of the Brush commands.
+     *
+     * @param shape     Used to determine what specific shape command was executed.
+     * @param color1    Used to color the Blueprint placed.
+     * @param color2    Used for the mask for the Blueprint to replace.
+     * @param hollow    Used to determine if the shape is hollow.
+     * @param thickness The amount of thickness of the shape.
+     */
+    private static int executeBrush (PlayerEntity player, String shape, DyeColor color1, DyeColor color2, boolean hollow, int thickness) {
+
+        //Determines which hand has a Brush
+        ItemStack stackMainHand = player.getHeldItemMainhand();
+        ItemStack stackOffHand = player.getHeldItemOffhand();
+
+        ItemBrush brush = null;
+
+        if (stackMainHand.getItem() instanceof ItemBrush) {
+            brush = (ItemBrush) stackMainHand.getItem();
+        }
+
+        else if (stackOffHand.getItem() instanceof ItemBrush) {
+            brush = (ItemBrush) stackOffHand.getItem();
+        }
+
+        //Checks if there is a Brush held.
+        if (brush == null) {
+            ChatHelper.printModMessage(TextFormatting.RED, "A Brush needs to be held!", player);
             return 0;
-        }).then(Commands.argument("color", new ColorArgument()));
+        }
+
+        UnitChatMessage unitChatMessage = new UnitChatMessage("Brush", player);
+
+        Location location1 = brush.location1;
+        Location location2 = brush.location2;
+
+        //Checks if both Locations have been set.
+        if (location1 != null && location2 != null) {
+
+            ArrayList<Location> blocksToPlace = new ArrayList<>();
+            BlockBlueprint BLUEPRINT = (BlockBlueprint) Objects.requireNonNull(InitItems.BLUEPRINT.get());
+
+            if (shape.equalsIgnoreCase("fill")) {
+
+                if (hollow) blocksToPlace = WorldEditHelper.selectHollowCubeFromTwoPoints(location1, location2);
+                else blocksToPlace = WorldEditHelper.selectCubeFromTwoPoints(location1, location2);
+            }
+
+            else if (shape.equalsIgnoreCase("recolor")) {
+
+                blocksToPlace = WorldEditHelper.selectCubeFromTwoPoints(location1, location2);
+                WorldEditHelper.generateCommand(blocksToPlace, BLUEPRINT.getDefaultState().with(BlockBlueprint.COLOR, color2), BLUEPRINT.getDefaultState().with(BlockBlueprint.COLOR, color1), player, unitChatMessage);
+                return 1;
+            }
+
+            else if (shape.equalsIgnoreCase("walls")) {
+
+                int xzRad;
+
+                if (location1.x == location2.x) {
+                    xzRad = Math.abs(location2.z - location1.z);
+                }
+
+                else if (location1.z == location2.z) {
+                    xzRad = Math.abs(location2.x - location1.x);
+                }
+
+                else {
+                    unitChatMessage.printMessage(TextFormatting.RED, "Both points need to line up either on the x-axis or z-axis!");
+                    return 0;
+                }
+
+                blocksToPlace = WorldEditHelper.selectWallsFromRadius(location1, xzRad, location1.y, location2.y);
+            }
+
+            else if (shape.equalsIgnoreCase("circle")) {
+                blocksToPlace = WorldEditHelper.selectCircleFromTwoPoints(location1, location2, hollow, thickness);
+            }
+
+            else if (shape.equalsIgnoreCase("cylinder")) {
+                blocksToPlace = WorldEditHelper.selectCylinderFromTwoPoints(location1, location2, hollow, thickness);
+            }
+
+            else if (shape.equalsIgnoreCase("sphere")) {
+                blocksToPlace = WorldEditHelper.selectSphereFromTwoPoints(location1, location2, hollow, thickness);
+            }
+
+            else if (shape.equalsIgnoreCase("pyramid")) {
+
+                int xyzRad;
+
+                if (location1.x == location2.x && location1.z == location2.z) {
+                    xyzRad = Math.abs(location2.y - location1.y);
+                }
+
+                else if (location1.x == location2.x) {
+                    xyzRad = Math.abs(location2.z - location1.z);
+                }
+
+                else if (location1.z == location2.z) {
+                    xyzRad = Math.abs(location2.x - location1.x);
+                }
+
+                else {
+                    unitChatMessage.printMessage(TextFormatting.RED, "Both points need to line up either on the x-axis, y-axis or z-axis!");
+                    return 0;
+                }
+
+                blocksToPlace = WorldEditHelper.selectPyramidFromRadius(location1, xyzRad, hollow);
+            }
+
+            if (!blocksToPlace.isEmpty()) {
+                WorldEditHelper.generateCommand(blocksToPlace, BLUEPRINT.getDefaultState().with(BlockBlueprint.COLOR, color1), Blocks.AIR.getDefaultState(), player, unitChatMessage);
+            }
+
+            return 1;
+        }
+
+        else {
+            unitChatMessage.printMessage(TextFormatting.RED, "Both of the Brush's positions need to be set!");
+            return 0;
+        }
     }
 }

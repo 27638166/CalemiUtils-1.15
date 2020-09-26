@@ -7,8 +7,7 @@
   ],
   "key": {
     "R": {
-      "type": "forge:ore_dict",
-      "ore": "dustRedstone"
+      "item": "minecraft:redstone"
     },
     "G": {
       "item": "calemiutils:gold_chip"

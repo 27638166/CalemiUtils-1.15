@@ -14,24 +14,24 @@ public class PacketPencilSetColor {
     private int colorId;
     private boolean offHand;
 
-    public PacketPencilSetColor() {}
+    public PacketPencilSetColor () {}
 
-    public PacketPencilSetColor(int colorId, boolean offHand) {
+    public PacketPencilSetColor (int colorId, Hand hand) {
         this.colorId = colorId;
-        this.offHand = offHand;
+        this.offHand = (hand != Hand.MAIN_HAND);
     }
 
-    public PacketPencilSetColor(PacketBuffer buf) {
+    public PacketPencilSetColor (PacketBuffer buf) {
         colorId = buf.readInt();
         offHand = buf.readBoolean();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes (PacketBuffer buf) {
         buf.writeInt(colorId);
         buf.writeBoolean(offHand);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
+    public void handle (Supplier<NetworkEvent.Context> ctx) {
 
         ctx.get().enqueueWork(() -> {
 
@@ -40,14 +40,16 @@ public class PacketPencilSetColor {
 
             ServerPlayerEntity player = ctx.get().getSender();
 
-            final ItemStack stack = player.getHeldItem(hand);
+            if (player != null) {
 
-            if (!stack.isEmpty()) {
+                final ItemStack stack = player.getHeldItem(hand);
 
-                ItemPencil pencil = (ItemPencil) player.getHeldItemMainhand().getItem();
-                pencil.setColorById(player.getHeldItemMainhand(), colorId);
+                if (stack.getItem() instanceof ItemPencil) {
+
+                    ItemPencil pencil = (ItemPencil) stack.getItem();
+                    pencil.setColorById(stack, colorId);
+                }
             }
-
         });
 
         ctx.get().setPacketHandled(true);

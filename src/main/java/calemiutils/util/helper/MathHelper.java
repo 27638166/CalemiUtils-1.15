@@ -2,7 +2,7 @@ package calemiutils.util.helper;
 
 public class MathHelper {
 
-    public static int[] getCountingArray(int offset, int max) {
+    public static int[] getCountingArray (int offset, int max) {
 
         int length = max - offset;
 
@@ -15,7 +15,7 @@ public class MathHelper {
         return array;
     }
 
-    public static int getAmountToAdd(int startingValue, int amountToAdd, int maxAmount) {
+    public static int getAmountToAdd (int startingValue, int amountToAdd, int maxAmount) {
 
         if (startingValue + amountToAdd > maxAmount) {
 
@@ -27,7 +27,7 @@ public class MathHelper {
         }
     }
 
-    public static int getRemainder(int startingValue, int amountToAdd, int maxAmount) {
+    public static int getRemainder (int startingValue, int amountToAdd, int maxAmount) {
 
         if (startingValue + amountToAdd > maxAmount) {
             return maxAmount - startingValue;
@@ -38,9 +38,9 @@ public class MathHelper {
         }
     }
 
-    public static int scaleInt(int value, int maxValue, int maxScale) {
+    public static int scaleInt (int value, int maxValue, int maxScale) {
 
-        float f = value * maxScale / maxValue;
+        float f = value * (float) maxScale / maxValue;
 
         return (int) f;
     }

@@ -17,7 +17,7 @@ public class ItemHelper {
 
     private static final Random rand = new Random();
 
-    public static CompoundNBT getNBT(ItemStack is) {
+    public static CompoundNBT getNBT (ItemStack is) {
 
         if (is.getTag() == null) {
             is.setTag(new CompoundNBT());
@@ -26,7 +26,7 @@ public class ItemHelper {
         return is.getTag();
     }
 
-    public static String getStringFromStack(ItemStack stack) {
+    public static String getStringFromStack (ItemStack stack) {
 
         if (stack.isEmpty()) {
             return "null";
@@ -35,16 +35,16 @@ public class ItemHelper {
         return Item.getIdFromItem(stack.getItem()) + "&" + stack.getCount() + "&" + stack.getDamage();
     }
 
-    public static String getNBTFromStack(ItemStack stack) {
+    public static String getNBTFromStack (ItemStack stack) {
 
-        if (stack.hasTag()) {
+        if (stack.getTag() != null && stack.hasTag()) {
             return stack.getTag().toString();
         }
 
         return "";
     }
 
-    public static ItemStack getStackFromString(String string) {
+    public static ItemStack getStackFromString (String string) {
 
         if (!string.equalsIgnoreCase("null")) {
 
@@ -60,14 +60,13 @@ public class ItemHelper {
                 stack.setDamage(meta);
 
                 return stack;
-
             }
         }
 
         return ItemStack.EMPTY;
     }
 
-    public static void attachNBTFromString(ItemStack stack, String nbtString) {
+    public static void attachNBTFromString (ItemStack stack, String nbtString) {
 
         try {
             stack.setTag(JsonToNBT.getTagFromJson(nbtString));
@@ -78,24 +77,19 @@ public class ItemHelper {
         }
     }
 
-    public static String countByStacks(int count) {
+    public static String countByStacks (int count) {
 
         int remainder = (count % 64);
 
-        return StringHelper.printCommas(count) + " blocks" + ((count > 64) ? " (" + ((int) Math.floor(count / 64)) + " stack(s)" + ((remainder > 0) ? (" + " + remainder + " blocks)") : ")") : "");
+        return StringHelper.printCommas(count) + " blocks" + ((count > 64) ? " (" + ((int) Math.floor((float) count / 64)) + " stack(s)" + ((remainder > 0) ? (" + " + remainder + " blocks)") : ")") : "");
     }
 
-    public static ItemEntity spawnItem(World world, Location location, ItemStack is) {
+    public static ItemEntity spawnItem (World world, Location location, ItemStack is) {
 
         return spawnItem(world, location.x + 0.5F, location.y + 0.5F, location.z + 0.5F, is);
     }
 
-    public static ItemEntity spawnItem(World world, Entity entity, ItemStack is) {
-
-        return spawnItem(world, (float) entity.getPosition().getX(), (float) entity.getPosition().getY(), (float) entity.getPosition().getZ(), is);
-    }
-
-    private static ItemEntity spawnItem(World world, float x, float y, float z, ItemStack is) {
+    private static ItemEntity spawnItem (World world, float x, float y, float z, ItemStack is) {
 
         ItemEntity item = new ItemEntity(world, x, y, z, is);
         item.setNoPickupDelay();
@@ -104,12 +98,18 @@ public class ItemHelper {
         return item;
     }
 
-    public static void spawnItems(World world, Location location, List<ItemStack> is) {
+    @SuppressWarnings("UnusedReturnValue")
+    public static ItemEntity spawnItem (World world, Entity entity, ItemStack is) {
+
+        return spawnItem(world, (float) entity.getPosition().getX(), (float) entity.getPosition().getY(), (float) entity.getPosition().getZ(), is);
+    }
+
+    public static void spawnItems (World world, Location location, List<ItemStack> is) {
 
         spawnItems(world, location.x + 0.5F, location.y + 0.5F, location.z + 0.5F, is);
     }
 
-    private static void spawnItems(World world, float x, float y, float z, List<ItemStack> stacks) {
+    private static void spawnItems (World world, float x, float y, float z, List<ItemStack> stacks) {
 
         for (ItemStack is : stacks) {
 

@@ -10,8 +10,7 @@
       "item": "calemiutils:gold_chip"
     },
     "G": {
-      "type": "forge:ore_dict",
-      "ore": "blockGlass"
+      "item": "minecraft:glass"
     }
   },
   "result": {

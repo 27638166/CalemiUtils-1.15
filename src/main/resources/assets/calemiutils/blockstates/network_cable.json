@@ -7,7 +7,7 @@
         "eastwest": "false"
       },
       "apply": {
-        "model": "calemiutils:network_cable_core"
+        "model": "calemiutils:block/network_cable_core"
       }
     },
     {
@@ -15,7 +15,7 @@
         "down": "true"
       },
       "apply": {
-        "model": "calemiutils:network_cable_connection",
+        "model": "calemiutils:block/network_cable_connection",
         "x": 270,
         "uvlock": false
       }
@@ -25,7 +25,7 @@
         "up": "true"
       },
       "apply": {
-        "model": "calemiutils:network_cable_connection",
+        "model": "calemiutils:block/network_cable_connection",
         "x": 90,
         "uvlock": false
       }
@@ -35,7 +35,7 @@
         "north": "true"
       },
       "apply": {
-        "model": "calemiutils:network_cable_connection",
+        "model": "calemiutils:block/network_cable_connection",
         "y": 180,
         "uvlock": false
       }
@@ -45,7 +45,7 @@
         "east": "true"
       },
       "apply": {
-        "model": "calemiutils:network_cable_connection",
+        "model": "calemiutils:block/network_cable_connection",
         "y": 270,
         "uvlock": false
       }
@@ -55,7 +55,7 @@
         "south": "true"
       },
       "apply": {
-        "model": "calemiutils:network_cable_connection",
+        "model": "calemiutils:block/network_cable_connection",
         "uvlock": false
       }
     },
@@ -64,7 +64,7 @@
         "west": "true"
       },
       "apply": {
-        "model": "calemiutils:network_cable_connection",
+        "model": "calemiutils:block/network_cable_connection",
         "y": 90,
         "uvlock": false
       }
@@ -74,7 +74,7 @@
         "downup": "true"
       },
       "apply": {
-        "model": "calemiutils:network_cable_tube",
+        "model": "calemiutils:block/network_cable_tube",
         "x": 270,
         "uvlock": false
       }
@@ -84,7 +84,7 @@
         "northsouth": "true"
       },
       "apply": {
-        "model": "calemiutils:network_cable_tube",
+        "model": "calemiutils:block/network_cable_tube",
         "uvlock": false
       }
     },
@@ -93,7 +93,7 @@
         "eastwest": "true"
       },
       "apply": {
-        "model": "calemiutils:network_cable_tube",
+        "model": "calemiutils:block/network_cable_tube",
         "y": 90,
         "uvlock": false
       }

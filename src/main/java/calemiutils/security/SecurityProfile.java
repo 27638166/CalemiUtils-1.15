@@ -7,34 +7,34 @@ public class SecurityProfile {
 
     private String ownerName = "";
 
-    public String getOwnerName() {
+    public String getOwnerName () {
 
         return ownerName;
     }
 
-    public void setOwner(PlayerEntity player) {
+    public void setOwner (PlayerEntity player) {
 
         ownerName = player.getName().getFormattedText();
     }
 
-    public boolean hasOwner() {
+    public boolean hasOwner () {
 
         return ownerName.isEmpty();
     }
 
-    public boolean isOwner(String ownerName) {
+    public boolean isOwner (String ownerName) {
 
         return this.ownerName.equalsIgnoreCase(ownerName);
     }
 
-    public void readFromNBT(CompoundNBT nbt) {
+    public void readFromNBT (CompoundNBT nbt) {
 
         if (!nbt.getString("ownerName").isEmpty()) {
             ownerName = nbt.getString("ownerName");
         }
     }
 
-    public void writeToNBT(CompoundNBT nbt) {
+    public void writeToNBT (CompoundNBT nbt) {
 
         if (!ownerName.isEmpty()) {
             nbt.putString("ownerName", ownerName);
