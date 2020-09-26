@@ -1,5 +1,6 @@
 package calemiutils.inventory.base;
 
+import calemiutils.tileentity.base.CUItemHandler;
 import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.tileentity.base.TileEntityUpgradable;
 import calemiutils.util.FunctionalIntReferenceHolder;
@@ -12,6 +13,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.items.SlotItemHandler;
 
 import java.util.Objects;
 
@@ -78,12 +80,12 @@ public class ContainerBase extends Container {
         throw new IllegalStateException("Tile entity is not correct!" + tileAtPos);
     }
 
-    protected void addTileEntityStorageInv (IInventory inv, int idOffset, int x, int y, int height) {
+    protected void addTileEntityStorageInv (CUItemHandler inv, int idOffset, int x, int y, int height) {
 
         int id = idOffset;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < 9; j++) {
-                this.addSlot(new Slot(inv, id, x + (j * 18), y + (i * 18)));
+                this.addSlot(new SlotItemHandler(inv, id, x + (j * 18), y + (i * 18)));
                 id++;
             }
         }

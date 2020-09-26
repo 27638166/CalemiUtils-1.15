@@ -5,11 +5,13 @@ import calemiutils.init.InitTileEntityTypes;
 import calemiutils.inventory.ContainerItemStand;
 import calemiutils.tileentity.base.ITileEntityGuiHandler;
 import calemiutils.tileentity.base.TileEntityInventoryBase;
+import calemiutils.util.helper.LogHelper;
 import calemiutils.util.helper.NBTHelper;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
@@ -22,6 +24,8 @@ public class TileEntityItemStand extends TileEntityInventoryBase implements ITil
 
     public Vector3f translation, rotation, spin, scale, pivot;
 
+    private ItemStack lastStack;
+
     public TileEntityItemStand () {
         super(InitTileEntityTypes.ITEM_STAND.get());
 
@@ -31,9 +35,19 @@ public class TileEntityItemStand extends TileEntityInventoryBase implements ITil
         scale = new Vector3f(1, 1, 1);
         pivot = new Vector3f(0, 0, 0);
 
-        setInputSlots(0);
-        setSideInputSlots(0);
-        setExtractSlots(0);
+        lastStack = ItemStack.EMPTY;
+    }
+
+    @Override
+    public void tick () {
+
+        if (!world.isRemote) {
+
+            if (!lastStack.equals(getInventory().getStackInSlot(0))) {
+                markForUpdate();
+                lastStack = getInventory().getStackInSlot(0);
+            }
+        }
     }
 
     @Override
@@ -48,17 +62,12 @@ public class TileEntityItemStand extends TileEntityInventoryBase implements ITil
     }
 
     @Override
-    public ITextComponent getName () {
-        return new StringTextComponent("item stand");
-    }    @Override
     public int getSizeInventory () {
         return 1;
     }
 
-
-
     @Override
-    public ITextComponent getDisplayName () {
+    public ITextComponent getDefaultName () {
         return new StringTextComponent("Item Stand");
     }
 

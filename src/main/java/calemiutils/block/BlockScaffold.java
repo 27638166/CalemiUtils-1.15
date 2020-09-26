@@ -44,6 +44,15 @@ public class BlockScaffold extends BlockBase {
     }
 
     @Override
+    public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        LoreHelper.addInformationLore(tooltip, "Temporary block used for getting to the hard to reach places!", true);
+        LoreHelper.addControlsLore(tooltip, "On block side - Teleport to the top. On block top - Teleport to bottom.", LoreHelper.Type.USE_OPEN_HAND, true);
+        LoreHelper.addControlsLore(tooltip, "Break all connected scaffolds", LoreHelper.Type.SNEAK_BREAK_BLOCK);
+        LoreHelper.addControlsLore(tooltip, "Place Scaffold in a line", LoreHelper.Type.LEFT_CLICK_BLOCK);
+        LoreHelper.addControlsLore(tooltip, "Place Scaffold downwards", LoreHelper.Type.SNEAK_LEFT_CLICK_BLOCK);
+    }
+
+    @Override
     public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
         return false;
     }
@@ -226,14 +235,5 @@ public class BlockScaffold extends BlockBase {
                 ItemHelper.spawnItem(world, new Location(player), new ItemStack(InitItems.IRON_SCAFFOLD.get()));
             }
         }
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Temporary block used for getting to the hard to reach places!");
-        LoreHelper.addControlsLore(tooltip, "On block side - Teleport to the top. On block top - Teleport to bottom.", LoreHelper.Type.USE_OPEN_HAND, true);
-        LoreHelper.addControlsLore(tooltip, "Break all connected scaffolds", LoreHelper.Type.SNEAK_BREAK_BLOCK);
-        LoreHelper.addControlsLore(tooltip, "Place Scaffold in a line", LoreHelper.Type.LEFT_CLICK_BLOCK);
-        LoreHelper.addControlsLore(tooltip, "Place Scaffold downwards", LoreHelper.Type.SNEAK_LEFT_CLICK_BLOCK);
     }
 }

@@ -20,6 +20,6 @@ public class ItemUpgrade extends ItemBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Placed in certain machines to upgrade their abilities.");
+        LoreHelper.addInformationLore(tooltip, "Placed in certain machines to upgrade their abilities.", true);
     }
 }

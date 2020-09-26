@@ -60,7 +60,7 @@ public class PacketLinkBook {
     public PacketLinkBook (PacketBuffer buf) {
         command = buf.readString(8).trim();
         offHand = buf.readBoolean();
-        name = buf.readString();
+        name = buf.readString(32);
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         dim = buf.readInt();
     }
@@ -68,7 +68,7 @@ public class PacketLinkBook {
     public void toBytes (PacketBuffer buf) {
         buf.writeString(command, 8);
         buf.writeBoolean(offHand);
-        buf.writeString(name);
+        buf.writeString(name, 32);
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());

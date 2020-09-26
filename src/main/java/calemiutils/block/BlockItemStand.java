@@ -45,6 +45,14 @@ public class BlockItemStand extends BlockInventoryContainerBase {
         setDefaultState(stateContainer.getBaseState().with(DISPLAY_ID, 0));
     }
 
+    @Override
+    public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        LoreHelper.addInformationLore(tooltip, "Displays Blocks & Items", true);
+        LoreHelper.addInformationLore(tooltip, "Can translate, rotate, spin, scale Items & Blocks");
+        LoreHelper.addControlsLore(tooltip, "Open Inventory", LoreHelper.Type.USE, true);
+        LoreHelper.addControlsLore(tooltip, "Open Display Options", LoreHelper.Type.USE_WRENCH);
+    }
+
     /**
      * This method functions the same as onBlockActivated().
      * This will handle opening the guis for options and inventory.
@@ -134,13 +142,5 @@ public class BlockItemStand extends BlockInventoryContainerBase {
     @Override
     protected void fillStateContainer (StateContainer.Builder<Block, BlockState> builder) {
         builder.add(DISPLAY_ID);
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Displays Blocks & Items", true);
-        LoreHelper.addInformationLore(tooltip, "Can translate, rotate, spin, scale Items & Blocks");
-        LoreHelper.addControlsLore(tooltip, "Open Inventory", LoreHelper.Type.USE, true);
-        LoreHelper.addControlsLore(tooltip, "Open Display Options", LoreHelper.Type.USE_WRENCH);
     }
 }

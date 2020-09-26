@@ -28,6 +28,14 @@ public class ItemTorchBelt extends ItemBase {
     }
 
     @Override
+    public void addInformation (ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        LoreHelper.addInformationLore(tooltip, "Place this anywhere in your inventory. Automatically uses and places torches in dark areas.", true);
+        LoreHelper.addControlsLore(tooltip, "Toggle ON/OFF", LoreHelper.Type.USE, true);
+        LoreHelper.addBlankLine(tooltip);
+        tooltip.add(new StringTextComponent("Status: " + ChatFormatting.AQUA + (ItemHelper.getNBT(stack).getBoolean("on") ? "ON" : "OFF")));
+    }
+
+    @Override
     public boolean hasEffect (ItemStack stack) {
         return ItemHelper.getNBT(stack).getBoolean("on");
     }
@@ -48,14 +56,6 @@ public class ItemTorchBelt extends ItemBase {
         tick(stack, worldIn, entityIn);
     }
 
-    @Override
-    public void addInformation (ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Place this anywhere in your inventory. Automatically uses and places torches in dark areas.");
-        LoreHelper.addControlsLore(tooltip, "Toggle ON/OFF", LoreHelper.Type.USE, true);
-        LoreHelper.addBlankLine(tooltip);
-        tooltip.add(new StringTextComponent("Status: " + ChatFormatting.AQUA + (ItemHelper.getNBT(stack).getBoolean("on") ? "ON" : "OFF")));
-    }
-
     private void tick (ItemStack stack, World worldIn, Entity entityIn) {
 
         if (entityIn instanceof PlayerEntity && ItemHelper.getNBT(stack).getBoolean("on")) {
@@ -72,7 +72,7 @@ public class ItemTorchBelt extends ItemBase {
 
                         location.setBlock(Blocks.TORCH);
 
-                        if (!player.abilities.isCreativeMode) InventoryHelper.consumeItem(player.inventory, 1, true, new ItemStack(Blocks.TORCH));
+                        if (!player.abilities.isCreativeMode) InventoryHelper.consumeItem(player.inventory, 1, new ItemStack(Blocks.TORCH));
                     }
                 }
             }

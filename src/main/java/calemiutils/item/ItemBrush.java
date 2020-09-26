@@ -31,6 +31,16 @@ public class ItemBrush extends ItemBase {
     }
 
     @Override
+    public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
+        LoreHelper.addInformationLore(tooltipList, "Creates shapes of blueprint for all your building needs! Use /cu for commands.", true);
+        LoreHelper.addControlsLore(tooltipList, "Marks the first point", LoreHelper.Type.USE, true);
+        LoreHelper.addControlsLore(tooltipList, "Marks the second point", LoreHelper.Type.SNEAK_USE);
+        LoreHelper.addBlankLine(tooltipList);
+        tooltipList.add(new StringTextComponent(ChatFormatting.GRAY + "Position 1: " + ChatFormatting.AQUA + (location1 != null ? location1.toString() : "Not set")));
+        tooltipList.add(new StringTextComponent(ChatFormatting.GRAY + "Position 2: " + ChatFormatting.AQUA + (location2 != null ? location2.toString() : "Not set")));
+    }
+
+    @Override
     public ActionResultType onItemUse (ItemUseContext context) {
 
         World world = context.getWorld();
@@ -60,15 +70,5 @@ public class ItemBrush extends ItemBase {
 
     public static UnitChatMessage getMessage (PlayerEntity player) {
         return new UnitChatMessage("Brush", player);
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
-        LoreHelper.addInformationLore(tooltipList, "Creates shapes of blueprint for all your building needs! Use /cu for commands.");
-        LoreHelper.addControlsLore(tooltipList, "Marks the first point", LoreHelper.Type.USE, true);
-        LoreHelper.addControlsLore(tooltipList, "Marks the second point", LoreHelper.Type.SNEAK_USE);
-        LoreHelper.addBlankLine(tooltipList);
-        tooltipList.add(new StringTextComponent(ChatFormatting.GRAY + "Position 1: " + ChatFormatting.AQUA + (location1 != null ? location1.toString() : "Not set")));
-        tooltipList.add(new StringTextComponent(ChatFormatting.GRAY + "Position 2: " + ChatFormatting.AQUA + (location2 != null ? location2.toString() : "Not set")));
     }
 }

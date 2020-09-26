@@ -36,10 +36,10 @@ public class ScreenBank extends ContainerScreenBase<ContainerBank> {
 
     private void withdraw (TileEntityBank teBank) {
 
-        if (teBank.getStackInSlot(1).getItem() instanceof ItemWallet) {
+        if (teBank.getInventory().getStackInSlot(1).getItem() instanceof ItemWallet) {
 
-            CompoundNBT nbt = ItemHelper.getNBT(teBank.getStackInSlot(1));
-            int currency = ItemWallet.getBalance(teBank.getStackInSlot(1));
+            CompoundNBT nbt = ItemHelper.getNBT(teBank.getInventory().getStackInSlot(1));
+            int currency = ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1));
 
             int amountToAdd = MathHelper.getAmountToAdd(currency, teBank.storedCurrency, CUConfig.wallet.walletCurrencyCapacity.get());
 
@@ -58,16 +58,16 @@ public class ScreenBank extends ContainerScreenBase<ContainerBank> {
                 }
             }
 
-            CalemiUtils.network.sendToServer(new PacketBank(teBank.storedCurrency, ItemWallet.getBalance(teBank.getStackInSlot(1)), teBank.getPos()));
+            CalemiUtils.network.sendToServer(new PacketBank(teBank.storedCurrency, ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1)), teBank.getPos()));
         }
     }
 
     private void deposit (TileEntityBank teBank) {
 
-        if (teBank.getStackInSlot(1).getItem() instanceof ItemWallet) {
+        if (teBank.getInventory().getStackInSlot(1).getItem() instanceof ItemWallet) {
 
-            CompoundNBT nbt = ItemHelper.getNBT(teBank.getStackInSlot(1));
-            int currency = ItemWallet.getBalance(teBank.getStackInSlot(1));
+            CompoundNBT nbt = ItemHelper.getNBT(teBank.getInventory().getStackInSlot(1));
+            int currency = ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1));
 
             int amountToAdd = MathHelper.getAmountToAdd(teBank.storedCurrency, currency, teBank.getMaxCurrency());
 
@@ -86,7 +86,7 @@ public class ScreenBank extends ContainerScreenBase<ContainerBank> {
                 }
             }
 
-            CalemiUtils.network.sendToServer(new PacketBank(teBank.storedCurrency, ItemWallet.getBalance(teBank.getStackInSlot(1)), teBank.getPos()));
+            CalemiUtils.network.sendToServer(new PacketBank(teBank.storedCurrency, ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1)), teBank.getPos()));
         }
     }
 

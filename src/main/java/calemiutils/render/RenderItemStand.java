@@ -28,9 +28,9 @@ public class RenderItemStand extends TileEntityRenderer<TileEntityItemStand> {
     @Override
     public void func_225616_a_ (TileEntityItemStand stand, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
 
-        if (!stand.getStackInSlot(0).isEmpty()) {
+        if (!stand.getInventory().getStackInSlot(0).isEmpty()) {
 
-            ItemStack bookStack = stand.getStackInSlot(0);
+            ItemStack bookStack = stand.getInventory().getStackInSlot(0);
 
             long targetTime = 10;
             if (System.currentTimeMillis() - lastTime >= targetTime) {

@@ -23,7 +23,7 @@ public class BlockMobBeacon extends BlockContainerBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Prevents natural enemy spawning in a chunk. (Won't prevent Spawners)");
+        LoreHelper.addInformationLore(tooltip, "Prevents natural enemy spawning in a chunk. (Won't prevent Spawners)", true);
     }
 
     @Nullable

@@ -39,9 +39,6 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
 
     public TileEntityTradingPost () {
         super(InitTileEntityTypes.TRADING_POST.get());
-
-        setInputSlots(MathHelper.getCountingArray(0, 26));
-        setSideInputSlots(MathHelper.getCountingArray(0, 26));
         amountForSale = 1;
         salePrice = 0;
         hasValidTradeOffer = false;
@@ -123,16 +120,16 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
 
             for (int i = 0; i < getSizeInventory(); i++) {
 
-                if (getStackInSlot(i) != null && getStackInSlot(i).isItemEqual(getStackForSale())) {
+                if (getInventory().getStackInSlot(i) != null && getInventory().getStackInSlot(i).isItemEqual(getStackForSale())) {
 
                     if (getStackForSale().hasTag()) {
 
-                        if (getStackInSlot(i).hasTag() && getStackInSlot(i).getTag().equals(getStackForSale().getTag())) {
-                            count += getStackInSlot(i).getCount();
+                        if (getInventory().getStackInSlot(i).hasTag() && getInventory().getStackInSlot(i).getTag().equals(getStackForSale().getTag())) {
+                            count += getInventory().getStackInSlot(i).getCount();
                         }
                     }
 
-                    else count += getStackInSlot(i).getCount();
+                    else count += getInventory().getStackInSlot(i).getCount();
                 }
             }
 
@@ -159,12 +156,7 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
     }
 
     @Override
-    public ITextComponent getName () {
-        return new StringTextComponent("trading post");
-    }
-
-    @Override
-    public ITextComponent getDisplayName () {
+    public ITextComponent getDefaultName () {
 
         if (hasValidTradeOffer) {
             return new StringTextComponent((buyMode ? "Buying " : "Selling ") + amountForSale + "x " + getStackForSale().getDisplayName() + " for " + StringHelper.printCurrency(salePrice));

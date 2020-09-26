@@ -52,7 +52,7 @@ public class PacketBank {
                 if (location.getTileEntity() instanceof TileEntityBank) {
 
                     TileEntityBank teBank = (TileEntityBank) location.getTileEntity();
-                    CompoundNBT walletNBT = ItemHelper.getNBT(teBank.getStackInSlot(1));
+                    CompoundNBT walletNBT = ItemHelper.getNBT(teBank.getInventory().getStackInSlot(1));
 
                     teBank.storedCurrency = bankCurrency;
                     walletNBT.putInt("balance", walletCurrency);

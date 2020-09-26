@@ -27,6 +27,13 @@ public class ItemEraser extends ItemBase {
     }
 
     @Override
+    public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
+        LoreHelper.addInformationLore(tooltipList, "Destroys Blueprint", true);
+        LoreHelper.addControlsLore(tooltipList, "Erases one Blueprint", LoreHelper.Type.USE, true);
+        LoreHelper.addControlsLore(tooltipList, "Erases all connected Blueprint", LoreHelper.Type.SNEAK_USE);
+    }
+
+    @Override
     public ActionResultType onItemUse (ItemUseContext context) {
 
         World world = context.getWorld();
@@ -69,12 +76,5 @@ public class ItemEraser extends ItemBase {
         }
 
         return super.getDestroySpeed(stack, state);
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
-        LoreHelper.addInformationLore(tooltipList, "Destroys Blueprint");
-        LoreHelper.addControlsLore(tooltipList, "Erases one Blueprint", LoreHelper.Type.USE, true);
-        LoreHelper.addControlsLore(tooltipList, "Erases all connected Blueprint", LoreHelper.Type.SNEAK_USE);
     }
 }

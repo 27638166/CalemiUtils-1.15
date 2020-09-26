@@ -26,9 +26,9 @@ public class RenderBookStand extends TileEntityRenderer<TileEntityBookStand> {
     @Override
     public void func_225616_a_ (TileEntityBookStand tileEntity, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
 
-        if (!tileEntity.getStackInSlot(0).isEmpty()) {
+        if (!tileEntity.getInventory().getStackInSlot(0).isEmpty()) {
 
-            ItemStack bookStack = tileEntity.getStackInSlot(0);
+            ItemStack bookStack = tileEntity.getInventory().getStackInSlot(0);
             Location location = tileEntity.getLocation();
 
             Direction dir = location.getBlockState().getBlockState().get(BlockBookStand.FACING);

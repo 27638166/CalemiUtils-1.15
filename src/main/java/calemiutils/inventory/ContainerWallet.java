@@ -5,6 +5,7 @@ import calemiutils.init.InitContainersTypes;
 import calemiutils.init.InitItems;
 import calemiutils.inventory.base.ContainerBase;
 import calemiutils.inventory.base.SlotFilter;
+import calemiutils.inventory.base.SlotIInventoryFilter;
 import calemiutils.item.ItemCurrency;
 import calemiutils.util.helper.CurrencyHelper;
 import calemiutils.util.helper.ItemHelper;
@@ -37,7 +38,7 @@ public class ContainerWallet extends ContainerBase {
         addPlayerHotbar(8, 152);
 
         //New Inventory
-        addSlot(new SlotFilter(stackInv, 0, 17, 42, InitItems.COIN_PENNY.get(), InitItems.COIN_NICKEL.get(), InitItems.COIN_QUARTER.get(), InitItems.COIN_DOLLAR.get()));
+        addSlot(new SlotIInventoryFilter(stackInv, 0, 17, 42, InitItems.COIN_PENNY.get(), InitItems.COIN_NICKEL.get(), InitItems.COIN_QUARTER.get(), InitItems.COIN_DOLLAR.get()));
     }
 
     public static ContainerWallet createClientWallet (final int windowId, final PlayerInventory playerInventory, final PacketBuffer data) {

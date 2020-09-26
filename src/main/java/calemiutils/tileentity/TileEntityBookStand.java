@@ -5,9 +5,13 @@ import calemiutils.init.InitTileEntityTypes;
 import calemiutils.inventory.ContainerBookStand;
 import calemiutils.tileentity.base.ITileEntityGuiHandler;
 import calemiutils.tileentity.base.TileEntityInventoryBase;
+import calemiutils.util.Location;
+import calemiutils.util.helper.InventoryHelper;
+import calemiutils.util.helper.LogHelper;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -15,26 +19,33 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class TileEntityBookStand extends TileEntityInventoryBase implements ITileEntityGuiHandler {
 
+    private ItemStack lastStack;
+
     public TileEntityBookStand () {
         super(InitTileEntityTypes.BOOK_STAND.get());
 
-        setInputSlots(0);
-        setSideInputSlots(0);
-        setExtractSlots(0);
+        lastStack = ItemStack.EMPTY;
     }
 
     @Override
-    public ITextComponent getName () {
-        return new StringTextComponent("book stand");
-    }    @Override
+    public void tick () {
+
+        if (!world.isRemote) {
+
+            if (!lastStack.equals(getInventory().getStackInSlot(0))) {
+                markForUpdate();
+                lastStack = getInventory().getStackInSlot(0);
+            }
+        }
+    }
+
+    @Override
     public int getSizeInventory () {
         return 1;
     }
 
-
-
     @Override
-    public ITextComponent getDisplayName () {
+    public ITextComponent getDefaultName () {
         return new StringTextComponent("Book Stand");
     }
 

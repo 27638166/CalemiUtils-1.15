@@ -1,51 +1,64 @@
 package calemiutils.tileentity.base;
 
 import calemiutils.CUConfig;
+import calemiutils.util.helper.LogHelper;
 import calemiutils.util.helper.MathHelper;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.SlotItemHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class TileEntityUpgradable extends TileEntityInventoryBase implements IProgress, IRange {
+
+    private final CUItemHandler upgradeInventory;
+    public final List<Slot> upgradeSlots = new ArrayList<>();
 
     public int currentProgress;
     public int currentRange;
 
     protected TileEntityUpgradable (TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
+        this.upgradeInventory = new CUItemHandler(2, upgradeSlots);
+    }
+
+    protected abstract int getRangeSlot ();
+    protected abstract int getSpeedSlot ();
+    protected abstract int getScaledRangeMin ();
+    protected abstract int getScaledRangeMax ();
+    protected abstract int getScaledSpeedMin ();
+    protected abstract int getScaledSpeedMax ();
+
+    public CUItemHandler getUpgradeInventory() {
+        return this.upgradeInventory;
     }
 
     public int getScaledRange () {
         return getScaledSlot(getRangeSlot(), getScaledRangeMin(), getScaledRangeMax());
     }
 
-    private int getScaledSlot (int slot, int min, int max) {
-        int difference = max - min;
-        return min + MathHelper.scaleInt(getStackInSlot(slot).getCount(), 5, difference);
-    }
-
-    protected abstract int getRangeSlot ();
-
-    protected abstract int getScaledRangeMin ();
-
-    protected abstract int getScaledRangeMax ();
-
-    protected int scaleCost (int cost) {
-        return cost + (cost * CUConfig.misc.speedUpgradeCostMultiplier.get() * getStackInSlot(getSpeedSlot()).getCount());
-    }
-
-    protected abstract int getSpeedSlot ();
-
-    protected void tickProgress () {
-        currentProgress += getScaledSpeed();
-    }
-
     private int getScaledSpeed () {
         return getScaledSlot(getSpeedSlot(), getScaledSpeedMin(), getScaledSpeedMax());
     }
 
-    protected abstract int getScaledSpeedMin ();
+    private int getScaledSlot (int slot, int min, int max) {
+        int difference = max - min;
+        return min + MathHelper.scaleInt(getUpgradeInventory().getStackInSlot(slot).getCount(), 5, difference);
+    }
 
-    protected abstract int getScaledSpeedMax ();
+    protected int scaleCost (int cost) {
+        return cost + (cost * CUConfig.misc.speedUpgradeCostMultiplier.get() * getUpgradeInventory().getStackInSlot(getSpeedSlot()).getCount());
+    }
+
+    protected void tickProgress () {
+        currentProgress += getScaledSpeed();
+    }
 
     protected boolean isDoneAndReset () {
 

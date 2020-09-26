@@ -23,7 +23,7 @@ public class BlockBank extends BlockInventoryContainerBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Collects RC from all connected Trading Posts.");
+        LoreHelper.addInformationLore(tooltip, "Collects RC from all connected Trading Posts.", true);
         LoreHelper.addControlsLore(tooltip, "Open Inventory", LoreHelper.Type.USE, true);
     }
 

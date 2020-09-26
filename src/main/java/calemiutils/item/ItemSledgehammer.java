@@ -55,6 +55,18 @@ public class ItemSledgehammer extends PickaxeItem {
     }
 
     @Override
+    public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
+        LoreHelper.addInformationLore(tooltipList, "Need a pickaxe, axe, shovel and sword in one single tool? This is your best bet.", true);
+        LoreHelper.addControlsLore(tooltipList, "Charge", LoreHelper.Type.USE, true);
+        LoreHelper.addControlsLore(tooltipList, "Force Charge", LoreHelper.Type.SNEAK_USE);
+        LoreHelper.addControlsLore(tooltipList, "Excavates, Mines Veins & Fells Trees", LoreHelper.Type.RELEASE_USE);
+
+        if (stack.isEnchanted()) {
+            LoreHelper.addBlankLine(tooltipList);
+        }
+    }
+
+    @Override
     public ActionResult<ItemStack> onItemRightClick (World world, PlayerEntity player, Hand hand) {
 
         ItemStack itemstack = player.getHeldItem(hand);
@@ -128,18 +140,6 @@ public class ItemSledgehammer extends PickaxeItem {
 
                 excavateRock(world, heldStack, player, locationReal, blockSide);
             }
-        }
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
-        LoreHelper.addInformationLore(tooltipList, "Need a pickaxe, axe, shovel and sword in one single tool? This is your best bet.");
-        LoreHelper.addControlsLore(tooltipList, "Charge", LoreHelper.Type.USE, true);
-        LoreHelper.addControlsLore(tooltipList, "Force Charge", LoreHelper.Type.SNEAK_USE);
-        LoreHelper.addControlsLore(tooltipList, "Excavates, Mines Veins & Fells Trees", LoreHelper.Type.RELEASE_USE);
-
-        if (stack.isEnchanted()) {
-            LoreHelper.addBlankLine(tooltipList);
         }
     }
 

@@ -41,7 +41,7 @@ public class BlockHelper {
 
                     nextLocation.setBlock(block);
 
-                    InventoryHelper.consumeItem(player.inventory, 1, true, new ItemStack(block));
+                    InventoryHelper.consumeItem(player.inventory, 1, new ItemStack(block));
 
                     break;
                 }
@@ -70,7 +70,7 @@ public class BlockHelper {
                     nextLocation.setBlock(block);
                     SoundHelper.playBlockPlaceSound(world, player, nextLocation.getBlockState(), nextLocation);
 
-                    InventoryHelper.consumeItem(player.inventory, 1, true, new ItemStack(block));
+                    InventoryHelper.consumeItem(player.inventory, 1, new ItemStack(block));
 
                     break;
                 }

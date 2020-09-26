@@ -1,5 +1,7 @@
 package calemiutils.util.helper;
 
+import calemiutils.tileentity.base.CUItemHandler;
+import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.util.Location;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,8 +31,47 @@ public class InventoryHelper {
         return false;
     }
 
+    public static boolean canInsertItem (ItemStack stack, TileEntityInventoryBase tileEntity) {
+
+        for (int i = 0; i < tileEntity.getInventory().getSlots(); i++) {
+
+            ItemStack slot = tileEntity.getInventory().getStackInSlot(i);
+
+            boolean equalAndNotFull = (ItemStack.areItemsEqual(slot, stack) && slot.getCount() + stack.getCount() < stack.getMaxStackSize());
+
+            if (tileEntity.isItemValidForSlot(i, stack) && (slot.isEmpty() || equalAndNotFull)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static void insertItem (ItemStack stack, CUItemHandler inventory) {
+        insertItem(stack, inventory, 0);
+    }
+
     public static void insertItem (ItemStack stack, IInventory inventory) {
         insertItem(stack, inventory, 0);
+    }
+
+    public static void insertItem (ItemStack stack, CUItemHandler inventory, int slotOffset) {
+
+        for (int i = slotOffset; i < inventory.getSlots(); i++) {
+
+            ItemStack slot = inventory.getStackInSlot(i);
+
+            if (ItemStack.areItemsEqual(slot, stack) && (slot.getCount() + stack.getCount() <= stack.getMaxStackSize())) {
+
+                inventory.setStackInSlot(i, new ItemStack(stack.getItem(), slot.getCount() + stack.getCount()));
+                return;
+            }
+
+            else if (slot.isEmpty()) {
+                inventory.setStackInSlot(i, stack);
+                return;
+            }
+        }
     }
 
     public static void insertItem (ItemStack stack, IInventory inventory, int slotOffset) {
@@ -67,12 +108,6 @@ public class InventoryHelper {
                     player.setHeldItem(hand, ItemStack.EMPTY);
                 }
 
-                /*if (te instanceof TileEntityInventoryBase) {
-                    TileEntityInventoryBase teBase = (TileEntityInventoryBase) te;
-
-                    teBase.markForUpdate();
-                }*/
-
                 return true;
             }
         }
@@ -80,9 +115,9 @@ public class InventoryHelper {
         return false;
     }
 
-    public static void breakInventory (World world, IInventory inventory, Location location) {
+    public static void breakInventory (World world, CUItemHandler inventory, Location location) {
 
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+        for (int i = 0; i < inventory.getSlots(); i++) {
 
             ItemStack stack = inventory.getStackInSlot(i);
 
@@ -97,16 +132,66 @@ public class InventoryHelper {
         }
     }
 
-    public static void consumeItem (IInventory inventory, int amount, boolean suckFromBuildersKit, ItemStack... itemStack) {
-
-        consumeItem(0, inventory, amount, suckFromBuildersKit, false, itemStack);
+    public static void consumeItem (IInventory inventory, int amount, ItemStack... itemStack) {
+        consumeItem(0, inventory, amount, false, itemStack);
     }
 
-    public static void consumeItem (int slotOffset, IInventory inventory, int amount, boolean suckFromBuildersKit, boolean useNBT, ItemStack... itemStacks) {
+    public static void consumeItem (CUItemHandler inventory, int amount, ItemStack... itemStack) {
+        consumeItem(0, inventory, amount, false, itemStack);
+    }
+
+    public static void consumeItem (int slotOffset, CUItemHandler inventory, int amount, boolean useNBT, ItemStack... itemStacks) {
 
         int amountLeft = amount;
 
-        if (countItems(inventory, suckFromBuildersKit, useNBT, itemStacks) >= amount) {
+        if (countItems(inventory, useNBT, itemStacks) >= amount) {
+
+            for (int i = slotOffset; i < inventory.getSlots(); i++) {
+
+                if (amountLeft <= 0) {
+                    break;
+                }
+
+                ItemStack stack = inventory.getStackInSlot(i);
+
+                if (!stack.isEmpty()) {
+
+                    for (ItemStack itemStack : itemStacks) {
+
+                        if (stack.isItemEqual(itemStack)) {
+
+                            if (useNBT && itemStack.hasTag()) {
+
+                                if (!stack.hasTag() || !Objects.equals(stack.getTag(), itemStack.getTag())) {
+                                    continue;
+                                }
+                            }
+
+                            if (amountLeft >= stack.getCount()) {
+
+                                amountLeft -= stack.getCount();
+                                inventory.setStackInSlot(i, ItemStack.EMPTY);
+                            }
+
+                            else {
+
+                                ItemStack copy = stack.copy();
+
+                                inventory.decrStackSize(i, amountLeft);
+                                amountLeft -= copy.getCount();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void consumeItem (int slotOffset, IInventory inventory, int amount, boolean useNBT, ItemStack... itemStacks) {
+
+        int amountLeft = amount;
+
+        if (countItems(inventory, useNBT, itemStacks) >= amount) {
 
             for (int i = slotOffset; i < inventory.getSizeInventory(); i++) {
 
@@ -117,41 +202,6 @@ public class InventoryHelper {
                 ItemStack stack = inventory.getStackInSlot(i);
 
                 if (!stack.isEmpty()) {
-
-                    /*if (suckFromBuildersKit) {
-
-                        if (stack.getItem() instanceof ItemBuildersKit) {
-
-                            ItemBuildersKit buildersKit = (ItemBuildersKit) stack.getItem();
-
-                            for (ItemStack itemStack : itemStacks) {
-
-                                if (buildersKit.getBlockType(stack) != null && buildersKit.getBlockType(stack).isItemEqual(itemStack)) {
-
-                                    if (useNBT && itemStack.hasTagCompound()) {
-
-                                        if (!stack.hasTagCompound() || !stack.getTagCompound().equals(itemStack.getTagCompound())) {
-                                            continue;
-                                        }
-                                    }
-
-                                    int stackAmount = ItemBuildersKit.getAmountOfBlocks(stack);
-
-                                    if (amountLeft >= stackAmount) {
-
-                                        amountLeft -= stackAmount;
-                                        ItemBuildersKit.setAmountOfBlocks(stack, 0);
-                                    }
-
-                                    else {
-
-                                        ItemBuildersKit.setAmountOfBlocks(stack, stackAmount - amountLeft);
-                                        amountLeft -= stackAmount;
-                                    }
-                                }
-                            }
-                        }
-                    }*/
 
                     for (ItemStack itemStack : itemStacks) {
 
@@ -184,7 +234,7 @@ public class InventoryHelper {
         }
     }
 
-    public static int countItems (IInventory inventory, boolean countFromBuildersKit, boolean useNBT, ItemStack... itemStacks) {
+    public static int countItems (IInventory inventory, boolean useNBT, ItemStack... itemStacks) {
 
         int count = 0;
 
@@ -192,25 +242,32 @@ public class InventoryHelper {
 
             ItemStack stack = inventory.getStackInSlot(i);
 
-            /*if (countFromBuildersKit && stack.getItem() instanceof ItemBuildersKit) {
+            for (ItemStack itemStack : itemStacks) {
 
-                ItemBuildersKit buildersKit = (ItemBuildersKit) stack.getItem();
+                if (stack.isItemEqual(itemStack)) {
 
-                for (ItemStack itemStack : itemStacks) {
+                    if (useNBT && itemStack.hasTag()) {
 
-                    if (buildersKit.getBlockType(stack) != null && buildersKit.getBlockType(stack).isItemEqual(itemStack)) {
-
-                        if (useNBT && itemStack.hasTagCompound()) {
-
-                            if (stack.hasTagCompound() && stack.getTagCompound().equals(itemStack.getTagCompound())) {
-                                count += ItemBuildersKit.getAmountOfBlocks(stack);
-                            }
+                        if (stack.hasTag() && Objects.equals(stack.getTag(), itemStack.getTag())) {
+                            count += stack.getCount();
                         }
-
-                        else count += ItemBuildersKit.getAmountOfBlocks(stack);
                     }
+
+                    count += stack.getCount();
                 }
-            }*/
+            }
+        }
+
+        return count;
+    }
+
+    public static int countItems (CUItemHandler inventory, boolean useNBT, ItemStack... itemStacks) {
+
+        int count = 0;
+
+        for (int i = 0; i < inventory.getSlots(); i++) {
+
+            ItemStack stack = inventory.getStackInSlot(i);
 
             for (ItemStack itemStack : itemStacks) {
 

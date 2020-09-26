@@ -39,7 +39,7 @@ public class ItemPencil extends ItemBase {
     @Override
     public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
 
-        LoreHelper.addInformationLore(tooltipList, "Places Blueprint. Blueprint can be used for mass building!");
+        LoreHelper.addInformationLore(tooltipList, "Places Blueprint. Blueprint can be used for mass building!", true);
         LoreHelper.addControlsLore(tooltipList, "Place Blueprint", LoreHelper.Type.USE, true);
         LoreHelper.addControlsLore(tooltipList, "Change Blueprint Color", LoreHelper.Type.SNEAK_USE);
         LoreHelper.addBlankLine(tooltipList);

@@ -6,10 +6,7 @@ import calemiutils.init.InitTileEntityTypes;
 import calemiutils.inventory.ContainerTorchPlacer;
 import calemiutils.tileentity.base.TileEntityUpgradable;
 import calemiutils.util.Location;
-import calemiutils.util.helper.InventoryHelper;
-import calemiutils.util.helper.MathHelper;
-import calemiutils.util.helper.TorchHelper;
-import calemiutils.util.helper.WorldEditHelper;
+import calemiutils.util.helper.*;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TorchBlock;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -30,12 +27,7 @@ public class TileEntityTorchPlacer extends TileEntityUpgradable {
     private static final ItemStack TORCH_STACK = new ItemStack(TORCH_BLOCK);
 
     public TileEntityTorchPlacer () {
-
         super(InitTileEntityTypes.TORCH_PLACER.get());
-
-        setInputSlots(MathHelper.getCountingArray(0, 28));
-        setSideInputSlots(MathHelper.getCountingArray(0, 28));
-        setExtractSlots(MathHelper.getCountingArray(2, 28));
         enable = false;
     }
 
@@ -61,7 +53,7 @@ public class TileEntityTorchPlacer extends TileEntityUpgradable {
                 if (isDoneAndReset()) {
 
                     darkSpot.setBlock(TORCH_BLOCK);
-                    InventoryHelper.consumeItem(this, 1, true, TORCH_STACK);
+                    InventoryHelper.consumeItem(getInventory(), 1, TORCH_STACK);
                 }
             }
         }
@@ -80,7 +72,7 @@ public class TileEntityTorchPlacer extends TileEntityUpgradable {
 
         for (int i = 0; i < getSizeInventory(); i++) {
 
-            if (getStackInSlot(i) != null && getStackInSlot(i).getItem() == Item.getItemFromBlock(TORCH_BLOCK)) {
+            if (getInventory().getStackInSlot(i) != null && getInventory().getStackInSlot(i).getItem() == Item.getItemFromBlock(TORCH_BLOCK)) {
                 return true;
             }
         }
@@ -109,7 +101,7 @@ public class TileEntityTorchPlacer extends TileEntityUpgradable {
 
     @Override
     public int getSizeInventory () {
-        return 29;
+        return 27;
     }
 
     @Override
@@ -143,11 +135,6 @@ public class TileEntityTorchPlacer extends TileEntityUpgradable {
     }
 
     @Override
-    public ITextComponent getName () {
-        return new StringTextComponent("torch placer");
-    }
-
-    @Override
     public Container getTileContainer (int windowId, PlayerInventory playerInv) {
         return new ContainerTorchPlacer(windowId, playerInv, this);
     }
@@ -159,7 +146,7 @@ public class TileEntityTorchPlacer extends TileEntityUpgradable {
     }
 
     @Override
-    public ITextComponent getDisplayName () {
+    public ITextComponent getDefaultName () {
         return new StringTextComponent("Torch Placer");
     }
 }

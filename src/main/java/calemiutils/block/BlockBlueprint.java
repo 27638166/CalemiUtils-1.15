@@ -122,14 +122,14 @@ public class BlockBlueprint extends BlockColoredBase {
             //Handles replacing only one Block.
             if (player.isCrouching()) {
                 replaceBlock(location, player, heldBlockState);
-                InventoryHelper.consumeItem(player.inventory, 1, true, heldStack);
+                InventoryHelper.consumeItem(player.inventory, 1, heldStack);
                 SoundHelper.playBlockPlaceSound(world, player, Block.getBlockFromItem(heldStack.getItem()).getDefaultState(), location);
             }
 
             //Handles replacing every block in list.
             else {
 
-                int itemCount = InventoryHelper.countItems(player.inventory, true, false, heldStack);
+                int itemCount = InventoryHelper.countItems(player.inventory, false, heldStack);
 
                 if (itemCount >= scan.buffer.size()) {
 
@@ -146,7 +146,7 @@ public class BlockBlueprint extends BlockColoredBase {
                         SoundHelper.playBlockPlaceSound(world, player, Block.getBlockFromItem(heldStack.getItem()).getDefaultState(), location);
 
                         if (!world.isRemote) message.printMessage(TextFormatting.GREEN, "Placed " + ItemHelper.countByStacks(amountToConsume));
-                        InventoryHelper.consumeItem(player.inventory, amountToConsume, true, heldStack);
+                        InventoryHelper.consumeItem(player.inventory, amountToConsume, heldStack);
                     }
                 }
 

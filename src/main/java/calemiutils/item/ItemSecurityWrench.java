@@ -29,7 +29,7 @@ public class ItemSecurityWrench extends ItemBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
-        LoreHelper.addInformationLore(tooltipList, "Used to access secured blocks!");
+        LoreHelper.addInformationLore(tooltipList, "Used to access secured blocks!", true);
         LoreHelper.addControlsLore(tooltipList, "Interact with secured blocks", LoreHelper.Type.USE, true);
         LoreHelper.addControlsLore(tooltipList, "Pick up secured blocks", LoreHelper.Type.SNEAK_USE);
     }

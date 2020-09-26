@@ -48,6 +48,14 @@ public class BlockBookStand extends BlockInventoryContainerBase {
         setDefaultState(stateContainer.getBaseState().with(FACING, Direction.NORTH));
     }
 
+    @Override
+    public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        LoreHelper.addInformationLore(tooltip, "Holds Link Books.");
+        LoreHelper.addControlsLore(tooltip, "Open Gui", LoreHelper.Type.USE, true);
+        LoreHelper.addControlsLore(tooltip, "Open Inventory", LoreHelper.Type.SNEAK_USE);
+        LoreHelper.addControlsLore(tooltip, "Place Book (Copies data from stored book if it exists)", LoreHelper.Type.USE_BOOK);
+    }
+
     /**
      * This method functions the same as onBlockActivated().
      * This will handle opening the gui or opening the Link Book's gui.
@@ -80,7 +88,7 @@ public class BlockBookStand extends BlockInventoryContainerBase {
         else if (book != null) {
 
             if (world.isRemote) {
-                book.openGui(player, hand, ((TileEntityBookStand) tileEntity).getStackInSlot(0), false);
+                book.openGui(player, hand, ((TileEntityBookStand) tileEntity).getInventory().getStackInSlot(0), false);
             }
 
             return ActionResultType.SUCCESS;
@@ -118,7 +126,7 @@ public class BlockBookStand extends BlockInventoryContainerBase {
 
         if (tileEntity instanceof TileEntityBookStand) {
             TileEntityBookStand bookStand = (TileEntityBookStand) tileEntity;
-            return bookStand.getStackInSlot(0);
+            return bookStand.getInventory().getStackInSlot(0);
         }
 
         return null;
@@ -182,13 +190,5 @@ public class BlockBookStand extends BlockInventoryContainerBase {
     @Override
     protected void fillStateContainer (StateContainer.Builder<Block, BlockState> builder) {
         builder.add(FACING);
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Holds Link Books.");
-        LoreHelper.addControlsLore(tooltip, "Open Gui", LoreHelper.Type.USE, true);
-        LoreHelper.addControlsLore(tooltip, "Open Inventory", LoreHelper.Type.SNEAK_USE);
-        LoreHelper.addControlsLore(tooltip, "Place Book (Copies data from stored book if it exists)", LoreHelper.Type.USE_BOOK);
     }
 }

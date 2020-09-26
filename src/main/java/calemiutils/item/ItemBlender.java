@@ -31,6 +31,16 @@ public class ItemBlender extends ItemBase {
     }
 
     @Override
+    public void addInformation (ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        LoreHelper.addInformationLore(tooltip, "Blends up food into juice which you can drink!", true);
+        LoreHelper.addControlsLore(tooltip, "Drink", LoreHelper.Type.USE);
+        LoreHelper.addControlsLore(tooltip, "Toggle Processing Mode", LoreHelper.Type.SNEAK_USE, true);
+        LoreHelper.addBlankLine(tooltip);
+        tooltip.add(new StringTextComponent("Process Food: " + ChatFormatting.AQUA + (ItemHelper.getNBT(stack).getBoolean("process") ? "ON" : "OFF")));
+        tooltip.add(new StringTextComponent("Juice: " + ChatFormatting.AQUA + StringHelper.printCommas((int) ItemHelper.getNBT(stack).getFloat("juice")) + " / " + StringHelper.printCommas(CUConfig.misc.blenderMaxJuice.get())));
+    }
+
+    @Override
     public boolean hasEffect (ItemStack stack) {
         return ItemHelper.getNBT(stack).getBoolean("process");
     }
@@ -121,7 +131,7 @@ public class ItemBlender extends ItemBase {
 
                         if (ItemHelper.getNBT(stack).getFloat("juice") + food <= CUConfig.misc.blenderMaxJuice.get()) {
 
-                            InventoryHelper.consumeItem(player.inventory, 1, false, currentStack);
+                            InventoryHelper.consumeItem(player.inventory, 1, currentStack);
                             ItemHelper.getNBT(stack).putFloat("juice", ItemHelper.getNBT(stack).getFloat("juice") + food);
                         }
                     }
@@ -138,17 +148,6 @@ public class ItemBlender extends ItemBase {
     @Override
     public int getUseDuration (ItemStack stack) {
         return 64;
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-
-        LoreHelper.addInformationLore(tooltip, "Blends up food into juice which you can drink!");
-        LoreHelper.addControlsLore(tooltip, "Drink", LoreHelper.Type.USE);
-        LoreHelper.addControlsLore(tooltip, "Toggle Processing Mode", LoreHelper.Type.SNEAK_USE, true);
-        LoreHelper.addBlankLine(tooltip);
-        tooltip.add(new StringTextComponent("Process Food: " + ChatFormatting.AQUA + (ItemHelper.getNBT(stack).getBoolean("process") ? "ON" : "OFF")));
-        tooltip.add(new StringTextComponent("Juice: " + ChatFormatting.AQUA + StringHelper.printCommas((int) ItemHelper.getNBT(stack).getFloat("juice")) + " / " + StringHelper.printCommas(CUConfig.misc.blenderMaxJuice.get())));
     }
 
     @SuppressWarnings("SameParameterValue")

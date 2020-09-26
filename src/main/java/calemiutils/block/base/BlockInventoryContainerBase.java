@@ -2,6 +2,8 @@ package calemiutils.block.base;
 
 import calemiutils.CUConfig;
 import calemiutils.security.ISecurity;
+import calemiutils.tileentity.base.TileEntityInventoryBase;
+import calemiutils.tileentity.base.TileEntityUpgradable;
 import calemiutils.util.Location;
 import calemiutils.util.helper.InventoryHelper;
 import net.minecraft.block.BlockState;
@@ -40,10 +42,16 @@ public abstract class BlockInventoryContainerBase extends BlockContainerBase {
             Location location = new Location(world, pos);
             TileEntity te = location.getTileEntity();
 
-            if (te instanceof IInventory) {
+            if (te instanceof TileEntityInventoryBase) {
 
-                IInventory inv = (IInventory) te;
-                InventoryHelper.breakInventory(world, inv, location);
+                TileEntityInventoryBase inv = (TileEntityInventoryBase) te;
+                InventoryHelper.breakInventory(world, inv.getInventory(), location);
+
+                if (te instanceof TileEntityUpgradable) {
+
+                    TileEntityUpgradable upgradeInv = (TileEntityUpgradable) te;
+                    InventoryHelper.breakInventory(world, upgradeInv.getUpgradeInventory(), location);
+                }
             }
 
             super.onReplaced(state, world, pos, newState, isMoving);

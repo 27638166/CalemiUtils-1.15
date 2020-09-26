@@ -30,6 +30,14 @@ public class ItemWallet extends ItemBase {
         super(new Item.Properties().group(CalemiUtils.TAB).maxStackSize(1));
     }
 
+    @Override
+    public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
+        LoreHelper.addInformationLore(tooltipList, "Used to store currency in one place.", true);
+        LoreHelper.addControlsLore(tooltipList, "Open Inventory", LoreHelper.Type.USE, true);
+        LoreHelper.addBlankLine(tooltipList);
+        LoreHelper.addCurrencyLore(tooltipList, getBalance(stack), CUConfig.wallet.walletCurrencyCapacity.get());
+    }
+
     public static UnitChatMessage getMessage (PlayerEntity player) {
         return new UnitChatMessage("Wallet", player);
     }
@@ -48,14 +56,6 @@ public class ItemWallet extends ItemBase {
         }
 
         return new ActionResult<>(ActionResultType.FAIL, stack);
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
-        LoreHelper.addInformationLore(tooltipList, "Used to store currency in one place.");
-        LoreHelper.addControlsLore(tooltipList, "Open Inventory", LoreHelper.Type.USE, true);
-        LoreHelper.addBlankLine(tooltipList);
-        LoreHelper.addCurrencyLore(tooltipList, getBalance(stack), CUConfig.wallet.walletCurrencyCapacity.get());
     }
 
     public static int getBalance (ItemStack stack) {

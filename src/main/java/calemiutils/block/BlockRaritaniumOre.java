@@ -29,7 +29,7 @@ public class BlockRaritaniumOre extends BlockBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable IBlockReader reader, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
-        LoreHelper.addInformationLore(tooltipList, "Found between Y levels " + CUConfig.worldGen.raritaniumOreGenMinY.get() + " and " + CUConfig.worldGen.raritaniumOreGenMaxY.get() + ".");
+        LoreHelper.addInformationLore(tooltipList, "Found between Y levels " + CUConfig.worldGen.raritaniumOreGenMinY.get() + " and " + CUConfig.worldGen.raritaniumOreGenMaxY.get() + ".", true);
     }
 
     @Override

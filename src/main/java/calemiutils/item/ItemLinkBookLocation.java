@@ -40,6 +40,26 @@ public class ItemLinkBookLocation extends ItemBase {
         super(new Item.Properties().group(CalemiUtils.TAB).maxStackSize(1));
     }
 
+    @Override
+    public void addInformation (ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+
+        CompoundNBT nbt = ItemHelper.getNBT(stack);
+        Location location = getLinkedLocation(worldIn, stack);
+
+        LoreHelper.addInformationLore(tooltip, "Creates a link to teleport to.", true);
+        LoreHelper.addControlsLore(tooltip, "Open Gui", LoreHelper.Type.USE, true);
+        LoreHelper.addBlankLine(tooltip);
+
+        String locationStr = "Not set";
+
+        if (location != null) {
+            locationStr = (location.x + ", " + location.y + ", " + location.z);
+        }
+
+        tooltip.add(new StringTextComponent("[Location] " + ChatFormatting.AQUA + locationStr));
+        tooltip.add(new StringTextComponent("[Dimension] " + ChatFormatting.AQUA + (nbt.getBoolean("linked") ? nbt.getString("DimName") : "Not set")));
+    }
+
     /**
      * @return the linked Dimension if set.
      */
@@ -202,26 +222,6 @@ public class ItemLinkBookLocation extends ItemBase {
         }
 
         return new ActionResult<>(ActionResultType.FAIL, heldItem);
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-
-        CompoundNBT nbt = ItemHelper.getNBT(stack);
-        Location location = getLinkedLocation(worldIn, stack);
-
-        LoreHelper.addInformationLore(tooltip, "Creates a link to teleport to.");
-        LoreHelper.addControlsLore(tooltip, "Open Gui", LoreHelper.Type.USE, true);
-        LoreHelper.addBlankLine(tooltip);
-
-        String locationStr = "Not set";
-
-        if (location != null) {
-            locationStr = (location.x + ", " + location.y + ", " + location.z);
-        }
-
-        tooltip.add(new StringTextComponent("[Location] " + ChatFormatting.AQUA + locationStr));
-        tooltip.add(new StringTextComponent("[Dimension] " + ChatFormatting.AQUA + (nbt.getBoolean("linked") ? nbt.getString("DimName") : "Not set")));
     }
 
     /**

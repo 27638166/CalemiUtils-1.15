@@ -27,7 +27,7 @@ public class BlockNetworkCableOpaque extends BlockContainerBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Used to connect Trading Posts to Banks within a single network.");
+        LoreHelper.addInformationLore(tooltip, "Used to connect Trading Posts to Banks within a single network.", true);
     }
 
     @Nullable

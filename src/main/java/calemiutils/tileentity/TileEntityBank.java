@@ -33,10 +33,6 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
 
     public TileEntityBank () {
         super(InitTileEntityTypes.BANK.get());
-
-        setInputSlots(0, 1);
-        setSideInputSlots(0, 1);
-        setExtractSlots(0, 1);
     }
 
     @Override
@@ -83,23 +79,23 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
 
         if (!world.isRemote) {
 
-            if (getStackInSlot(0) != null && getStackInSlot(0).getItem() instanceof ItemCurrency) {
+            if (getInventory().getStackInSlot(0) != null && getInventory().getStackInSlot(0).getItem() instanceof ItemCurrency) {
 
-                int amountToAdd = ((ItemCurrency) getStackInSlot(0).getItem()).value;
+                int amountToAdd = ((ItemCurrency) getInventory().getStackInSlot(0).getItem()).value;
                 int stackSize = 0;
 
-                for (int i = 0; i < getStackInSlot(0).getCount(); i++) {
+                for (int i = 0; i < getInventory().getStackInSlot(0).getCount(); i++) {
 
                     if (canAddAmount(amountToAdd)) {
                         stackSize++;
-                        amountToAdd += ((ItemCurrency) getStackInSlot(0).getItem()).value;
+                        amountToAdd += ((ItemCurrency) getInventory().getStackInSlot(0).getItem()).value;
                     }
                 }
 
                 if (stackSize != 0) {
 
-                    addCurrency(stackSize * ((ItemCurrency) getStackInSlot(0).getItem()).value);
-                    decrStackSize(0, stackSize);
+                    addCurrency(stackSize * ((ItemCurrency) getInventory().getStackInSlot(0).getItem()).value);
+                    getInventory().decrStackSize(0, stackSize);
                 }
             }
         }
@@ -169,7 +165,7 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
 
 
     @Override
-    public ITextComponent getDisplayName () {
+    public ITextComponent getDefaultName () {
         return new StringTextComponent("Bank");
     }
 }

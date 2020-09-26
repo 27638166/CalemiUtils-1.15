@@ -28,6 +28,11 @@ public class BlockNetworkGate extends BlockNetworkCableOpaque {
         setDefaultState(stateContainer.getBaseState().with(CONNECTED, true));
     }
 
+    @Override
+    public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        LoreHelper.addInformationLore(tooltip, "Used to enable and disable networks branches by redstone signal.", true);
+    }
+
     /**
      * Changes the Block's "CONNECTED" property by the value.
      */
@@ -42,11 +47,6 @@ public class BlockNetworkGate extends BlockNetworkCableOpaque {
             tileentity.validate();
             worldIn.setTileEntity(pos, tileentity);
         }
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Used to enable and disable networks branches by redstone signal.");
     }
 
     @Nullable

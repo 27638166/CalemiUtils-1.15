@@ -45,6 +45,14 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
         super(Block.Properties.create(Material.WOOD).sound(SoundType.WOOD).hardnessAndResistance(-1.0F, 3600000.0F).func_226896_b_().variableOpacity());
     }
 
+    @Override
+    public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        LoreHelper.addInformationLore(tooltip, "Used to buy and sell blocks and items.", true);
+        LoreHelper.addControlsLore(tooltip, "Show Trade Info", LoreHelper.Type.SNEAK_USE, true);
+        LoreHelper.addControlsLore(tooltip, "Open Inventory", LoreHelper.Type.USE_WRENCH);
+        LoreHelper.addControlsLore(tooltip, "Buy Item", LoreHelper.Type.USE_WALLET);
+    }
+
     /**
      * This method functions the same as onBlockActivated().
      * This will handle purchasing, selling, and opening the gui.
@@ -135,7 +143,7 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
     private void handleSell (UnitChatMessage message, ItemStack walletStack, World world, PlayerEntity player, TileEntityTradingPost tePost) {
 
         //Checks if the player has the required amount of items.
-        if (InventoryHelper.countItems(player.inventory, true, true, tePost.getStackForSale()) >= tePost.amountForSale) {
+        if (InventoryHelper.countItems(player.inventory, true, tePost.getStackForSale()) >= tePost.amountForSale) {
 
             ItemStack stackForSale = new ItemStack(tePost.getStackForSale().getItem(), tePost.amountForSale);
 
@@ -151,13 +159,13 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
                         CompoundNBT nbt = ItemHelper.getNBT(walletStack);
 
                         //Removes the Items from the player.
-                        InventoryHelper.consumeItem(player.inventory, tePost.amountForSale, true, tePost.getStackForSale());
+                        InventoryHelper.consumeItem(player.inventory, tePost.amountForSale, tePost.getStackForSale());
 
                         //Checks if not in admin mode.
                         if (!tePost.adminMode) {
 
                             //Adds Items to the Trading Post
-                            InventoryHelper.insertItem(stackForSale, tePost);
+                            InventoryHelper.insertItem(stackForSale, tePost.getInventory());
 
                             //Subtracts funds from the connected Bank
                             tePost.decrStoredCurrencyInBank(tePost.salePrice);
@@ -250,7 +258,7 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
                         }
 
                         //Removes the amount of Items for sale.
-                        InventoryHelper.consumeItem(0, tePost, tePost.amountForSale, true, true, tePost.getStackForSale());
+                        InventoryHelper.consumeItem(0, tePost.getInventory(), tePost.amountForSale, true, tePost.getStackForSale());
                     }
                 }
 
@@ -332,13 +340,5 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
     @OnlyIn(Dist.CLIENT)
     public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
         return 1.0F;
-    }
-
-    @Override
-    public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Used to buy and sell blocks and items.");
-        LoreHelper.addControlsLore(tooltip, "Show Trade Info", LoreHelper.Type.SNEAK_USE, true);
-        LoreHelper.addControlsLore(tooltip, "Open Inventory", LoreHelper.Type.USE_WRENCH);
-        LoreHelper.addControlsLore(tooltip, "Buy Item", LoreHelper.Type.USE_WALLET);
     }
 }
