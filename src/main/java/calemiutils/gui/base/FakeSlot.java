@@ -45,7 +45,7 @@ public class FakeSlot extends Button {
             StringHelper.removeCharFromList(list, "Shift", "Ctrl");
 
             ScreenHelper.drawItemStack(itemRender, getItemStack(), rect.x, rect.y);
-            if (!stack.isEmpty()) ScreenHelper.drawHoveringTextBox(mouseX, mouseY, 50, rect, StringHelper.getArrayFromList(list));
+            if (!stack.isEmpty()) ScreenHelper.drawHoveringTextBox(mouseX, mouseY, 300, rect, StringHelper.getArrayFromList(list));
 
             GL11.glColor3f(1, 1, 1);
         }

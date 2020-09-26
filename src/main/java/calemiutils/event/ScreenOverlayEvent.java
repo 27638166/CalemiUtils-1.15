@@ -31,7 +31,7 @@ public class ScreenOverlayEvent {
 
         ClientPlayerEntity player = mc.player;
 
-        if (player != null) {
+        if (player != null && !player.isSpectator()) {
 
             ItemStack walletStack = CurrencyHelper.getCurrentWalletStack(player);
             ItemStack activeItemStack = player.getActiveItemStack();

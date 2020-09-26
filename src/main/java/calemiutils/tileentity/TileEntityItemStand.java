@@ -79,7 +79,7 @@ public class TileEntityItemStand extends TileEntityInventoryBase implements ITil
     @Override
     @OnlyIn(Dist.CLIENT)
     public ContainerScreen getTileGuiContainer (int windowId, PlayerInventory playerInv) {
-        return new ScreenOneSlot(getTileContainer(windowId, playerInv), playerInv, getDisplayName());
+        return new ScreenOneSlot(getTileContainer(windowId, playerInv), playerInv, getDefaultName());
     }
 
     @Override

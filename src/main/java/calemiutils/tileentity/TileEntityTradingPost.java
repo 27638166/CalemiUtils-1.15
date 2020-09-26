@@ -11,9 +11,7 @@ import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
 import calemiutils.util.helper.ItemHelper;
-import calemiutils.util.helper.MathHelper;
 import calemiutils.util.helper.NetworkHelper;
-import calemiutils.util.helper.StringHelper;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -42,16 +40,6 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
         amountForSale = 1;
         salePrice = 0;
         hasValidTradeOffer = false;
-    }
-
-    @Override
-    public Location getBankLocation () {
-        return bankLocation;
-    }
-
-    @Override
-    public void setBankLocation (Location location) {
-        bankLocation = location;
     }
 
     public int getStoredCurrencyInBank () {
@@ -99,11 +87,6 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
         return new UnitChatMessage(getSecurityProfile().getOwnerName() + "'s Trading Post", player);
     }
 
-    @Override
-    public SecurityProfile getSecurityProfile () {
-        return profile;
-    }
-
     public ItemStack getStackForSale () {
         return stackForSale;
     }
@@ -140,6 +123,36 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
     }
 
     @Override
+    public Location getBankLocation () {
+        return bankLocation;
+    }
+
+    @Override
+    public void setBankLocation (Location location) {
+        bankLocation = location;
+    }
+
+    @Override
+    public int getSizeInventory () {
+        return 27;
+    }
+
+    @Override
+    public SecurityProfile getSecurityProfile () {
+        return profile;
+    }
+
+    @Override
+    public Direction[] getConnectedDirections () {
+        return new Direction[] {Direction.DOWN};
+    }
+
+    @Override
+    public ITextComponent getDefaultName () {
+        return new StringTextComponent("Trading Post");
+    }
+
+    @Override
     public Container getTileContainer (int windowId, PlayerInventory playerInv) {
         return new ContainerTradingPost(windowId, playerInv, this);
     }
@@ -151,26 +164,6 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
     }
 
     @Override
-    public Direction[] getConnectedDirections () {
-        return new Direction[] {Direction.DOWN};
-    }
-
-    @Override
-    public ITextComponent getDefaultName () {
-
-        if (hasValidTradeOffer) {
-            return new StringTextComponent((buyMode ? "Buying " : "Selling ") + amountForSale + "x " + getStackForSale().getDisplayName() + " for " + StringHelper.printCurrency(salePrice));
-        }
-
-        return null;
-    }
-
-    @Override
-    public int getSizeInventory () {
-        return 27;
-    }
-
-    @Override
     public void read (CompoundNBT nbt) {
 
         super.read(nbt);
@@ -179,6 +172,10 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
         salePrice = nbt.getInt("price");
 
         stackForSale = ItemHelper.getStackFromString(nbt.getString("stack"));
+
+        if (!nbt.getString("nbt").isEmpty()) {
+            ItemHelper.attachNBTFromString(stackForSale, nbt.getString("nbt"));
+        }
 
         adminMode = nbt.getBoolean("adminMode");
         buyMode = nbt.getBoolean("buyMode");
@@ -193,6 +190,14 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
         nbt.putInt("price", salePrice);
 
         nbt.putString("stack", ItemHelper.getStringFromStack(stackForSale));
+
+        String nbtString = "";
+
+        if (stackForSale.hasTag()) {
+            nbtString = stackForSale.getTag().toString();
+        }
+
+        nbt.putString("nbt", nbtString);
 
         nbt.putBoolean("adminMode", adminMode);
         nbt.putBoolean("buyMode", buyMode);

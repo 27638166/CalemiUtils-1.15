@@ -101,11 +101,6 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
         }
     }
 
-    @Override
-    public Direction[] getConnectedDirections () {
-        return Direction.values();
-    }
-
     private boolean canAddAmount (int amount) {
         int storedAmount = storedCurrency;
         return storedAmount + amount <= getMaxCurrency();
@@ -114,7 +109,9 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
     public void addCurrency (int amount) {
         markForUpdate();
         setCurrency(storedCurrency + amount);
-    }    @Override
+    }
+
+    @Override
     public int getSizeInventory () {
         return 2;
     }
@@ -147,8 +144,13 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
     }
 
     @Override
-    public ITextComponent getName () {
-        return new StringTextComponent("bank");
+    public Direction[] getConnectedDirections () {
+        return Direction.values();
+    }
+
+    @Override
+    public ITextComponent getDefaultName () {
+        return new StringTextComponent("Bank");
     }
 
     @Override
@@ -159,13 +161,6 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
     @Override
     @OnlyIn(Dist.CLIENT)
     public ContainerScreen getTileGuiContainer (int windowId, PlayerInventory playerInv) {
-        return new ScreenBank(getTileContainer(windowId, playerInv), playerInv, getDisplayName());
-    }
-
-
-
-    @Override
-    public ITextComponent getDefaultName () {
-        return new StringTextComponent("Bank");
+        return new ScreenBank(getTileContainer(windowId, playerInv), playerInv, getDefaultName());
     }
 }

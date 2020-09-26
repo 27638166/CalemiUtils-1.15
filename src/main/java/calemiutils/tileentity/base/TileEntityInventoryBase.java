@@ -1,5 +1,6 @@
 package calemiutils.tileentity.base;
 
+import calemiutils.util.helper.LogHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -16,7 +17,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -49,13 +49,13 @@ public abstract class TileEntityInventoryBase extends TileEntityBase implements 
         this.customName = name;
     }
 
-    public ITextComponent getName() {
+    public ITextComponent getCurrentName () {
         return customName != null ? customName : getDefaultName();
     }
 
     @Override
     public ITextComponent getDisplayName() {
-        return getName();
+        return getCurrentName();
     }
 
     @Override

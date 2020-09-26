@@ -10,7 +10,11 @@ import net.minecraft.item.Item;
  */
 public class BlockItemBase extends BlockItem {
 
+    public BlockItemBase (Block block, boolean onCreativeTab) {
+        super(block, onCreativeTab ? new Item.Properties().group(CalemiUtils.TAB) : new Item.Properties());
+    }
+
     public BlockItemBase (Block block) {
-        super(block, new Item.Properties().group(CalemiUtils.TAB));
+        this(block, true);
     }
 }

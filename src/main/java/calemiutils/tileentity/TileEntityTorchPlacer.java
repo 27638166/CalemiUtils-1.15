@@ -135,6 +135,11 @@ public class TileEntityTorchPlacer extends TileEntityUpgradable {
     }
 
     @Override
+    public ITextComponent getDefaultName () {
+        return new StringTextComponent("Torch Placer");
+    }
+
+    @Override
     public Container getTileContainer (int windowId, PlayerInventory playerInv) {
         return new ContainerTorchPlacer(windowId, playerInv, this);
     }
@@ -142,11 +147,6 @@ public class TileEntityTorchPlacer extends TileEntityUpgradable {
     @Override
     @OnlyIn(Dist.CLIENT)
     public ContainerScreen getTileGuiContainer (int windowId, PlayerInventory playerInv) {
-        return new ScreenTorchPlacer(getTileContainer(windowId, playerInv), playerInv, getDisplayName());
-    }
-
-    @Override
-    public ITextComponent getDefaultName () {
-        return new StringTextComponent("Torch Placer");
+        return new ScreenTorchPlacer(getTileContainer(windowId, playerInv), playerInv, getDefaultName());
     }
 }

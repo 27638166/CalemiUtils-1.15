@@ -8,13 +8,11 @@ import calemiutils.inventory.ContainerTradingPost;
 import calemiutils.packet.PacketTradingPost;
 import calemiutils.tileentity.TileEntityTradingPost;
 import calemiutils.tileentity.base.ICurrencyNetworkBank;
-import calemiutils.util.helper.ItemHelper;
-import calemiutils.util.helper.ScreenHelper;
-import calemiutils.util.helper.ShiftHelper;
-import calemiutils.util.helper.StringHelper;
+import calemiutils.util.helper.*;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -119,14 +117,14 @@ public class ScreenTradingPost extends ContainerScreenBase<ContainerTradingPost>
     }
 
     private void changeAmount (int change) {
-        tePost.amountForSale += change;
-        int value = tePost.amountForSale;
+        int value = MathHelper.clamp(tePost.amountForSale + change, 1, 64);
+        tePost.amountForSale = value;
         CalemiUtils.network.sendToServer(new PacketTradingPost("syncoptions", tePost.getPos(), value, tePost.salePrice));
     }
 
     private void changePrice (int change) {
-        tePost.salePrice += change;
-        int value = tePost.salePrice;
+        int value = MathHelper.clamp(tePost.salePrice + change, 0, 9999);
+        tePost.salePrice = value;
         CalemiUtils.network.sendToServer(new PacketTradingPost("syncoptions", tePost.getPos(), tePost.amountForSale, value));
     }
 
@@ -151,7 +149,7 @@ public class ScreenTradingPost extends ContainerScreenBase<ContainerTradingPost>
         ItemStack stack = new ItemStack(playerInventory.getItemStack().getItem(), 1);
         if (playerInventory.getItemStack().hasTag()) stack.setTag(playerInventory.getItemStack().getTag());
 
-        CalemiUtils.network.sendToServer(new PacketTradingPost("syncstack", tePost.getPos(), ItemHelper.getStringFromStack(stack)));
+        CalemiUtils.network.sendToServer(new PacketTradingPost("syncstack", tePost.getPos(), ItemHelper.getStringFromStack(stack), stack.hasTag() ? stack.getTag().toString() : ""));
         tePost.setStackForSale(stack);
         fakeSlot.setItemStack(stack);
     }

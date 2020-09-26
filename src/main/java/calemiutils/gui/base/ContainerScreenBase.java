@@ -251,7 +251,13 @@ public abstract class ContainerScreenBase<T extends ContainerBase> extends Conta
 
         drawGuiBackground(mouseX, mouseY);
 
-        ScreenHelper.drawCenteredString(getTitle().getFormattedText(), getScreenX() + getGuiSizeX() / 2, getScreenY() + 6, 5, TEXT_COLOR);
+        String name = getTitle().getFormattedText();
+
+        if (getTileEntity() != null) {
+            name = getTileEntity().getDisplayName().getFormattedText();
+        }
+
+        ScreenHelper.drawCenteredString(name, getScreenX() + getGuiSizeX() / 2, getScreenY() + 6, 5, TEXT_COLOR);
     }
 
     protected abstract String getGuiTextureName ();

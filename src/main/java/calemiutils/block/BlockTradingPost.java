@@ -107,7 +107,7 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
     }
 
     /**
-     * Handles the trading system.
+     * Handles the trading system. Decides if the trade is valid and if it is a sell or a purchase.
      */
     private void handleTrade (UnitChatMessage message, World world, PlayerEntity player, TileEntityTradingPost tePost) {
 

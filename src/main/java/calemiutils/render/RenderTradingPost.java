@@ -61,6 +61,8 @@ public class RenderTradingPost extends TileEntityRenderer<TileEntityTradingPost>
 
             //Pop
             matrixStack.func_227865_b_();
+
+
         }
     }
 
