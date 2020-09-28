@@ -32,7 +32,7 @@ public class ItemHelper {
             return "null";
         }
 
-        return Item.getIdFromItem(stack.getItem()) + "&" + stack.getCount() + "&" + stack.getDamage();
+        return Item.getIdFromItem(stack.getItem()) + "&" + stack.getCount();
     }
 
     public static String getNBTFromStack (ItemStack stack) {
@@ -50,16 +50,12 @@ public class ItemHelper {
 
             String[] data = string.split("&");
 
-            if (data.length == 3) {
+            if (data.length == 2) {
 
                 int itemId = Integer.parseInt(data[0]);
                 int stackSize = Integer.parseInt(data[1]);
-                int meta = Integer.parseInt(data[2]);
 
-                ItemStack stack = new ItemStack(Item.getItemById(itemId), stackSize);
-                stack.setDamage(meta);
-
-                return stack;
+                return new ItemStack(Item.getItemById(itemId), stackSize);
             }
         }
 

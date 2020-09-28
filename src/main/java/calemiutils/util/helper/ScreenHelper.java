@@ -28,35 +28,38 @@ public class ScreenHelper {
 
         if (rect.contains(mouseX, mouseY)) {
 
-            GL11.glPushMatrix();
-            GL11.glTranslatef(0, 0, zLevel);
-
-            int maxLength = mc.fontRenderer.getStringWidth(text[0]);
-
-            for (String str : text) {
-
-                if (mc.fontRenderer.getStringWidth(str) > maxLength) {
-                    maxLength = mc.fontRenderer.getStringWidth(str);
-                }
-            }
-
-            bindGuiTextures();
-            drawCappedRect(mouseX + 7, mouseY - 13, 0, 138, 0, maxLength + 5, 13 + ((text.length - 1) * 9), 256, 102);
-
-            for (int i = 0; i < text.length; i++) {
-
-                String str = text[i];
-
-                GL11.glTranslatef(0, 0, 100);
-                mc.fontRenderer.drawString(ChatFormatting.WHITE + str, (mouseX + 10), (mouseY - 10) + (i * 9), 0xFFFFFF);
-            }
-
-            GL11.glTranslatef(0, 0, 0);
-
-            GL11.glPopMatrix();
-
-            GL11.glColor4f(1, 1, 1, 1);
+            drawTextBox(mouseX, mouseY, zLevel, text);
         }
+    }
+
+    public static void drawTextBox (int x, int y, int zLevel, String... text) {
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef(0, 0, zLevel);
+
+        int maxLength = mc.fontRenderer.getStringWidth(text[0]);
+
+        for (String str : text) {
+
+            if (mc.fontRenderer.getStringWidth(str) > maxLength) {
+                maxLength = mc.fontRenderer.getStringWidth(str);
+            }
+        }
+
+        bindGuiTextures();
+        drawCappedRect(x + 7, y - 13, 0, 138, 0, maxLength + 5, 13 + ((text.length - 1) * 9), 256, 102);
+
+        for (int i = 0; i < text.length; i++) {
+
+            String str = text[i];
+
+            GL11.glTranslatef(0, 0, 100);
+            mc.fontRenderer.drawString(ChatFormatting.WHITE + str, (x + 10), (y - 10) + (i * 9), 0xFFFFFF);
+        }
+
+        GL11.glTranslatef(0, 0, 0);
+        GL11.glPopMatrix();
+        GL11.glColor4f(1, 1, 1, 1);
     }
 
     /*public static void drawOneLineHoveringTextBox(String text, int mouseX, int mouseY, GuiRect rect) {

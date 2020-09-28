@@ -5,6 +5,7 @@ import calemiutils.gui.ScreenLinkBook;
 import calemiutils.item.base.ItemBase;
 import calemiutils.tileentity.TileEntityBookStand;
 import calemiutils.tileentity.base.TileEntityBase;
+import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
 import calemiutils.util.helper.EntityHelper;
@@ -146,9 +147,11 @@ public class ItemLinkBookLocation extends ItemBase {
 
         if (location.getTileEntity() != null && location.getTileEntity() instanceof TileEntityBookStand) {
 
+            TileEntityBookStand inv = (TileEntityBookStand) location.getTileEntity();
+
             //Insert the Link Book into the Book Stand if possible
-            if (InventoryHelper.insertHeldItemIntoSlot(player, hand, location, location.getIInventory(), 0, true)) {
-                ((TileEntityBase) location.getTileEntity()).markForUpdate();
+            if (InventoryHelper.insertHeldItemIntoSlot(player, hand, location, inv.getInventory(), 0, true)) {
+                inv.markForUpdate();
                 return ActionResultType.SUCCESS;
             }
 

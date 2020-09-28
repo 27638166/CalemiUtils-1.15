@@ -145,7 +145,6 @@ public class ItemSledgehammer extends PickaxeItem {
 
     @Override
     public boolean hasEffect (ItemStack stack) {
-
         return this == InitItems.SLEDGEHAMMER_STARLIGHT.get() || stack.isEnchanted();
     }
 
@@ -199,11 +198,20 @@ public class ItemSledgehammer extends PickaxeItem {
 
             if (canBreakBlock(nextLocation)) {
                 nextLocation.breakBlock(player, heldStack);
-                heldStack.damageItem(1, player, (p_220038_0_) -> {
-                });
+                if (heldStack.getItem() != InitItems.SLEDGEHAMMER_STARLIGHT.get()) heldStack.damageItem(1, player, (i) -> i.sendBreakAnimation(EquipmentSlotType.MAINHAND));
                 damage++;
             }
         }
+    }
+
+    @Override
+    public boolean onBlockDestroyed (ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity entityLiving) {
+
+        if (!world.isRemote && state.getBlockHardness(world, pos) != 0.0F) {
+            if (stack.getItem() != InitItems.SLEDGEHAMMER_STARLIGHT.get()) stack.damageItem(1, entityLiving, (i) -> i.sendBreakAnimation(EquipmentSlotType.MAINHAND));
+        }
+
+        return true;
     }
 
     private boolean canBreakBlock (Location location) {

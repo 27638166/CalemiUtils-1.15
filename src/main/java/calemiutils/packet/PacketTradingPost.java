@@ -3,6 +3,7 @@ package calemiutils.packet;
 import calemiutils.tileentity.TileEntityTradingPost;
 import calemiutils.util.Location;
 import calemiutils.util.helper.ItemHelper;
+import calemiutils.util.helper.LogHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;

@@ -12,6 +12,7 @@ import calemiutils.tileentity.base.ICurrencyNetworkUnit;
 import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.util.Location;
 import calemiutils.util.VeinScan;
+import calemiutils.util.helper.LogHelper;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -107,8 +108,8 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
     }
 
     public void addCurrency (int amount) {
-        markForUpdate();
         setCurrency(storedCurrency + amount);
+        markForUpdate();
     }
 
     @Override
@@ -136,6 +137,7 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
         }
 
         storedCurrency = setAmount;
+        markForUpdate();
     }
 
     @Override

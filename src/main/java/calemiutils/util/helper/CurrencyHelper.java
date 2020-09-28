@@ -33,53 +33,6 @@ public class CurrencyHelper {
         return ItemStack.EMPTY;
     }
 
-    @SuppressWarnings("SameReturnValue")
-    public static List<ItemStack> checkForActiveWallets (PlayerEntity player) {
-
-        List<ItemStack> walletList = new ArrayList<>();
-
-        /*if (Loader.isModLoaded("baubles")) {
-
-            IBaublesItemHandler container = BaublesApi.getBaublesHandler(player);
-
-            for (int i = 0; i < container.getSlots(); i++) {
-
-                ItemStack stack = container.getStackInSlot(i);
-
-                if (stack.getItem() instanceof ItemWallet) {
-
-                    if (ItemWallet.isActive(stack)) {
-                        walletList.add(stack);
-                    }
-                }
-            }
-        }
-
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-
-            ItemStack stack = player.inventory.getStackInSlot(i);
-
-            if (stack.getItem() instanceof ItemWallet) {
-
-                if (ItemWallet.isActive(stack)) {
-                    walletList.add(stack);
-                }
-            }
-        }
-
-        if (walletList.size() > 1) {
-
-            for (ItemStack stack : walletList) {
-                ItemHelper.getNBT(stack).setBoolean("active", false);
-                System.out.println("Set Inactive");
-            }
-        }
-
-        return walletList;*/
-
-        return null;
-    }
-
     private static void addWallet (List<ItemStack> walletList, ItemStack stackToAdd) {
 
         for (ItemStack stackInList : walletList) {

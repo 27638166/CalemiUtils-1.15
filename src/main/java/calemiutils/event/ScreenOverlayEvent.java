@@ -3,17 +3,29 @@ package calemiutils.event;
 import calemiutils.CUConfig;
 import calemiutils.item.ItemSledgehammer;
 import calemiutils.item.ItemWallet;
+import calemiutils.tileentity.TileEntityTradingPost;
+import calemiutils.util.Location;
 import calemiutils.util.helper.CurrencyHelper;
 import calemiutils.util.helper.MathHelper;
 import calemiutils.util.helper.ScreenHelper;
 import calemiutils.util.helper.StringHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.util.List;
 
 public class ScreenOverlayEvent {
 
@@ -22,6 +34,7 @@ public class ScreenOverlayEvent {
     public void render (RenderGameOverlayEvent.Post event) {
 
         Minecraft mc = Minecraft.getInstance();
+        World world = mc.world;
 
         int scaledWidth = mc.func_228018_at_().getScaledWidth();
         int scaledHeight = mc.func_228018_at_().getScaledHeight();
@@ -35,6 +48,64 @@ public class ScreenOverlayEvent {
 
             ItemStack walletStack = CurrencyHelper.getCurrentWalletStack(player);
             ItemStack activeItemStack = player.getActiveItemStack();
+
+            //Render Trading Post Info
+            if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
+
+                Vec3d posVec = new Vec3d(player.getPositionVector().x, player.getPositionVector().y + player.getEyeHeight(), player.getPositionVector().z);
+
+                Vec3d lookVec = player.getLookVec();
+                Direction dir = Direction.getFacingFromVector(lookVec.x, lookVec.y, lookVec.z);
+
+                BlockRayTraceResult trace = world.rayTraceBlocks(new RayTraceContext(posVec, posVec.add(lookVec.scale(5)), RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, player));
+                ItemUseContext itemUseContext = new ItemUseContext(player, Hand.MAIN_HAND, trace);
+                BlockItemUseContext blockUseContext = new BlockItemUseContext(itemUseContext);
+
+                if (trace.getType() == RayTraceResult.Type.BLOCK) {
+
+                    BlockPos pos = blockUseContext.getPos();
+                    Location locationOffset = new Location(world, pos);
+                    player.spawnSweepParticles();
+
+                    BlockPos difference = locationOffset.getBlockPos().subtract(itemUseContext.getPos());
+                    Direction blockSide = Direction.getFacingFromVector(difference.getX(), difference.getY(), difference.getZ());
+
+                    Location locationReal = locationOffset.translate(blockSide.getOpposite(), 1);
+
+                    if (locationReal.getTileEntity() != null && locationReal.getTileEntity() instanceof TileEntityTradingPost) {
+
+                        TileEntityTradingPost post = (TileEntityTradingPost) locationReal.getTileEntity();
+
+                        if (post.hasValidTradeOffer) {
+
+                            ItemStack stack = post.getStackForSale();
+
+                            String postName = post.getSecurityProfile().getOwnerName() + "'s Trading Post";
+
+                            if (post.adminMode) {
+                                postName = "Admin Post";
+                            }
+
+                            String str = (post.buyMode ? "Buying " : "Selling ") + StringHelper.printCommas(post.amountForSale) + "x " + post.getStackForSale().getDisplayName().getFormattedText() + " for " + (post.salePrice > 0 ? (StringHelper.printCurrency(post.salePrice)) : "free");
+
+                            List<ITextComponent> lore = post.getStackForSale().getTooltip(Minecraft.getInstance().player, ITooltipFlag.TooltipFlags.NORMAL);
+
+                            int boxWidth = mc.fontRenderer.getStringWidth(str) + 5;
+                            int boxHeight = 23;
+
+                            if (lore.size() == 2) boxHeight += 11;
+
+                            ScreenHelper.bindGuiTextures();
+                            ScreenHelper.drawCappedRect(midX - boxWidth / 2, midY + 12, 0, 138, 0, boxWidth, boxHeight, 256, 102);
+
+                            ScreenHelper.drawCenteredString(postName, midX, midY + 15, 5, 0xFFFFFFFF);
+                            ScreenHelper.drawCenteredString(str, midX, midY + 15 + 10, 5, 0xFFFFFFFF);
+
+                            if (lore.size() == 2) ScreenHelper.drawCenteredString(lore.get(1).getFormattedText(), midX, midY + 15 + 20, 5, 0xFFFFFFFF);
+                        }
+                    }
+                }
+            }
 
             //Renders the Wallet info.
             if (CUConfig.wallet.walletOverlay.get() && !walletStack.isEmpty() && mc.currentScreen == null) {

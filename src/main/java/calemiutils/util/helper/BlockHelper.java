@@ -18,7 +18,7 @@ public class BlockHelper {
 
         ItemStack currentStack = player.getHeldItemMainhand();
 
-        if (currentStack.getItem() == Item.getItemFromBlock(block)) {// || currentStack.getItem() instanceof ItemBuildersKit) {
+        if (currentStack.getItem() == Item.getItemFromBlock(block)) {
 
             int face = MathHelper.floor((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
 
@@ -55,7 +55,7 @@ public class BlockHelper {
 
         ItemStack currentStack = player.getHeldItemMainhand();
 
-        if (currentStack.getItem() == Item.getItemFromBlock(block)) {// || currentStack.getItem() instanceof ItemBuildersKit) {
+        if (currentStack.getItem() == Item.getItemFromBlock(block)) {
 
             for (int i = 0; i < 64; i++) {
 

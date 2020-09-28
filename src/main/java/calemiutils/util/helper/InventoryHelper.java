@@ -93,16 +93,16 @@ public class InventoryHelper {
         }
     }
 
-    public static boolean insertHeldItemIntoSlot (PlayerEntity player, Hand hand, Location location, IInventory inventory, int slot, boolean removeStack) {
+    public static boolean insertHeldItemIntoSlot (PlayerEntity player, Hand hand, Location location, CUItemHandler inventory, int slot, boolean removeStack) {
 
         ItemStack stack = player.getHeldItem(hand);
         TileEntity te = location.getTileEntity();
 
-        if (inventory.getSizeInventory() > slot) {
+        if (inventory.getSlots() > slot) {
 
             if (!stack.isEmpty() && inventory.getStackInSlot(slot).isEmpty()) {
 
-                inventory.setInventorySlotContents(slot, stack.copy());
+                inventory.setStackInSlot(slot, stack.copy());
 
                 if (removeStack) {
                     player.setHeldItem(hand, ItemStack.EMPTY);
