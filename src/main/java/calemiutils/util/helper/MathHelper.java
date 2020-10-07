@@ -18,30 +18,23 @@ public class MathHelper {
     public static int getAmountToAdd (int startingValue, int amountToAdd, int maxAmount) {
 
         if (startingValue + amountToAdd > maxAmount) {
-
             return 0;
         }
 
-        else {
-            return amountToAdd;
-        }
+        return amountToAdd;
     }
 
-    public static int getRemainder (int startingValue, int amountToAdd, int maxAmount) {
+    public static int getAmountToFill (int startingValue, int amountToAdd, int maxAmount) {
 
         if (startingValue + amountToAdd > maxAmount) {
             return maxAmount - startingValue;
         }
 
-        else {
-            return 0;
-        }
+        return 0;
     }
 
     public static int scaleInt (int value, int maxValue, int maxScale) {
-
         float f = value * (float) maxScale / maxValue;
-
         return (int) f;
     }
 }

@@ -34,6 +34,9 @@ public class ItemSecurityWrench extends ItemBase {
         LoreHelper.addControlsLore(tooltipList, "Pick up secured blocks", LoreHelper.Type.SNEAK_USE);
     }
 
+    /**
+     * Handles calling the Wrench event.
+     */
     @Override
     public ActionResultType onItemUseFirst (ItemStack stack, ItemUseContext context) {
 
@@ -41,23 +44,29 @@ public class ItemSecurityWrench extends ItemBase {
 
         Location location = new Location(context.getWorld(), context.getPos());
 
-        if (player != null && player.isCrouching() && location.getTileEntity() != null && location.getTileEntity() instanceof TileEntityBase) {
+        //Checks if the Player exists.
+        if (player != null && player.isCrouching()) {
 
-            if (location.getTileEntity() instanceof ISecurity) {
+            //Checks if the Tile Entity exists and if its a the mod's Tile Entity
+            if (location.getTileEntity() != null && location.getTileEntity() instanceof TileEntityBase) {
 
-                ISecurity security = (ISecurity) location.getTileEntity();
+                //Checks if the Tile Entity has security
+                if (location.getTileEntity() instanceof ISecurity) {
 
-                if (security.getSecurityProfile().isOwner(player.getName().getFormattedText()) || player.isCreative() || !CUConfig.misc.useSecurity.get()) {
+                    ISecurity security = (ISecurity) location.getTileEntity();
 
-                    WrenchEvent.onBlockWrenched(context.getWorld(), location);
-                    return ActionResultType.SUCCESS;
+                    //Checks if the Player is the owner of the secured block. Bypassed by creative mode or config option.
+                    if (security.getSecurityProfile().isOwner(player.getName().getFormattedText()) || player.isCreative() || !CUConfig.misc.useSecurity.get()) {
+
+                        WrenchEvent.onBlockWrenched(context.getWorld(), location);
+                        return ActionResultType.SUCCESS;
+                    }
+
+                    else SecurityHelper.printErrorMessage(location, player);
                 }
 
-                else SecurityHelper.printErrorMessage(location, player);
-            }
-
-            else {
-                WrenchEvent.onBlockWrenched(context.getWorld(), location);
+                //If the Tile Entity has no security, call the event.
+                else WrenchEvent.onBlockWrenched(context.getWorld(), location);
             }
         }
 

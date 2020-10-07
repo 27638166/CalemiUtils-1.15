@@ -12,7 +12,6 @@ import calemiutils.tileentity.base.ICurrencyNetworkUnit;
 import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.util.Location;
 import calemiutils.util.VeinScan;
-import calemiutils.util.helper.LogHelper;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -28,7 +27,7 @@ import java.util.List;
 public class TileEntityBank extends TileEntityInventoryBase implements ICurrencyNetworkBank, ISecurity {
 
     private final SecurityProfile profile = new SecurityProfile();
-    public List<Location> connectedUnits = new ArrayList<>();
+    public final List<Location> connectedUnits = new ArrayList<>();
     public int storedCurrency = 0;
     private VeinScan scan;
 

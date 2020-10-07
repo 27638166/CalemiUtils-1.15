@@ -2,7 +2,6 @@ package calemiutils.event;
 
 import calemiutils.init.InitItems;
 import calemiutils.item.base.ItemPencilColored;
-import calemiutils.util.helper.LogHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -12,6 +11,9 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class ColorEvent {
 
+    /**
+     * Registers the coloring of the Pencil.
+     */
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public static void onColorRegister(final ColorHandlerEvent.Item event) {

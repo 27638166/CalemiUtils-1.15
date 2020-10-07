@@ -6,6 +6,7 @@ import calemiutils.item.base.ItemBase;
 import calemiutils.util.Location;
 import calemiutils.util.VeinScan;
 import calemiutils.util.helper.LoreHelper;
+import calemiutils.util.helper.SoundHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,6 +34,9 @@ public class ItemEraser extends ItemBase {
         LoreHelper.addControlsLore(tooltipList, "Erases all connected Blueprint", LoreHelper.Type.SNEAK_USE);
     }
 
+    /**
+     * Handles erasing.
+     */
     @Override
     public ActionResultType onItemUse (ItemUseContext context) {
 
@@ -42,21 +46,28 @@ public class ItemEraser extends ItemBase {
 
         Location location = new Location(world, pos);
 
+        //Checks if the Player exists.
         if (player != null) {
 
+            //Checks if the block clicked is a Blueprint.
             if (location.getBlock() instanceof BlockBlueprint) {
 
+                SoundHelper.playSlime(world, player, location);
+
+                //If the Player is not crouching, remove only one Blueprint.
                 if (!player.isCrouching()) {
                     location.setBlockToAir();
                 }
 
+                //If the Player is crouching, remove multiple Blueprints.
                 else {
 
-                    VeinScan scan = new VeinScan(location, location.getBlockState());
+                    //Starts a scan of all connected Blueprint.
+                    VeinScan scan = new VeinScan(location, location.getForgeBlockState());
                     scan.startScan();
 
+                    //Iterates through all scanned Blueprints and removes them.
                     for (Location nextLocation : scan.buffer) {
-
                         nextLocation.setBlockToAir();
                     }
                 }
@@ -68,6 +79,9 @@ public class ItemEraser extends ItemBase {
         return ActionResultType.FAIL;
     }
 
+    /**
+     * Used to increase the mining speed on Blueprint.
+     */
     @Override
     public float getDestroySpeed (ItemStack stack, BlockState state) {
 

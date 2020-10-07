@@ -30,7 +30,17 @@ public class CUCommandBase {
      */
     public static void register (CommandDispatcher<CommandSource> dispatcher) {
 
-        dispatcher.register(LiteralArgumentBuilder.<CommandSource>literal("cu").requires(commandSource -> true).then(help()).then(reload()).then(brushWithHollow("fill")).then(recolor()).then(brush("walls")).then(brushCircular("circle")).then(brushCircular("cylinder")).then(brushCircular("sphere")).then(brushWithHollow("pyramid")));
+        dispatcher.register(LiteralArgumentBuilder.<CommandSource>literal("cu")
+                .requires(commandSource -> true)
+                .then(help())
+                .then(reload())
+                .then(brushWithHollow("fill"))
+                .then(recolor())
+                .then(brush("walls"))
+                .then(brushCircular("circle"))
+                .then(brushCircular("cylinder"))
+                .then(brushCircular("sphere"))
+                .then(brushWithHollow("pyramid")));
     }
 
     /**
@@ -68,14 +78,22 @@ public class CUCommandBase {
      * The Brush commands that have a "hollow" argument.
      */
     private static ArgumentBuilder<CommandSource, ?> brushWithHollow (String shape) {
-        return Commands.literal(shape).executes(ctx -> 0).then(Commands.argument("color", new DyeColorArgument()).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, false, 1)).then(Commands.literal("hollow").executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, true, 1))));
+        return Commands.literal(shape).executes(ctx -> 0)
+                .then(Commands.argument("color", DyeColorArgument.color())
+                        .executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, false, 1))
+                        .then(Commands.literal("hollow")
+                                .executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, true, 1))));
     }
 
     /**
      * The recolor command.
      */
     private static ArgumentBuilder<CommandSource, ?> recolor () {
-        return Commands.literal("recolor").executes(ctx -> 0).then(Commands.argument("color1", new DyeColorArgument()).executes(ctx -> 0).then(Commands.argument("color2", new DyeColorArgument()).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), "recolor", DyeColorArgument.getColor(ctx, "color1"), DyeColorArgument.getColor(ctx, "color2"), false, 1))));
+        return Commands.literal("recolor")
+                .executes(ctx -> 0).then(Commands.argument("color1", DyeColorArgument.color())
+                        .executes(ctx -> 0)
+                        .then(Commands.argument("color2", DyeColorArgument.color())
+                                .executes(ctx -> executeBrush(ctx.getSource().asPlayer(), "recolor", DyeColorArgument.getColor(ctx, "color1"), DyeColorArgument.getColor(ctx, "color2"), false, 1))));
     }
 
     /**
@@ -83,19 +101,26 @@ public class CUCommandBase {
      */
     @SuppressWarnings("SameParameterValue")
     private static ArgumentBuilder<CommandSource, ?> brush (String shape) {
-        return Commands.literal(shape).executes(ctx -> 0).then(Commands.argument("color", new DyeColorArgument()).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, false, 1)));
+        return Commands.literal(shape)
+                .executes(ctx -> 0)
+                .then(Commands.argument("color", DyeColorArgument.color())
+                        .executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, false, 1)));
     }
 
     /**
      * The circular Brush commands.
      */
     private static ArgumentBuilder<CommandSource, ?> brushCircular (String shape) {
-        return Commands.literal(shape).executes(ctx -> 0).then(Commands.argument("color", new DyeColorArgument()).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, false, 1)).then(Commands.literal("hollow").executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, true, 1)).then(Commands.argument("thickness", IntegerArgumentType.integer(1, 128)).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, true, IntegerArgumentType.getInteger(ctx, "thickness"))))));
+        return Commands.literal(shape)
+                .executes(ctx -> 0)
+                .then(Commands.argument("color", DyeColorArgument.color())
+                        .executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, false, 1))
+                        .then(Commands.literal("hollow")
+                                .executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, true, 1)).then(Commands.argument("thickness", IntegerArgumentType.integer(1, 128)).executes(ctx -> executeBrush(ctx.getSource().asPlayer(), shape, DyeColorArgument.getColor(ctx, "color"), null, true, IntegerArgumentType.getInteger(ctx, "thickness"))))));
     }
 
     /**
      * Handles all of the Brush commands.
-     *
      * @param shape     Used to determine what specific shape command was executed.
      * @param color1    Used to color the Blueprint placed.
      * @param color2    Used for the mask for the Blueprint to replace.

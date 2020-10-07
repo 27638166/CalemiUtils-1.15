@@ -4,16 +4,11 @@ import calemiutils.tileentity.base.ICurrencyNetworkBank;
 import calemiutils.tileentity.base.TileEntityBase;
 import calemiutils.util.Location;
 import calemiutils.util.helper.ItemHelper;
-import calemiutils.util.helper.LoreHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -26,14 +21,13 @@ public class WrenchEvent {
     public static void onBlockWrenched (World world, Location location) {
 
         TileEntity tileEntity = location.getTileEntity();
-
         ItemStack stack = new ItemStack(location.getBlock().asItem(), 1);
 
         if (!world.isRemote) {
             ItemHelper.spawnItem(world, location, stack);
         }
 
-        //Currency
+        //Handles currency saving.
         if (tileEntity instanceof ICurrencyNetworkBank) {
 
             ICurrencyNetworkBank currencyNetwork = (ICurrencyNetworkBank) tileEntity;
@@ -52,16 +46,17 @@ public class WrenchEvent {
     @SubscribeEvent
     public void onBlockPlace (BlockEvent.EntityPlaceEvent event) {
 
+        //Checks if the entity is a Player
         if (event.getEntity() instanceof PlayerEntity) {
 
             PlayerEntity player = (PlayerEntity) event.getEntity();
-
             TileEntity tileEntity = event.getWorld().getTileEntity(event.getPos());
             ItemStack stack = player.getHeldItem(player.getActiveHand());
 
-            if (!stack.isEmpty() && stack.getItem() instanceof BlockItem) {
+            //Checks if the held Item is a Block.
+            if (stack.getItem() instanceof BlockItem) {
 
-                //Currency
+                //Handles restoring currency.
                 if (tileEntity instanceof ICurrencyNetworkBank) {
 
                     ICurrencyNetworkBank currencyNetwork = (ICurrencyNetworkBank) tileEntity;

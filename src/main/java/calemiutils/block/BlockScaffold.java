@@ -52,36 +52,6 @@ public class BlockScaffold extends BlockBase {
         LoreHelper.addControlsLore(tooltip, "Place Scaffold downwards", LoreHelper.Type.SNEAK_LEFT_CLICK_BLOCK);
     }
 
-    @Override
-    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
-        return false;
-    }
-
-    @Override
-    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public boolean isSideInvisible (BlockState centerBlockState, BlockState otherStateBlock, Direction dir) {
-        return otherStateBlock.getBlock() == this || super.isSideInvisible(centerBlockState, otherStateBlock, dir);
-    }
-
-    /*
-        Methods for Blocks that are not full and solid cubes.
-     */
-
-    @Override
-    public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
-        return true;
-    }
-
     /**
      * This method functions the same as onBlockActivated().
      * This will handle the teleportation.
@@ -185,12 +155,6 @@ public class BlockScaffold extends BlockBase {
         }
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
-        return 1.0F;
-    }
-
     /**
      * Handles the Scaffold breaking system.
      */
@@ -235,5 +199,41 @@ public class BlockScaffold extends BlockBase {
                 ItemHelper.spawnItem(world, new Location(player), new ItemStack(InitItems.IRON_SCAFFOLD.get()));
             }
         }
+    }
+
+    /*
+        Methods for Blocks that are not full and solid cubes.
+     */
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean isSideInvisible (BlockState centerBlockState, BlockState otherStateBlock, Direction dir) {
+        return otherStateBlock.getBlock() == this || super.isSideInvisible(centerBlockState, otherStateBlock, dir);
+    }
+
+    @Override
+    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
+        return false;
+    }
+
+    @Override
+    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
+        return 1.0F;
     }
 }

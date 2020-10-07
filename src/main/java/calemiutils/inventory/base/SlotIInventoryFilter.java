@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * IInventory variant.
+ * This slot can prevent certain Items from being placed in it.
+ */
 public class SlotIInventoryFilter extends Slot {
 
     private final List<Item> itemFilters;

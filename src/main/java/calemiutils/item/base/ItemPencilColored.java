@@ -5,9 +5,10 @@ import calemiutils.item.ItemPencil;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
+/**
+ * Used by the Pencil to register its colors.
+ */
 public class ItemPencilColored implements IItemColor {
 
     @Override

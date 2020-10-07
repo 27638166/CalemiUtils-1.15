@@ -27,46 +27,9 @@ public class ScreenWallet extends ContainerScreenBase<ContainerWallet> {
         super(container, playerInventory, new StringTextComponent("Wallet"));
     }
 
-    @Override
-    protected void init () {
-        super.init();
-
-        for (int index = 0; index < 4; index++) {
-
-            int id = index;
-
-            addButton(new ButtonRect(getScreenX() + 146, getScreenY() + 15 + (index * 18), 16, "+", (btn) -> addMoneyButton(id)));
-        }
-    }
-
-    private void addMoneyButton (int id) {
-
-        int price = ((ItemCurrency) InitItems.COIN_PENNY.get()).value;
-        if (id == 1) price = ((ItemCurrency) InitItems.COIN_NICKEL.get()).value;
-        else if (id == 2) price = ((ItemCurrency) InitItems.COIN_QUARTER.get()).value;
-        else if (id == 3) price = ((ItemCurrency) InitItems.COIN_DOLLAR.get()).value;
-
-        int multiplier = ShiftHelper.getShiftCtrlInt(1, 16, 64, 9 * 64);
-
-        price *= multiplier;
-
-        ItemStack walletStack = getCurrentWalletStack();
-
-        if (!walletStack.isEmpty()) {
-
-            ItemWallet walletItem = (ItemWallet) walletStack.getItem();
-
-            if (ItemWallet.getBalance(walletStack) >= price) {
-
-                CalemiUtils.network.sendToServer(new PacketWallet(id, multiplier));
-
-                CompoundNBT nbt = ItemHelper.getNBT(walletStack);
-
-                nbt.putInt("balance", nbt.getInt("balance") - price);
-            }
-        }
-    }
-
+    /**
+     * Gets the current Wallet Stack, returns empty if missing and closes the screen.
+     */
     private ItemStack getCurrentWalletStack () {
 
         ItemStack walletStack = CurrencyHelper.getCurrentWalletStack(player);
@@ -82,16 +45,54 @@ public class ScreenWallet extends ContainerScreenBase<ContainerWallet> {
     }
 
     @Override
+    protected void init () {
+        super.init();
+
+        for (int index = 0; index < 4; index++) {
+
+            int id = index;
+
+            addButton(new ButtonRect(getScreenX() + 146, getScreenY() + 15 + (index * 18), 16, "+", (btn) -> addMoney(id)));
+        }
+    }
+
+    /**
+     * Called when a "+" button is pressed.
+     * Adds money to the Player from the Wallet.
+     */
+    private void addMoney (int id) {
+
+        ItemStack walletStack = getCurrentWalletStack();
+
+        //Checks if there is a current Wallet.
+        if (!walletStack.isEmpty()) {
+
+            ItemWallet walletItem = (ItemWallet) walletStack.getItem();
+
+            int price = ((ItemCurrency) InitItems.COIN_PENNY.get()).value;
+            if (id == 1) price = ((ItemCurrency) InitItems.COIN_NICKEL.get()).value;
+            else if (id == 2) price = ((ItemCurrency) InitItems.COIN_QUARTER.get()).value;
+            else if (id == 3) price = ((ItemCurrency) InitItems.COIN_DOLLAR.get()).value;
+
+            int multiplier = ShiftHelper.getShiftCtrlInt(1, 16, 64, 9 * 64);
+            price *= multiplier;
+
+            //If the Wallet's balance can afford the requested amount, give it to the player and sync the current balance.
+            if (ItemWallet.getBalance(walletStack) >= price) {
+
+                CalemiUtils.network.sendToServer(new PacketWallet(id, multiplier));
+                CompoundNBT nbt = ItemHelper.getNBT(walletStack);
+                nbt.putInt("balance", nbt.getInt("balance") - price);
+            }
+        }
+    }
+
+    @Override
     public void drawGuiForeground (int mouseX, int mouseY) {
 
         GL11.glDisable(GL11.GL_LIGHTING);
         addInfoIcon(0);
-        addInfoIconText(mouseX, mouseY, "Button Click Info", "Shift: 16, Ctrl: 64, Shift + Ctrl: 64 * 9");
-    }
-
-    @Override
-    public String getGuiTextureName () {
-        return "wallet";
+        addInfoHoveringText(mouseX, mouseY, "Button Click Info", "Shift: 16, Ctrl: 64, Shift + Ctrl: 64 * 9");
     }
 
     @Override
@@ -108,8 +109,13 @@ public class ScreenWallet extends ContainerScreenBase<ContainerWallet> {
         ItemStack stack = getCurrentWalletStack();
 
         if (!stack.isEmpty()) {
-            ScreenHelper.drawCenteredString(StringHelper.printCommas(ItemHelper.getNBT(stack).getInt("balance")), getScreenX() + getGuiSizeX() / 2 - 16, getScreenY() + 42, 0, TEXT_COLOR);
-            ScreenHelper.drawCenteredString(CUConfig.economy.currencyName.get(), getScreenX() + getGuiSizeX() / 2 - 16, getScreenY() + 51, 0, TEXT_COLOR);
+            ScreenHelper.drawCenteredString(StringHelper.printCommas(ItemHelper.getNBT(stack).getInt("balance")), getScreenX() + getGuiSizeX() / 2 - 16, getScreenY() + 42, 0, TEXT_COLOR_GRAY);
+            ScreenHelper.drawCenteredString(CUConfig.economy.currencyName.get(), getScreenX() + getGuiSizeX() / 2 - 16, getScreenY() + 51, 0, TEXT_COLOR_GRAY);
         }
+    }
+
+    @Override
+    public String getGuiTextureName () {
+        return "wallet";
     }
 }

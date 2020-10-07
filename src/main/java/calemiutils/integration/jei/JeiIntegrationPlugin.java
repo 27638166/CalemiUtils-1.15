@@ -1,8 +1,7 @@
-package calemiutils.integration;
+package calemiutils.integration.jei;
 
 import calemiutils.CUReference;
 import calemiutils.gui.ScreenTorchPlacer;
-import calemiutils.gui.base.ScreenJEIHandler;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.IGuiHandlerRegistration;

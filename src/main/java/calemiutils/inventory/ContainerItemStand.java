@@ -4,7 +4,6 @@ import calemiutils.init.InitContainersTypes;
 import calemiutils.inventory.base.ContainerBase;
 import calemiutils.tileentity.TileEntityItemStand;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.items.SlotItemHandler;
 

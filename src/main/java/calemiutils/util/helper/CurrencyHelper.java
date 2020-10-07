@@ -1,12 +1,14 @@
 package calemiutils.util.helper;
 
 import calemiutils.CUConfig;
+import calemiutils.CalemiUtils;
+import calemiutils.init.InitItems;
 import calemiutils.item.ItemWallet;
 import calemiutils.tileentity.base.ICurrencyNetworkBank;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import top.theillusivec4.curios.api.CuriosAPI;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CurrencyHelper {
@@ -19,6 +21,13 @@ public class CurrencyHelper {
 
         if (player.getHeldItemOffhand().getItem() instanceof ItemWallet) {
             return player.getHeldItemOffhand();
+        }
+
+        if (CalemiUtils.curiosLoaded) {
+
+            if (CuriosAPI.getCurioEquipped(InitItems.WALLET.get(), player).isPresent()) {
+                return CuriosAPI.getCurioEquipped(InitItems.WALLET.get(), player).get().right;
+            }
         }
 
         for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
@@ -44,11 +53,9 @@ public class CurrencyHelper {
     }
 
     public static boolean canFitAddedCurrencyToNetwork (ICurrencyNetworkBank network, int addAmount) {
-
         return network.getStoredCurrency() + addAmount <= network.getMaxCurrency();
     }
 
-    @SuppressWarnings("SameReturnValue")
     public static boolean canFitAddedCurrencyToWallet (ItemStack walletStack, int addAmount) {
 
         if (walletStack.getItem() instanceof ItemWallet) {

@@ -23,6 +23,10 @@ public class FakeSlot extends Button {
     private final ItemRenderer itemRender;
     private ItemStack stack = new ItemStack(Items.AIR);
 
+    /**
+     * A fake slot. Can set its icon based on what Item is clicked into it.
+     * @param pressable Called when the button is pressed.
+     */
     public FakeSlot (int x, int y, ItemRenderer itemRender, Button.IPressable pressable) {
         super(x, y, 16, 16, "", pressable);
         rect = new ScreenRect(this.x, this.y, width, height);

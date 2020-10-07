@@ -44,10 +44,17 @@ public class ScreenTorchPlacer extends ContainerScreenBase<ContainerTorchPlacer>
         activateBtn = addButton(new ButtonRect(getScreenX() + (getGuiSizeX() / 2) - (btnWidth / 2), getScreenY() + 24, btnWidth, getEnabledText(), (btn) -> toggleActivate()));
     }
 
+    /**
+     * @return The Tile Entities current enable state.
+     */
     private String getEnabledText () {
         return getTileEntity().enable ? "Enabled" : "Disabled";
     }
 
+    /**
+     * Called when the activateBtn is pressed.
+     * Handles toggling activation.
+     */
     private void toggleActivate () {
 
         boolean value = !getTileEntity().enable;

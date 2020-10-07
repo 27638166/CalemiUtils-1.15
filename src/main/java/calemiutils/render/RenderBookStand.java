@@ -31,7 +31,7 @@ public class RenderBookStand extends TileEntityRenderer<TileEntityBookStand> {
             ItemStack bookStack = tileEntity.getInventory().getStackInSlot(0);
             Location location = tileEntity.getLocation();
 
-            Direction dir = location.getBlockState().getBlockState().get(BlockBookStand.FACING);
+            Direction dir = location.getForgeBlockState().getBlockState().get(BlockBookStand.FACING);
             int rotation = 0;
 
             switch (dir) {

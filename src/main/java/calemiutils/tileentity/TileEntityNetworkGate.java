@@ -48,7 +48,7 @@ public class TileEntityNetworkGate extends TileEntityNetworkCable implements INe
 
             BlockNetworkGate gate = (BlockNetworkGate) getLocation().getBlock();
 
-            if (getLocation().getBlockState().getBlockState().get(BlockNetworkGate.CONNECTED)) {
+            if (getLocation().getForgeBlockState().getBlockState().get(BlockNetworkGate.CONNECTED)) {
                 return Direction.values();
             }
         }

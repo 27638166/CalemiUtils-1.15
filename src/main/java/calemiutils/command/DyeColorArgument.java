@@ -19,8 +19,8 @@ public class DyeColorArgument implements ArgumentType<DyeColor> {
 
     private static final Collection<String> EXAMPLES = Arrays.asList("red", "green");
 
-    public DyeColorArgument () {
-
+    public static DyeColorArgument color() {
+        return new DyeColorArgument();
     }
 
     public static DyeColor getColor (CommandContext<CommandSource> context, String name) {

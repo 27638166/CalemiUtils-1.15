@@ -50,14 +50,14 @@ public class ScreenItemStandOptions extends GuiScreenBase {
                 convertFieldsToFloats();
                 clampAllOptions();
                 copyOptions();
-                syncOptions();
+                setAndSyncOptions();
             }));
 
             addButton(new ButtonRect(getScreenX() - 50 + 70 + 50, getScreenY() - 65, 40, "Paste", (btn) -> {
                 convertFieldsToFloats();
                 clampAllOptions();
                 pasteOptions();
-                syncOptions();
+                setAndSyncOptions();
             }));
 
             int xSpread = 45;
@@ -90,6 +90,20 @@ public class ScreenItemStandOptions extends GuiScreenBase {
         }
     }
 
+    /**
+     * Used to create a field with reduced code.
+     */
+    private TextFieldRect initField (float value, int x, int y) {
+        TextFieldRect field = new TextFieldRect(minecraft.fontRenderer, getScreenX() + x - 20, getScreenY() + y - 7, 40, 5, "" + value);
+        children.add(field);
+        fields.add(field);
+        return field;
+    }
+
+    /**
+     * Called when the Cycle Display button is pressed.
+     * Handles the cycling of the Block's state.
+     */
     private void cycleDisplay () {
         BlockState state = stand.getBlockState();
         int displayID = state.get(BlockItemStand.DISPLAY_ID) + 1;
@@ -98,6 +112,9 @@ public class ScreenItemStandOptions extends GuiScreenBase {
         CalemiUtils.network.sendToServer(new PacketItemStand("syncdisplay", stand.getPos(), displayID));
     }
 
+    /**
+     * Converts every field's text to a float. If the text contains a non-number, set it to 0.0.
+     */
     private void convertFieldsToFloats () {
 
         for (TextFieldRect field : fields) {
@@ -112,6 +129,10 @@ public class ScreenItemStandOptions extends GuiScreenBase {
         }
     }
 
+    /**
+     * Clamps every field's text to its respective minimums and maximums.
+     * WARNING: Make sure they are all converted to floats!
+     */
     private void clampAllOptions () {
 
         clampOption(transXField, -10, 10);
@@ -135,6 +156,19 @@ public class ScreenItemStandOptions extends GuiScreenBase {
         clampOption(pivotZField, -10, 10);
     }
 
+    /**
+     * Clamps a given text field to a minimum and maximum.
+     * WARNING: Make sure its converted to a float!
+     */
+    private void clampOption (TextFieldRect field, float min, float max) {
+
+        float value = Float.parseFloat(field.getText());
+        field.setText("" + MathHelper.clamp(value, min, max));
+    }
+
+    /**
+     * Copies all set options from every field to the client's clipboard.
+     */
     private void copyOptions () {
 
         StringBuilder str = new StringBuilder();
@@ -149,36 +183,9 @@ public class ScreenItemStandOptions extends GuiScreenBase {
         Minecraft.getInstance().keyboardListener.setClipboardString(str.toString());
     }
 
-    private void syncOptions () {
-
-        float transX = Float.parseFloat(transXField.getText());
-        float transY = Float.parseFloat(transYField.getText());
-        float transZ = Float.parseFloat(transZField.getText());
-
-        float rotX = Float.parseFloat(rotXField.getText());
-        float rotY = Float.parseFloat(rotYField.getText());
-        float rotZ = Float.parseFloat(rotZField.getText());
-
-        float spinX = Float.parseFloat(spinXField.getText());
-        float spinY = Float.parseFloat(spinYField.getText());
-        float spinZ = Float.parseFloat(spinZField.getText());
-
-        float scaleX = Float.parseFloat(scaleXField.getText());
-        float scaleY = Float.parseFloat(scaleYField.getText());
-        float scaleZ = Float.parseFloat(scaleZField.getText());
-
-        float pivotX = Float.parseFloat(pivotXField.getText());
-        float pivotY = Float.parseFloat(pivotYField.getText());
-        float pivotZ = Float.parseFloat(pivotZField.getText());
-
-        stand.translation = new Vector3f(transX, transY, transZ);
-        stand.rotation = new Vector3f(rotX, rotY, rotZ);
-        stand.spin = new Vector3f(spinX, spinY, spinZ);
-        stand.scale = new Vector3f(scaleX, scaleY, scaleZ);
-        stand.pivot = new Vector3f(pivotX, pivotY, pivotZ);
-        CalemiUtils.network.sendToServer(new PacketItemStand("syncoptions", stand.getPos(), stand.translation, stand.rotation, stand.spin, stand.scale, stand.pivot));
-    }
-
+    /**
+     * Pastes options to every field from the client's clipboard.
+     */
     private void pasteOptions () {
 
         UnitChatMessage unitMessage = new UnitChatMessage("Item Stand", Minecraft.getInstance().player);
@@ -214,37 +221,38 @@ public class ScreenItemStandOptions extends GuiScreenBase {
         }
     }
 
-    private TextFieldRect initField (float value, int x, int y) {
-        TextFieldRect field = new TextFieldRect(minecraft.fontRenderer, getScreenX() + x - 20, getScreenY() + y - 7, 40, 5, "" + value);
-        children.add(field);
-        fields.add(field);
-        return field;
-    }
+    /**
+     * Sets and syncs all set options to the Item Stand.
+     */
+    private void setAndSyncOptions () {
 
-    private void clampOption (TextFieldRect field, float min, float max) {
+        float transX = Float.parseFloat(transXField.getText());
+        float transY = Float.parseFloat(transYField.getText());
+        float transZ = Float.parseFloat(transZField.getText());
 
-        float value = Float.parseFloat(field.getText());
-        field.setText("" + MathHelper.clamp(value, min, max));
-    }
+        float rotX = Float.parseFloat(rotXField.getText());
+        float rotY = Float.parseFloat(rotYField.getText());
+        float rotZ = Float.parseFloat(rotZField.getText());
 
-    @Override
-    public boolean isPauseScreen () {
-        return false;
-    }
+        float spinX = Float.parseFloat(spinXField.getText());
+        float spinY = Float.parseFloat(spinYField.getText());
+        float spinZ = Float.parseFloat(spinZField.getText());
 
-    @Override
-    public String getGuiTextureName () {
-        return null;
-    }
+        float scaleX = Float.parseFloat(scaleXField.getText());
+        float scaleY = Float.parseFloat(scaleYField.getText());
+        float scaleZ = Float.parseFloat(scaleZField.getText());
 
-    @Override
-    public int getGuiSizeX () {
-        return 0;
-    }
+        float pivotX = Float.parseFloat(pivotXField.getText());
+        float pivotY = Float.parseFloat(pivotYField.getText());
+        float pivotZ = Float.parseFloat(pivotZField.getText());
 
-    @Override
-    public int getGuiSizeY () {
-        return 0;
+        stand.translation = new Vector3f(transX, transY, transZ);
+        stand.rotation = new Vector3f(rotX, rotY, rotZ);
+        stand.spin = new Vector3f(spinX, spinY, spinZ);
+        stand.scale = new Vector3f(scaleX, scaleY, scaleZ);
+        stand.pivot = new Vector3f(pivotX, pivotY, pivotZ);
+
+        CalemiUtils.network.sendToServer(new PacketItemStand("syncoptions", stand.getPos(), stand.translation, stand.rotation, stand.spin, stand.scale, stand.pivot));
     }
 
     @Override
@@ -267,17 +275,38 @@ public class ScreenItemStandOptions extends GuiScreenBase {
     @Override
     public boolean keyPressed (int id, int i2, int i3) {
 
+        //If the enter key is pressed, convert, clamp, and set all options.
         if (id == 257) {
             convertFieldsToFloats();
             clampAllOptions();
-            syncOptions();
+            setAndSyncOptions();
         }
 
         return super.keyPressed(id, i2, i3);
     }
 
     @Override
+    public int getGuiSizeX () {
+        return 0;
+    }
+
+    @Override
+    public int getGuiSizeY () {
+        return 0;
+    }
+
+    @Override
+    public String getGuiTextureName () {
+        return null;
+    }
+
+    @Override
     public boolean canCloseWithInvKey () {
         return true;
+    }
+
+    @Override
+    public boolean isPauseScreen () {
+        return false;
     }
 }

@@ -45,5 +45,7 @@
 
 
   "itemGroup.calemiutils.tabMain": "Calemi's Utils",
-  "enchantment.calemiutils.crushing": "Crushing"
+  "enchantment.calemiutils.crushing": "Crushing",
+
+  "curios.identifier.wallet" : "Wallet"
 }

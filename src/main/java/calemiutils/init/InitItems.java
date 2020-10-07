@@ -18,6 +18,11 @@ public class InitItems {
     public static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, CUReference.MOD_ID);
     public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, CUReference.MOD_ID);
 
+    public static void init () {
+        BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+    }
+
     //----- BLOCKS ------\\
 
     public static final RegistryObject<Block> RARITANIUM_ORE = BLOCKS.register("raritanium_ore", BlockRaritaniumOre::new);
@@ -72,7 +77,7 @@ public class InitItems {
     public static final RegistryObject<Item> KNOB_IRON = ITEMS.register("knob_iron", ItemBase::new);
     public static final RegistryObject<Item> KNOB_GOLD = ITEMS.register("knob_gold", ItemBase::new);
     public static final RegistryObject<Item> KNOB_DIAMOND = ITEMS.register("knob_diamond", ItemBase::new);
-    public static final RegistryObject<Item> KNOB_STARLIGHT = ITEMS.register("knob_starlight", ItemBase::new);
+    public static final RegistryObject<Item> KNOB_STARLIGHT = ITEMS.register("knob_starlight", () -> new ItemBase().setEffect());
 
     public static final RegistryObject<Item> SLEDGEHAMMER_WOOD = ITEMS.register("sledgehammer_wood", () -> new ItemSledgehammer(SledgehammerTiers.WOOD));
     public static final RegistryObject<Item> SLEDGEHAMMER_STONE = ITEMS.register("sledgehammer_stone", () -> new ItemSledgehammer(SledgehammerTiers.STONE));
@@ -93,9 +98,4 @@ public class InitItems {
     public static final RegistryObject<Item> RANGE_UPGRADE = ITEMS.register("range_upgrade", ItemUpgrade::new);
 
     public static final RegistryObject<Item> LINK_BOOK_LOCATION = ITEMS.register("link_book_location", ItemLinkBookLocation::new);
-
-    public static void init () {
-        BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
-    }
 }

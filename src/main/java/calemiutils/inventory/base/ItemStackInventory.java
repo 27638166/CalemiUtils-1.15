@@ -7,6 +7,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 
+/**
+ * The Tile Entity for Items.
+ */
 public class ItemStackInventory implements IInventory {
 
     public final NonNullList<ItemStack> slots;
@@ -38,30 +41,6 @@ public class ItemStackInventory implements IInventory {
     }
 
     @Override
-    public void clear () {
-        for (int i = 0; i < getSizeInventory(); i++) {
-            slots.set(i, ItemStack.EMPTY);
-        }
-    }
-
-    @Override
-    public int getSizeInventory () {
-        return slots.size();
-    }
-
-    @Override
-    public boolean isEmpty () {
-
-        for (ItemStack stack : slots) {
-            if (!stack.isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    @Override
     public ItemStack getStackInSlot (int slot) {
         return slots.get(slot);
     }
@@ -87,13 +66,6 @@ public class ItemStackInventory implements IInventory {
     }
 
     @Override
-    public ItemStack removeStackFromSlot (int index) {
-        ItemStack copy = getStackInSlot(index).copy();
-        setInventorySlotContents(index, ItemStack.EMPTY);
-        return copy;
-    }
-
-    @Override
     public void setInventorySlotContents (int slot, ItemStack stack) {
 
         this.slots.set(slot, stack);
@@ -104,13 +76,44 @@ public class ItemStackInventory implements IInventory {
     }
 
     @Override
+    public ItemStack removeStackFromSlot (int index) {
+        ItemStack copy = getStackInSlot(index).copy();
+        setInventorySlotContents(index, ItemStack.EMPTY);
+        return copy;
+    }
+
+    @Override
+    public boolean isEmpty () {
+
+        for (ItemStack stack : slots) {
+            if (!stack.isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public void clear () {
+        for (int i = 0; i < getSizeInventory(); i++) {
+            slots.set(i, ItemStack.EMPTY);
+        }
+    }
+
+    @Override
+    public int getSizeInventory () {
+        return slots.size();
+    }
+
+    @Override
     public int getInventoryStackLimit () {
         return 64;
     }
 
     @Override
-    public void markDirty () {
-
+    public boolean isItemValidForSlot (int index, ItemStack stack) {
+        return true;
     }
 
     @Override
@@ -119,17 +122,11 @@ public class ItemStackInventory implements IInventory {
     }
 
     @Override
-    public void openInventory (PlayerEntity player) {
-
-    }
+    public void markDirty () {}
 
     @Override
-    public void closeInventory (PlayerEntity player) {
-
-    }
+    public void openInventory (PlayerEntity player) {}
 
     @Override
-    public boolean isItemValidForSlot (int index, ItemStack stack) {
-        return true;
-    }
+    public void closeInventory (PlayerEntity player) {}
 }

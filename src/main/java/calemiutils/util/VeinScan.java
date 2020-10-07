@@ -66,7 +66,7 @@ public class VeinScan {
 
             if (state != null) {
 
-                if (location.getBlockState() != state) {
+                if (location.getForgeBlockState() != state) {
                     return;
                 }
             }

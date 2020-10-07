@@ -11,7 +11,6 @@ import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
 import calemiutils.util.helper.ItemHelper;
-import calemiutils.util.helper.LogHelper;
 import calemiutils.util.helper.NetworkHelper;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;

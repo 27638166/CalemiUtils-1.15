@@ -7,6 +7,7 @@ import calemiutils.tool.SledgehammerTiers;
 import calemiutils.util.Location;
 import calemiutils.util.VeinScan;
 import calemiutils.util.helper.LoreHelper;
+import calemiutils.util.helper.RayTraceHelper;
 import calemiutils.util.helper.WorldEditHelper;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
@@ -18,10 +19,13 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.PickaxeItem;
+import net.minecraft.item.UseAction;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeMod;
@@ -66,32 +70,27 @@ public class ItemSledgehammer extends PickaxeItem {
         }
     }
 
+    /**
+     * Handles charging.
+     */
     @Override
     public ActionResult<ItemStack> onItemRightClick (World world, PlayerEntity player, Hand hand) {
 
         ItemStack itemstack = player.getHeldItem(hand);
 
+        //If the off hand has an item and the Player is not crouching, prevent charging.
         if (hand == Hand.MAIN_HAND && !player.getHeldItemOffhand().isEmpty() && !player.isCrouching()) {
-
             return new ActionResult<>(ActionResultType.FAIL, itemstack);
         }
 
         chargeTime = Math.max(1, baseChargeTime - EnchantmentHelper.getEfficiencyModifier(player) * 3);
-
         player.setActiveHand(hand);
         return new ActionResult<>(ActionResultType.SUCCESS, itemstack);
     }
 
-    @Override
-    public UseAction getUseAction (ItemStack stack) {
-        return UseAction.BOW;
-    }
-
-    @Override
-    public int getUseDuration (ItemStack stack) {
-        return 72000;
-    }
-
+    /**
+     * Handles vein minding and excavation.
+     */
     @Override
     public void onPlayerStoppedUsing (ItemStack heldStack, World world, LivingEntity e, int timeLeft) {
 
@@ -99,88 +98,79 @@ public class ItemSledgehammer extends PickaxeItem {
 
         Hand hand = Hand.OFF_HAND;
 
+        //If the Sledgehammer is in the main hand, set the current hand to main.
         if (ItemStack.areItemStacksEqual(player.getHeldItemMainhand(), heldStack)) {
             hand = Hand.MAIN_HAND;
         }
 
+        //Checks if fully charged.
         if (getUseDuration(heldStack) - timeLeft >= chargeTime) {
 
             player.swingArm(hand);
 
-            Vec3d posVec = new Vec3d(player.getPositionVector().x, player.getPositionVector().y + player.getEyeHeight(), player.getPositionVector().z);
+            RayTraceHelper.BlockTrace blockTrace = RayTraceHelper.RayTraceBlock(world, player, hand);
 
-            Vec3d lookVec = player.getLookVec();
-            Direction dir = Direction.getFacingFromVector(lookVec.x, lookVec.y, lookVec.z);
+            //Checks if the ray trace hit a Block.
+            if (blockTrace != null) {
 
-            BlockRayTraceResult trace = world.rayTraceBlocks(new RayTraceContext(posVec, posVec.add(lookVec.scale(5)), RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, player));
-            ItemUseContext itemUseContext = new ItemUseContext(player, hand, trace);
-            BlockItemUseContext blockUseContext = new BlockItemUseContext(itemUseContext);
+                Location hit = blockTrace.getHit();
 
-            if (trace.getType() == RayTraceResult.Type.BLOCK) {
-
-                BlockPos pos = blockUseContext.getPos();
-                Location locationOffset = new Location(world, pos);
-                player.spawnSweepParticles();
-
-                BlockPos difference = locationOffset.getBlockPos().subtract(itemUseContext.getPos());
-                Direction blockSide = Direction.getFacingFromVector(difference.getX(), difference.getY(), difference.getZ());
-
-                Location locationReal = locationOffset.translate(blockSide.getOpposite(), 1);
-
-                if (Objects.requireNonNull(ItemTags.getCollection().get(oreTags)).contains(locationReal.getBlock().asItem())) {
-
-                    veinMine(heldStack, player, locationReal);
+                //If the Block hit was an ore, vein mine.
+                if (Objects.requireNonNull(ItemTags.getCollection().get(oreTags)).contains(hit.getBlock().asItem())) {
+                    veinMine(heldStack, player, hit);
                     return;
                 }
 
-                if (Objects.requireNonNull(ItemTags.getCollection().get(logTags)).contains(locationReal.getBlock().asItem())) {
-                    veinMine(heldStack, player, locationReal);
+                //If the Block hit was a log, vein mine.
+                if (Objects.requireNonNull(ItemTags.getCollection().get(logTags)).contains(hit.getBlock().asItem())) {
+                    veinMine(heldStack, player, hit);
                     return;
                 }
 
-                excavateRock(world, heldStack, player, locationReal, blockSide);
+                //Else, excavate.
+                excavateBlocks(world, heldStack, player, hit, blockTrace.getHitSide());
             }
         }
     }
 
-    @Override
-    public boolean hasEffect (ItemStack stack) {
-        return this == InitItems.SLEDGEHAMMER_STARLIGHT.get() || stack.isEnchanted();
-    }
+    /**
+     * Handles vein mining. (for trees & ores)
+     */
+    private void veinMine (ItemStack heldStack, PlayerEntity player, Location startLocation) {
 
-    @Override
-    public Set<ToolType> getToolTypes (ItemStack stack) {
-        return ImmutableSet.of(ToolType.PICKAXE, ToolType.AXE, ToolType.SHOVEL);
-    }
+        //Checks if the starting Location can be mined.
+        if (canBreakBlock(startLocation)) {
 
-    private void veinMine (ItemStack heldStack, PlayerEntity player, Location location) {
+            IForgeBlockState state = startLocation.getForgeBlockState();
 
-        if (canBreakBlock(location)) {
-
-            IForgeBlockState state = location.getBlockState();
-
-            VeinScan scan = new VeinScan(location, state.getBlockState().getBlock());
+            //Start a scan of blocks that equal the starting Location's Block.
+            VeinScan scan = new VeinScan(startLocation, state.getBlockState().getBlock());
             scan.startScan(64, true);
 
             int damage = getDamage(heldStack);
 
+            //Iterate through the scanned Locations.
             for (Location nextLocation : scan.buffer) {
 
                 int maxDamage = getMaxDamage(heldStack);
 
-                if (damage > getMaxDamage(heldStack) && maxDamage > 0) {
+                //If the Sledgehammer is broken, stop the iteration.
+                if (damage > maxDamage && maxDamage > 0) {
                     return;
                 }
 
                 nextLocation.breakBlock(player, heldStack);
-                heldStack.damageItem(1, player, (p_220038_0_) -> {
-                });
+                heldStack.damageItem(1, player, (i) -> i.sendBreakAnimation(EquipmentSlotType.MAINHAND));
                 damage++;
             }
         }
     }
 
-    private void excavateRock (World worldIn, ItemStack heldStack, PlayerEntity player, Location location, Direction face) {
+    /**
+     * Handles the 3x3 mining of Blocks.
+     * Size can increase based on Crushing enchant.
+     */
+    private void excavateBlocks (World worldIn, ItemStack heldStack, PlayerEntity player, Location location, Direction face) {
 
         int radius = EnchantmentHelper.getEnchantmentLevel(InitEnchantments.CRUSHING.get(), heldStack) + 1;
 
@@ -188,14 +178,17 @@ public class ItemSledgehammer extends PickaxeItem {
 
         int damage = getDamage(heldStack);
 
+        //Iterate through the Locations from the World Edit shape.
         for (Location nextLocation : locations) {
 
             int maxDamage = getMaxDamage(heldStack);
 
+            //If the Sledgehammer is broken, stop the iteration.
             if (damage > maxDamage && maxDamage > 0) {
                 return;
             }
 
+            //Checks if the next Location can be mined.
             if (canBreakBlock(nextLocation)) {
                 nextLocation.breakBlock(player, heldStack);
                 if (heldStack.getItem() != InitItems.SLEDGEHAMMER_STARLIGHT.get()) heldStack.damageItem(1, player, (i) -> i.sendBreakAnimation(EquipmentSlotType.MAINHAND));
@@ -204,24 +197,36 @@ public class ItemSledgehammer extends PickaxeItem {
         }
     }
 
+    /**
+     * Checks if the Block at the given Location can be mined by the Sledgehammer.
+     */
+    private boolean canBreakBlock (Location location) {
+
+        float hardness = location.getForgeBlockState().getBlockState().getBlockHardness(location.world, location.getBlockPos());
+        int harvestLevel = location.getForgeBlockState().getHarvestLevel();
+
+        return hardness >= 0 && hardness <= 50 && getTier().getHarvestLevel() >= harvestLevel;
+    }
+
+    /**
+     * Handles damaging when the Sledgehammer breaks a Block.
+     */
     @Override
     public boolean onBlockDestroyed (ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity entityLiving) {
 
+        //Checks if on server & if the block has hardness.
         if (!world.isRemote && state.getBlockHardness(world, pos) != 0.0F) {
+
+            //If not a Starlight Sledgehammer, damage the item.
             if (stack.getItem() != InitItems.SLEDGEHAMMER_STARLIGHT.get()) stack.damageItem(1, entityLiving, (i) -> i.sendBreakAnimation(EquipmentSlotType.MAINHAND));
         }
 
         return true;
     }
 
-    private boolean canBreakBlock (Location location) {
-
-        float hardness = location.getBlockState().getBlockState().getBlockHardness(location.world, location.getBlockPos());
-        int harvestLevel = location.getBlockState().getHarvestLevel();
-
-        return hardness >= 0 && hardness <= 50 && getTier().getHarvestLevel() >= harvestLevel;
-    }
-
+    /**
+     * Handles setting attack damage & speed.
+     */
     @Override
     public Multimap<String, AttributeModifier> getAttributeModifiers (EquipmentSlotType equipmentSlot) {
 
@@ -245,5 +250,25 @@ public class ItemSledgehammer extends PickaxeItem {
     @Override
     public float getDestroySpeed (ItemStack stack, BlockState blockState) {
         return this.efficiency;
+    }
+
+    @Override
+    public Set<ToolType> getToolTypes (ItemStack stack) {
+        return ImmutableSet.of(ToolType.PICKAXE, ToolType.AXE, ToolType.SHOVEL);
+    }
+
+    @Override
+    public UseAction getUseAction (ItemStack stack) {
+        return UseAction.BOW;
+    }
+
+    @Override
+    public int getUseDuration (ItemStack stack) {
+        return 72000;
+    }
+
+    @Override
+    public boolean hasEffect (ItemStack stack) {
+        return this == InitItems.SLEDGEHAMMER_STARLIGHT.get() || stack.isEnchanted();
     }
 }

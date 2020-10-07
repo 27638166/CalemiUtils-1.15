@@ -1,10 +1,6 @@
 package calemiutils.inventory.base;
 
 import calemiutils.tileentity.base.CUItemHandler;
-import calemiutils.tileentity.base.TileEntityInventoryBase;
-import calemiutils.util.helper.LogHelper;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
@@ -13,6 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * CUItemHandler variant.
+ * This slot can prevent certain Items from being placed in it.
+ */
 public class SlotFilter extends SlotItemHandler {
 
     private final List<Item> itemFilters;

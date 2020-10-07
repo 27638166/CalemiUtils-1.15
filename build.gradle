@@ -20,12 +20,15 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.k-4u.nl"
     }
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
 }
 
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 
-version = "1.0.2-MC1.15.2"
+version = "1.0.3-MC1.15.2"
 group = "com.calemi.calemiutils"
 
 minecraft {
@@ -59,6 +62,12 @@ minecraft {
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.15.2-31.1.16'
+
+    //JEI API
     compileOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.4:api")
     runtimeOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.4")
+
+    //Curios API
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-1.15.2-2.0.2.6")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-1.15.2-2.0.2.6:api")
 }

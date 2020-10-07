@@ -8,7 +8,6 @@ public class ScreenRect {
     public int y;
 
     public ScreenRect (int x, int y, int width, int height) {
-
         this.x = x;
         this.y = y;
         this.width = width;
@@ -16,7 +15,6 @@ public class ScreenRect {
     }
 
     public boolean contains (int px, int py) {
-
         return px > x - 1 && px < (x + width) + 1 && py > y - 1 && py < (y + height) + 1;
     }
 }

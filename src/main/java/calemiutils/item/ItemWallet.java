@@ -2,6 +2,7 @@ package calemiutils.item;
 
 import calemiutils.CUConfig;
 import calemiutils.CalemiUtils;
+import calemiutils.integration.curios.CuriosIntegration;
 import calemiutils.inventory.ContainerWallet;
 import calemiutils.inventory.base.ItemStackInventory;
 import calemiutils.item.base.ItemBase;
@@ -14,11 +15,13 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -42,13 +45,38 @@ public class ItemWallet extends ItemBase {
         return new UnitChatMessage("Wallet", player);
     }
 
+    /**
+     * Adds behaviours to the Wallet as a curios Item.
+     */
+    @Override
+    public ICapabilityProvider initCapabilities(final ItemStack stack, CompoundNBT unused) {
+
+        if (CalemiUtils.curiosLoaded) {
+            return CuriosIntegration.walletCapability();
+        }
+
+        return super.initCapabilities(stack, unused);
+    }
+
+    /**
+     * Gets the balance of the given Wallet Stack.
+     */
+    public static int getBalance (ItemStack stack) {
+        return ItemHelper.getNBT(stack).getInt("balance");
+    }
+
+    /**
+     * Handles opening the GUI.
+     */
     @Override
     public ActionResult<ItemStack> onItemRightClick (World world, PlayerEntity player, Hand hand) {
 
         ItemStack stack = player.getHeldItem(hand);
 
+        //Checks if on server & if the Player is a Server Player.
         if (!world.isRemote && player instanceof ServerPlayerEntity) {
 
+            //Checks if Wallet is not disabled by config.
             if (CUConfig.wallet.walletCurrencyCapacity.get() > 0) {
                 openGui((ServerPlayerEntity) player, stack, player.inventory.currentItem);
                 return new ActionResult<>(ActionResultType.SUCCESS, stack);
@@ -58,10 +86,9 @@ public class ItemWallet extends ItemBase {
         return new ActionResult<>(ActionResultType.FAIL, stack);
     }
 
-    public static int getBalance (ItemStack stack) {
-        return ItemHelper.getNBT(stack).getInt("balance");
-    }
-
+    /**
+     * opens the GUI.
+     */
     private void openGui (ServerPlayerEntity player, ItemStack stack, int selectedSlot) {
 
         NetworkHooks.openGui(player, new SimpleNamedContainerProvider(

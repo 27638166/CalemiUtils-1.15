@@ -1,6 +1,4 @@
 {
   "replace" : false,
-  "values" : [
-    "calemiutils:raritanium"
-  ]
+  "values" : ["calemiutils:raritanium"]
 }

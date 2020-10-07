@@ -4,6 +4,9 @@ import calemiutils.CalemiUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+/**
+ * The base class for Items.
+ */
 public class ItemBase extends Item {
 
     private boolean hasEffect = false;
@@ -23,7 +26,6 @@ public class ItemBase extends Item {
 
     @Override
     public boolean hasEffect (ItemStack stack) {
-
         return hasEffect;
     }
 }

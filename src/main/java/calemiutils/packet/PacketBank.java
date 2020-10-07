@@ -19,6 +19,12 @@ public class PacketBank {
 
     public PacketBank () {}
 
+    /**
+     * Handles syncing data to the Bank on the server.
+     * @param bankCurrency The Bank's stored currency.
+     * @param walletCurrency The Bank's Wallet's stored currency.
+     * @param pos The Block position of the Bank.
+     */
     public PacketBank (int bankCurrency, int walletCurrency, BlockPos pos) {
         this.bankCurrency = bankCurrency;
         this.walletCurrency = walletCurrency;
@@ -49,7 +55,8 @@ public class PacketBank {
 
                 Location location = new Location(player.world, pos);
 
-                if (location.getTileEntity() instanceof TileEntityBank) {
+                //Checks if the Tile Entity is a Bank.
+                if (location.getTileEntity() != null && location.getTileEntity() instanceof TileEntityBank) {
 
                     TileEntityBank teBank = (TileEntityBank) location.getTileEntity();
                     CompoundNBT walletNBT = ItemHelper.getNBT(teBank.getInventory().getStackInSlot(1));

@@ -1,16 +1,10 @@
 package calemiutils.tileentity.base;
 
 import calemiutils.CUConfig;
-import calemiutils.util.helper.LogHelper;
 import calemiutils.util.helper.MathHelper;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
 import java.util.ArrayList;
 import java.util.List;

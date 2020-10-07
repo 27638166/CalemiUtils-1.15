@@ -5,7 +5,6 @@ import calemiutils.init.InitTileEntityTypes;
 import calemiutils.inventory.ContainerItemStand;
 import calemiutils.tileentity.base.ITileEntityGuiHandler;
 import calemiutils.tileentity.base.TileEntityInventoryBase;
-import calemiutils.util.helper.LogHelper;
 import calemiutils.util.helper.NBTHelper;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Vector3f;

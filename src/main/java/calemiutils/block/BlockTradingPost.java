@@ -271,46 +271,6 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
         else if (!world.isRemote) message.printMessage(TextFormatting.RED, "There is not enough items in stock!");
     }
 
-    @Nullable
-    @Override
-    public TileEntity createNewTileEntity (IBlockReader worldIn) {
-        return InitTileEntityTypes.TRADING_POST.get().create();
-    }
-
-    @Override
-    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
-        return false;
-    }
-
-    @Override
-    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    /*
-        Methods for Blocks that are not full and solid cubes.
-     */
-
-    @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    public VoxelShape getShape (BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-        return AABB;
-    }
-
-    @Override
-    public VoxelShape getCollisionShape (BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
-        return AABB;
-    }
-
-    @Override
-    public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
-        return true;
-    }
-
     /**
      * Handles enabling admin mode for the Trading Post.
      */
@@ -334,6 +294,46 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
                 }
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity (IBlockReader worldIn) {
+        return InitTileEntityTypes.TRADING_POST.get().create();
+    }
+
+    /*
+        Methods for Blocks that are not full and solid cubes.
+     */
+
+    @Override
+    public VoxelShape getShape (BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+        return AABB;
+    }
+
+    @Override
+    public VoxelShape getCollisionShape (BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) {
+        return AABB;
+    }
+
+    @Override
+    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
+        return false;
+    }
+
+    @Override
+    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
+        return true;
     }
 
     @Override

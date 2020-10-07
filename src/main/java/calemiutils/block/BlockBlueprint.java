@@ -35,36 +35,6 @@ public class BlockBlueprint extends BlockColoredBase {
         super(Block.Properties.create(Material.GLASS).sound(SoundType.STONE).hardnessAndResistance(0.1F).harvestLevel(0).func_226896_b_().variableOpacity());
     }
 
-    @Override
-    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
-        return false;
-    }
-
-    @Override
-    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public boolean isSideInvisible (BlockState centerBlockState, BlockState otherStateBlock, Direction dir) {
-        return (otherStateBlock.getBlock() == this && centerBlockState.get(COLOR).getId() == otherStateBlock.get(COLOR).getId()) || super.isSideInvisible(centerBlockState, otherStateBlock, dir);
-    }
-
-    /*
-        Methods for Blocks that are not full and solid cubes.
-     */
-
-    @Override
-    public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
-        return true;
-    }
-
     /**
      * Handles the Blueprint's replacement system.
      */
@@ -76,7 +46,7 @@ public class BlockBlueprint extends BlockColoredBase {
         UnitChatMessage message = new UnitChatMessage("Blueprint", player);
 
         //Creates a scanner which will search through multiple Blueprints.
-        VeinScan scan = new VeinScan(location, location.getBlockState());
+        VeinScan scan = new VeinScan(location, location.getForgeBlockState());
         scan.startScan();
 
         //Checking if there the held stack exists and that it's not a Blueprint.
@@ -114,7 +84,7 @@ public class BlockBlueprint extends BlockColoredBase {
      */
     private void replaceAllBlocks (World world, PlayerEntity player, Location location, ItemStack heldStack, VeinScan scan, UnitChatMessage message) {
 
-        IForgeBlockState heldBlockState = Block.getBlockFromItem(heldStack.getItem()).getDefaultState();
+        BlockState heldBlockState = Block.getBlockFromItem(heldStack.getItem()).getDefaultState();
 
         //Checks if the held Block State can be placed within a Blueprint.
         if (canPlaceBlockInBlueprint(heldBlockState)) {
@@ -179,7 +149,7 @@ public class BlockBlueprint extends BlockColoredBase {
      * @param location The Location of the replacement.
      * @param state    The Block State of that replaces the Blueprint.
      */
-    private void replaceBlock (Location location, PlayerEntity player, IForgeBlockState state) {
+    private void replaceBlock (Location location, PlayerEntity player, BlockState state) {
 
         if (!player.world.isRemote) {
             location.setBlock(state, player);
@@ -187,9 +157,39 @@ public class BlockBlueprint extends BlockColoredBase {
         }
     }
 
+    /*
+        Methods for Blocks that are not full and solid cubes.
+     */
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public boolean isSideInvisible (BlockState centerBlockState, BlockState otherStateBlock, Direction dir) {
+        return (otherStateBlock.getBlock() == this && centerBlockState.get(COLOR).getId() == otherStateBlock.get(COLOR).getId()) || super.isSideInvisible(centerBlockState, otherStateBlock, dir);
+    }
+
+    @Override
+    public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
+        return true;
+    }
+
     @Override
     @OnlyIn(Dist.CLIENT)
     public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
         return 1.0F;
+    }
+
+    @Override
+    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
+        return false;
+    }
+
+    @Override
+    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
     }
 }

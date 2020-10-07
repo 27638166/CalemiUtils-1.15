@@ -6,7 +6,6 @@ import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.tileentity.base.TileEntityUpgradable;
 import calemiutils.util.Location;
 import calemiutils.util.helper.InventoryHelper;
-import calemiutils.util.helper.LogHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

@@ -34,36 +34,49 @@ public class ScreenBank extends ContainerScreenBase<ContainerBank> {
         addButton(new ButtonRect(getScreenX() + (getGuiSizeX() / 2 - 25) - 30, getScreenY() + 40, 50, "Deposit", (btn) -> deposit(teBank)));
     }
 
+    /**
+     * Called when the withdraw button is pressed.
+     * Handles withdrawals from the Bank.
+     */
     private void withdraw (TileEntityBank teBank) {
 
+        //Checks if there is a Wallet in the Wallet slot.
         if (teBank.getInventory().getStackInSlot(1).getItem() instanceof ItemWallet) {
 
             CompoundNBT nbt = ItemHelper.getNBT(teBank.getInventory().getStackInSlot(1));
-            int currency = ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1));
+            int walletBalance = ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1));
 
-            int amountToAdd = MathHelper.getAmountToAdd(currency, teBank.storedCurrency, CUConfig.wallet.walletCurrencyCapacity.get());
+            int amountToAdd = MathHelper.getAmountToAdd(walletBalance, teBank.storedCurrency, CUConfig.wallet.walletCurrencyCapacity.get());
 
+            //If the Wallet can fit the currency, add it and subtract it from the Bank.
             if (amountToAdd > 0) {
                 teBank.addCurrency(-amountToAdd);
-                nbt.putInt("balance", currency + amountToAdd);
+                nbt.putInt("balance", walletBalance + amountToAdd);
             }
 
+            //If the Wallet can't fit all the money, get how much is needed to fill it, then only used that much.
             else {
 
-                int remainder = MathHelper.getRemainder(currency, teBank.storedCurrency, CUConfig.wallet.walletCurrencyCapacity.get());
+                int amountToFill = MathHelper.getAmountToFill(walletBalance, teBank.storedCurrency, CUConfig.wallet.walletCurrencyCapacity.get());
 
-                if (remainder > 0) {
-                    teBank.addCurrency(-remainder);
-                    nbt.putInt("balance", currency + remainder);
+                if (amountToFill > 0) {
+                    teBank.addCurrency(-amountToFill);
+                    nbt.putInt("balance", walletBalance + amountToFill);
                 }
             }
 
+            //Syncs the Bank's currency to the server.
             CalemiUtils.network.sendToServer(new PacketBank(teBank.storedCurrency, ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1)), teBank.getPos()));
         }
     }
 
+    /**
+     * Called when the deposit button is pressed.
+     * Handles deposits from the Bank.
+     */
     private void deposit (TileEntityBank teBank) {
 
+        //Checks if there is a Wallet in the Wallet slot.
         if (teBank.getInventory().getStackInSlot(1).getItem() instanceof ItemWallet) {
 
             CompoundNBT nbt = ItemHelper.getNBT(teBank.getInventory().getStackInSlot(1));
@@ -71,14 +84,16 @@ public class ScreenBank extends ContainerScreenBase<ContainerBank> {
 
             int amountToAdd = MathHelper.getAmountToAdd(teBank.storedCurrency, currency, teBank.getMaxCurrency());
 
+            //If the Bank can fit the currency, add it and subtract it from the Wallet.
             if (amountToAdd > 0) {
                 teBank.addCurrency(amountToAdd);
                 nbt.putInt("balance", currency - amountToAdd);
             }
 
+            //If the Bank can't fit all the money, get how much is needed to fill it, then only used that much.
             else {
 
-                int remainder = MathHelper.getRemainder(teBank.storedCurrency, currency, teBank.getMaxCurrency());
+                int remainder = MathHelper.getAmountToFill(teBank.storedCurrency, currency, teBank.getMaxCurrency());
 
                 if (remainder > 0) {
                     teBank.addCurrency(remainder);
@@ -91,23 +106,27 @@ public class ScreenBank extends ContainerScreenBase<ContainerBank> {
     }
 
     @Override
-    public int getGuiSizeY () {
-        return 144;
+    public void drawGuiBackground (int mouseX, int mouseY) {}
+
+    /**
+     * Handles rendering a tab that shows if the Bank is inactive.
+     */
+    @Override
+    public void drawGuiForeground (int mouseX, int mouseY) {
+
+        if (!getTileEntity().enable) {
+            addInfoIcon(1);
+            addInfoHoveringText(mouseX, mouseY, "Inactive!", "Another Bank is connected in the network!");
+        }
     }
 
     @Override
-    public void drawGuiForeground (int mouseX, int mouseY) {
-        if (!getTileEntity().enable) {
-            addInfoIcon(1);
-            addInfoIconText(mouseX, mouseY, "Inactive!", "Another Bank is connected in the network!");
-        }
+    public int getGuiSizeY () {
+        return 144;
     }
 
     @Override
     public String getGuiTextureName () {
         return "bank";
     }
-
-    @Override
-    public void drawGuiBackground (int mouseX, int mouseY) {}
 }

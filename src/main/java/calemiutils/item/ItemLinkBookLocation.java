@@ -4,8 +4,6 @@ import calemiutils.CalemiUtils;
 import calemiutils.gui.ScreenLinkBook;
 import calemiutils.item.base.ItemBase;
 import calemiutils.tileentity.TileEntityBookStand;
-import calemiutils.tileentity.base.TileEntityBase;
-import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
 import calemiutils.util.helper.EntityHelper;
@@ -61,6 +59,31 @@ public class ItemLinkBookLocation extends ItemBase {
         tooltip.add(new StringTextComponent("[Dimension] " + ChatFormatting.AQUA + (nbt.getBoolean("linked") ? nbt.getString("DimName") : "Not set")));
     }
 
+    private static UnitChatMessage getUnitChatMessage (PlayerEntity player) {
+        return new UnitChatMessage("Location Link Book", player);
+    }
+
+    /**
+     * Checks if the given Link Book ItemStack's location has been set.
+     */
+    public static boolean isLinked (ItemStack bookStack) {
+        return ItemHelper.getNBT(bookStack).getBoolean("linked");
+    }
+
+    /**
+     * @return the linked Location if set.
+     */
+    public static Location getLinkedLocation (World world, ItemStack bookStack) {
+
+        CompoundNBT nbt = ItemHelper.getNBT(bookStack);
+
+        if (isLinked(bookStack)) {
+            return new Location(world, nbt.getInt("X"), nbt.getInt("Y"), nbt.getInt("Z"));
+        }
+
+        return null;
+    }
+
     /**
      * @return the linked Dimension if set.
      */
@@ -93,90 +116,6 @@ public class ItemLinkBookLocation extends ItemBase {
         if (!player.world.isRemote) {
             getUnitChatMessage(player).printMessage(TextFormatting.GREEN, "Cleared Book");
         }
-    }
-
-    private static UnitChatMessage getUnitChatMessage (PlayerEntity player) {
-        return new UnitChatMessage("Location Link Book", player);
-    }
-
-    /**
-     * Teleports the given player to the given location. Only happens if they are in the same Dimension.
-     */
-    public static void teleport (World world, PlayerEntity player, Location location, int dim) {
-
-        if (!world.isRemote) {
-
-            if (world.dimension.getType().getId() == dim) {
-
-                if (EntityHelper.canTeleportAt((ServerPlayerEntity) player, location)) {
-
-                    EntityHelper.teleportPlayer((ServerPlayerEntity) player, location);
-                    getUnitChatMessage(player).printMessage(TextFormatting.GREEN, "Teleported you to " + location.toString());
-                }
-
-                else getUnitChatMessage(player).printMessage(TextFormatting.RED, "The area needs to be clear!");
-            }
-
-            else getUnitChatMessage(player).printMessage(TextFormatting.RED, "You need to be in the same dimension as the linked one!");
-        }
-    }
-
-    @Override
-    public boolean hasEffect (ItemStack stack) {
-        return isLinked(stack);
-    }
-
-    /**
-     * Checks if the given Link Book ItemStack's location has been set.
-     */
-    public boolean isLinked (ItemStack stack) {
-        return ItemHelper.getNBT(stack).getBoolean("linked");
-    }
-
-    /**
-     * Handles places the Link Book into a Book Stand or copying data from it.
-     */
-    @Override
-    public ActionResultType onItemUse (ItemUseContext context) {
-
-        World world = context.getWorld();
-        Location location = new Location(world, context.getPos());
-        PlayerEntity player = context.getPlayer();
-        Hand hand = context.getHand();
-        ItemStack heldItem = player.getHeldItem(hand);
-
-        if (location.getTileEntity() != null && location.getTileEntity() instanceof TileEntityBookStand) {
-
-            TileEntityBookStand inv = (TileEntityBookStand) location.getTileEntity();
-
-            //Insert the Link Book into the Book Stand if possible
-            if (InventoryHelper.insertHeldItemIntoSlot(player, hand, location, inv.getInventory(), 0, true)) {
-                inv.markForUpdate();
-                return ActionResultType.SUCCESS;
-            }
-
-            //If not, copy the data from the Book Stand's Link Book
-            else {
-
-                ItemStack bookInventory = ((IInventory) location.getTileEntity()).getStackInSlot(0);
-                Location linkedLocation = ItemLinkBookLocation.getLinkedLocation(world, bookInventory);
-
-                if (!bookInventory.isEmpty() && linkedLocation != null) {
-
-                    bindLocation(heldItem, player, linkedLocation, false);
-                    if (bookInventory.hasDisplayName()) bindName(heldItem, bookInventory.getDisplayName().getFormattedText());
-                    if (!world.isRemote) getUnitChatMessage(player).printMessage(TextFormatting.GREEN, "Copied Data from Book Stand");
-                    return ActionResultType.SUCCESS;
-                }
-            }
-        }
-
-        else if (world.isRemote) {
-            openGui(player, hand, heldItem, true);
-            return ActionResultType.SUCCESS;
-        }
-
-        return ActionResultType.FAIL;
     }
 
     /**
@@ -212,7 +151,79 @@ public class ItemLinkBookLocation extends ItemBase {
     }
 
     /**
-     * Handles opening the gui.
+     * Teleports the given player to the given location. Only happens if they are in the same Dimension.
+     */
+    public static void teleport (World world, PlayerEntity player, Location location, int dim) {
+
+        //Checks if on server.
+        if (!world.isRemote) {
+
+            //Checks if the location of the Player equals the linked dimension.
+            if (world.dimension.getType().getId() == dim) {
+
+                //Checks if it's safe to teleport to the link Location.
+                if (EntityHelper.canTeleportAt((ServerPlayerEntity) player, location)) {
+
+                    EntityHelper.teleportPlayer((ServerPlayerEntity) player, location);
+                    getUnitChatMessage(player).printMessage(TextFormatting.GREEN, "Teleported you to " + location.toString());
+                }
+
+                else getUnitChatMessage(player).printMessage(TextFormatting.RED, "The area needs to be clear!");
+            }
+
+            else getUnitChatMessage(player).printMessage(TextFormatting.RED, "You need to be in the same dimension as the linked one!");
+        }
+    }
+
+    /**
+     * Handles places the Link Book into a Book Stand or copying data from it.
+     */
+    @Override
+    public ActionResultType onItemUse (ItemUseContext context) {
+
+        World world = context.getWorld();
+        Location location = new Location(world, context.getPos());
+        PlayerEntity player = context.getPlayer();
+        Hand hand = context.getHand();
+        ItemStack heldItem = player.getHeldItem(hand);
+
+        //Checks if the Tile Entity exists & if its a Book Stand.
+        if (location.getTileEntity() != null && location.getTileEntity() instanceof TileEntityBookStand) {
+
+            TileEntityBookStand inv = (TileEntityBookStand) location.getTileEntity();
+
+            //Insert the Link Book into the Book Stand if possible
+            if (InventoryHelper.insertHeldItemIntoSlot(player, hand, location, inv.getInventory(), 0, true)) {
+                inv.markForUpdate();
+                return ActionResultType.SUCCESS;
+            }
+
+            //If not, copy the data from the Book Stand's Link Book
+            else {
+
+                ItemStack bookInventory = ((IInventory) location.getTileEntity()).getStackInSlot(0);
+                Location linkedLocation = ItemLinkBookLocation.getLinkedLocation(world, bookInventory);
+
+                if (!bookInventory.isEmpty() && linkedLocation != null) {
+
+                    bindLocation(heldItem, player, linkedLocation, false);
+                    if (bookInventory.hasDisplayName()) bindName(heldItem, bookInventory.getDisplayName().getFormattedText());
+                    if (!world.isRemote) getUnitChatMessage(player).printMessage(TextFormatting.GREEN, "Copied Data from Book Stand");
+                    return ActionResultType.SUCCESS;
+                }
+            }
+        }
+
+        else if (world.isRemote) {
+            openGui(player, hand, heldItem, true);
+            return ActionResultType.SUCCESS;
+        }
+
+        return ActionResultType.FAIL;
+    }
+
+    /**
+     * Handles opening the GUI.
      */
     @Override
     public ActionResult<ItemStack> onItemRightClick (World world, PlayerEntity player, Hand hand) {
@@ -227,22 +238,13 @@ public class ItemLinkBookLocation extends ItemBase {
         return new ActionResult<>(ActionResultType.FAIL, heldItem);
     }
 
-    /**
-     * @return the linked Location if set.
-     */
-    public static Location getLinkedLocation (World world, ItemStack bookStack) {
-
-        CompoundNBT nbt = ItemHelper.getNBT(bookStack);
-
-        if (nbt.getBoolean("linked")) {
-            return new Location(world, nbt.getInt("X"), nbt.getInt("Y"), nbt.getInt("Z"));
-        }
-
-        return null;
-    }
-
     @OnlyIn(Dist.CLIENT)
     public void openGui (PlayerEntity player, Hand hand, ItemStack stack, boolean isBookInHand) {
         Minecraft.getInstance().displayGuiScreen(new ScreenLinkBook(player, hand, stack, isBookInHand));
+    }
+
+    @Override
+    public boolean hasEffect (ItemStack stack) {
+        return isLinked(stack);
     }
 }

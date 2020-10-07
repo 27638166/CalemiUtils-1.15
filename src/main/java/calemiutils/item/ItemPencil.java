@@ -38,7 +38,6 @@ public class ItemPencil extends ItemBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
-
         LoreHelper.addInformationLore(tooltipList, "Places Blueprint. Blueprint can be used for mass building!", true);
         LoreHelper.addControlsLore(tooltipList, "Place Blueprint", LoreHelper.Type.USE, true);
         LoreHelper.addControlsLore(tooltipList, "Change Blueprint Color", LoreHelper.Type.SNEAK_USE);
@@ -46,6 +45,9 @@ public class ItemPencil extends ItemBase {
         tooltipList.add(new StringTextComponent(ChatFormatting.GRAY + "Color: " + ChatFormatting.AQUA + (DyeColor.byId(getColorId(stack)).getName()).toUpperCase()));
     }
 
+    /**
+     * Gets the color id of a given Pencil Stack.
+     */
     public int getColorId (ItemStack stack) {
 
         int meta = 11;
@@ -57,10 +59,16 @@ public class ItemPencil extends ItemBase {
         return meta;
     }
 
+    /**
+     * Sets the Pencil's color by id.
+     */
     public void setColorById (ItemStack stack, int meta) {
         ItemHelper.getNBT(stack).putInt("color", meta);
     }
 
+    /**
+     * Handles placing Blueprint & opening the GUI.
+     */
     @Override
     public ActionResultType onItemUse (ItemUseContext context) {
 
@@ -73,8 +81,10 @@ public class ItemPencil extends ItemBase {
         BlockBlueprint BLUEPRINT = (BlockBlueprint) InitItems.BLUEPRINT.get();
         Location location = new Location(world, pos);
 
+        //Checks if the Player exists.
         if (player != null) {
 
+            //If the Player is crouching, open the GUI.
             if (player.isCrouching()) {
 
                 if (world.isRemote) {
@@ -84,13 +94,17 @@ public class ItemPencil extends ItemBase {
                 return ActionResultType.SUCCESS;
             }
 
-            if (!location.getBlock().getMaterial(location.getBlockState().getBlockState()).isReplaceable()) {
+            //If the Player is not crouching, check some things.
+
+            //Checks if the clicked Location can be replaced.
+            if (!location.getBlock().getMaterial(location.getForgeBlockState().getBlockState()).isReplaceable()) {
 
                 location = new Location(location, dir);
 
                 if (!location.isBlockValidForPlacing()) return ActionResultType.FAIL;
             }
 
+            //Checks if the Player can edit the Location.
             if (!player.canPlayerEdit(pos, dir, player.getHeldItem(hand))) return ActionResultType.FAIL;
 
             else {
@@ -106,6 +120,9 @@ public class ItemPencil extends ItemBase {
         return ActionResultType.FAIL;
     }
 
+    /**
+     * Handles opening the GUI.
+     */
     @Override
     public ActionResult<ItemStack> onItemRightClick (World world, PlayerEntity player, Hand hand) {
 
@@ -123,6 +140,4 @@ public class ItemPencil extends ItemBase {
     private void openGui (PlayerEntity player, Hand hand) {
         Minecraft.getInstance().displayGuiScreen(new ScreenPencil(player, hand));
     }
-
-
 }

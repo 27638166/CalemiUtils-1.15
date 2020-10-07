@@ -13,6 +13,11 @@ public class ButtonRect extends Button {
 
     public final ScreenRect rect;
 
+    /**
+     * Used as the basic button for anything in the mod.
+     * @param text The text rendered on the button.
+     * @param pressable Called when the button is pressed.
+     */
     public ButtonRect (int x, int y, int width, String text, Button.IPressable pressable) {
         super(width, 16, x, y, text, pressable);
 

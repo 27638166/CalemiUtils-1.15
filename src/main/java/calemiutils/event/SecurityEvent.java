@@ -17,6 +17,7 @@ public class SecurityEvent {
 
         TileEntity tileEntity = event.getWorld().getTileEntity(event.getPos());
 
+        //Checks if the Entity is a Player and the Location is a TileEntityBase and implements ISecurity.
         if (event.getEntity() instanceof PlayerEntity && tileEntity instanceof TileEntityBase && tileEntity instanceof ISecurity) {
 
             ISecurity security = (ISecurity) tileEntity;

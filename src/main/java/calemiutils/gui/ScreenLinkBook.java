@@ -33,12 +33,16 @@ public class ScreenLinkBook extends GuiScreenBase {
         this.isBookInHand = isBookInHand;
     }
 
-    private void setName (String name) {
+    /**
+     * Gets the ItemLinkBookLocation, returns null if missing.
+     */
+    private ItemLinkBookLocation getBook () {
 
-        if (isBookInHand && getBook() != null) {
-            CalemiUtils.network.sendToServer(new PacketLinkBook("name", hand, name));
-            ItemLinkBookLocation.bindName(bookStack, name);
+        if (bookStack.getItem() instanceof ItemLinkBookLocation) {
+            return (ItemLinkBookLocation) bookStack.getItem();
         }
+
+        return null;
     }
 
     @Override
@@ -83,11 +87,20 @@ public class ScreenLinkBook extends GuiScreenBase {
         if (isBookInHand) resetBookBtn.active = location != null;
     }
 
-    @Override
-    public boolean isPauseScreen () {
-        return false;
+    /**
+     * Sets the name of the Link Book to the given text and syncs it.
+     */
+    private void setName (String name) {
+
+        if (isBookInHand && getBook() != null) {
+            CalemiUtils.network.sendToServer(new PacketLinkBook("name", hand, name));
+            ItemLinkBookLocation.bindName(bookStack, name);
+        }
     }
 
+    /**
+     * Binds the current Location to the Link Book and syncs it.
+     */
     private void bindLocation () {
         setName(nameField.getText());
 
@@ -99,6 +112,9 @@ public class ScreenLinkBook extends GuiScreenBase {
         ItemLinkBookLocation.bindLocation(bookStack, player, location, true);
     }
 
+    /**
+     * Reset all data of the Link Book and syncs it.
+     */
     private void resetBook () {
         setName(nameField.getText());
 
@@ -108,12 +124,17 @@ public class ScreenLinkBook extends GuiScreenBase {
         nameField.setText("");
     }
 
+    /**
+     * Teleports the Player to the Link Book's linked Location.
+     */
     private void teleport () {
 
-        if (getBook() != null && getBook().isLinked(bookStack)) {
+        //Checks if the Link Book exists and is linked.
+        if (getBook() != null && ItemLinkBookLocation.isLinked(bookStack)) {
 
             Location location = ItemLinkBookLocation.getLinkedLocation(player.world, bookStack);
 
+            //Checks if the Location exists.
             if (location != null) {
 
                 BlockPos pos = location.getBlockPos();
@@ -129,9 +150,35 @@ public class ScreenLinkBook extends GuiScreenBase {
     }
 
     @Override
-    public String getGuiTextureName () {
-        return null;
+    public void drawGuiBackground (int mouseX, int mouseY) {
+
+        //If the book is in hand, render the name field.
+        if (isBookInHand) {
+            nameField.render(mouseX, mouseY, 0);
+            ScreenHelper.drawCenteredString("Name Book", getScreenX(), getScreenY() - 67, 0, 0xFFFFFF);
+        }
+
+        //Checks the Link Book exists
+        if (getBook() != null) {
+
+            CompoundNBT nbt = ItemHelper.getNBT(bookStack);
+
+            Location location = ItemLinkBookLocation.getLinkedLocation(player.world, bookStack);
+            String string = "Not set";
+
+            //If the Link Book is linked and has a existing Location, set the string to the Location's details.
+            if (ItemLinkBookLocation.isLinked(bookStack) && location != null) {
+                ScreenHelper.drawCenteredString(bookStack.getDisplayName().getFormattedText(), getScreenX(), getScreenY() - 28, 0, 0xFFFFFF);
+                string = nbt.getString("DimName") + " " + location.toString();
+            }
+
+            //Render the Link Book's linked Location's details. Shows "Not set" if the Link Book is not linked.
+            ScreenHelper.drawCenteredString(string, getScreenX(), getScreenY() - 18, 0, 0xFFFFFF);
+        }
     }
+
+    @Override
+    public void drawGuiForeground (int mouseX, int mouseY) {}
 
     @Override
     public int getGuiSizeX () {
@@ -144,43 +191,17 @@ public class ScreenLinkBook extends GuiScreenBase {
     }
 
     @Override
-    public void drawGuiBackground (int mouseX, int mouseY) {
-
-        if (isBookInHand) {
-            nameField.render(mouseX, mouseY, 0);
-            ScreenHelper.drawCenteredString("Name Book", getScreenX(), getScreenY() - 67, 0, 0xFFFFFF);
-        }
-
-        if (getBook() != null) {
-
-            CompoundNBT nbt = ItemHelper.getNBT(bookStack);
-
-            Location location = ItemLinkBookLocation.getLinkedLocation(player.world, bookStack);
-            String string = "Not set";
-
-            if (getBook().isLinked(bookStack) && location != null) {
-                ScreenHelper.drawCenteredString(bookStack.getDisplayName().getFormattedText(), getScreenX(), getScreenY() - 28, 0, 0xFFFFFF);
-                string = nbt.getString("DimName") + " " + location.toString();
-            }
-
-            ScreenHelper.drawCenteredString(string, getScreenX(), getScreenY() - 18, 0, 0xFFFFFF);
-        }
-    }
-
-    private ItemLinkBookLocation getBook () {
-
-        if (bookStack.getItem() instanceof ItemLinkBookLocation) {
-            return (ItemLinkBookLocation) bookStack.getItem();
-        }
-
+    public String getGuiTextureName () {
         return null;
     }
 
     @Override
-    public void drawGuiForeground (int mouseX, int mouseY) {}
-
-    @Override
     public boolean canCloseWithInvKey () {
         return !isBookInHand || !nameField.isFocused();
+    }
+
+    @Override
+    public boolean isPauseScreen () {
+        return false;
     }
 }

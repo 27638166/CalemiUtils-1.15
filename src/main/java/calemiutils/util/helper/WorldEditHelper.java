@@ -3,36 +3,26 @@ package calemiutils.util.helper;
 import calemiutils.CUConfig;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.extensions.IForgeBlockState;
 
 import java.util.ArrayList;
 
 public class WorldEditHelper {
 
-    public static void generateCommand (ArrayList<Location> list, IForgeBlockState blockToPlace, IForgeBlockState mask, PlayerEntity player, UnitChatMessage message) {
+    public static void generateCommand (ArrayList<Location> list, BlockState blockToPlace, BlockState mask, PlayerEntity player, UnitChatMessage message) {
 
         if (CUConfig.blockScans.worldEditMaxSize.get() == 0) {
-
-            if (!player.world.isRemote) {
-
-                message.printMessage(TextFormatting.RED, "The Brush is disabled by config!");
-            }
-
+            message.printMessage(TextFormatting.RED, "The Brush is disabled by config!");
             return;
         }
 
         if (list.size() > CUConfig.blockScans.worldEditMaxSize.get()) {
-
-            if (!player.world.isRemote) {
-
-                message.printMessage(TextFormatting.RED, "Too many blocks to fill!");
-                message.printMessage(TextFormatting.RED, "You are " + StringHelper.printCommas(list.size() - CUConfig.blockScans.worldEditMaxSize.get()) + " blocks over!");
-            }
-
+            message.printMessage(TextFormatting.RED, "Too many blocks to fill!");
+            message.printMessage(TextFormatting.RED, "You are " + StringHelper.printCommas(list.size() - CUConfig.blockScans.worldEditMaxSize.get()) + " blocks over!");
             return;
         }
 
@@ -46,24 +36,15 @@ public class WorldEditHelper {
                 nextLocation.setBlock(blockToPlace, player);
             }
 
-            else if (nextLocation.getBlockState() == mask) {
+            else if (nextLocation.getForgeBlockState() == mask) {
 
                 count++;
                 nextLocation.setBlock(blockToPlace, player);
             }
         }
 
-        if (!player.world.isRemote) {
-
-            message.printMessage(TextFormatting.GREEN, "Placed " + ItemHelper.countByStacks(count));
-        }
-
-        if (count > 0) {
-
-            if (player.world.isRemote) {
-                SoundHelper.playDing(player.world, player);
-            }
-        }
+        message.printMessage(TextFormatting.GREEN, "Placed " + ItemHelper.countByStacks(count));
+        SoundHelper.playDing(player.world, player);
     }
 
     public static ArrayList<Location> selectFlatCubeFromFace (Location location, Direction face, int radius) {

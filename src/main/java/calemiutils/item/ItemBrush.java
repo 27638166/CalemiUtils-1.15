@@ -40,6 +40,9 @@ public class ItemBrush extends ItemBase {
         tooltipList.add(new StringTextComponent(ChatFormatting.GRAY + "Position 2: " + ChatFormatting.AQUA + (location2 != null ? location2.toString() : "Not set")));
     }
 
+    /**
+     * Handles setting the positions.
+     */
     @Override
     public ActionResultType onItemUse (ItemUseContext context) {
 
@@ -47,14 +50,17 @@ public class ItemBrush extends ItemBase {
         PlayerEntity player = context.getPlayer();
         BlockPos pos = context.getPos();
 
+        //Checks if the Player exists.
         if (player != null) {
 
+            //If the Player is not crouching, set the first position.
             if (!player.isCrouching()) {
 
                 location1 = new Location(world, pos);
                 if (!world.isRemote) getMessage(player).printMessage(TextFormatting.GREEN, "First position set to coords: " + location1.x + ", " + location1.y + ", " + location1.z);
             }
 
+            //If the Player is crouching, set the second position.
             else {
 
                 location2 = new Location(world, pos);

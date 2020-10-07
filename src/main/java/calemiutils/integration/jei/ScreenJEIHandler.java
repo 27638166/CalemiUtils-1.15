@@ -1,5 +1,6 @@
-package calemiutils.gui.base;
+package calemiutils.integration.jei;
 
+import calemiutils.gui.base.ContainerScreenBase;
 import calemiutils.tileentity.base.TileEntityUpgradable;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -8,8 +9,14 @@ import net.minecraft.tileentity.TileEntity;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Used to add special behaviors to JEI.
+ */
 public class ScreenJEIHandler implements IGuiContainerHandler<ContainerScreenBase> {
 
+    /**
+     * Prevents JEI from rendering Items over the GUI.
+     */
     @Override
     public List<Rectangle2d> getGuiExtraAreas (ContainerScreenBase containerScreen) {
         List<Rectangle2d> list = new ArrayList<>();

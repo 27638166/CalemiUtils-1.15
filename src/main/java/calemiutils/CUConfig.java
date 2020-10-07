@@ -23,21 +23,6 @@ public class CUConfig {
 
     private static final String NEEDED_FOR_SERVERS = "(Only needed on Servers)";
 
-    public enum WalletOverlayPosition {
-        TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT;
-
-        private static final Map<String, WalletOverlayPosition> NAME_LOOKUP = Arrays.stream(values()).collect(Collectors.toMap(WalletOverlayPosition::toString, (n) -> n));
-
-        WalletOverlayPosition () {
-
-        }
-
-        @Nullable
-        public static WalletOverlayPosition byName (@Nullable String name) {
-            return name == null ? null : NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
-        }
-    }
-
     public static class CategoryTooltips {
 
         public final ForgeConfigSpec.ConfigValue<Boolean> showInfoOnTooltips;
@@ -85,8 +70,8 @@ public class CUConfig {
 
             builder.push("BlockScans");
 
-            veinScanMaxSize = builder.comment("Vein Scan Max Size", "The Vein Scan is a system used by Blueprints, Scaffolds and Networks. It scans for blocks in a chain. The max size is how many chains will occur. Lower values run faster on servers.").define("veinScanMaxSize", 1500);
-            worldEditMaxSize = builder.comment("Brush Max Size", "0 to Disable. The max size of blocks the Brush can place. Lower values run faster on servers.").define("worldEditMaxSize", 5000);
+            veinScanMaxSize = builder.comment("Vein Scan Max Size", "The Vein Scan is a system used by Blueprints, Scaffolds and Networks.", "It scans for blocks in a chain. The max size is how many chains will occur. Lower values run faster on servers.", "2304 is the maximum count of blocks in a single Player inventory. There is no real reason to set it above, but the option is there").defineInRange("veinScanMaxSize", 2304, 0, 5000);
+            worldEditMaxSize = builder.comment("Brush Max Size", "0 to Disable. The max size of blocks the Brush can place. Lower values run faster on servers.").defineInRange("worldEditMaxSize", 5000, 0, 10000);
 
             builder.pop();
         }
@@ -151,6 +136,21 @@ public class CUConfig {
             blenderMaxJuice = builder.comment("Blender Max Juice", "The max height amount of juice the blender can store.").defineInRange("blenderMaxJuice", 1000, 0, 1000000);
 
             builder.pop();
+        }
+    }
+
+    public enum WalletOverlayPosition {
+        TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT;
+
+        private static final Map<String, WalletOverlayPosition> NAME_LOOKUP = Arrays.stream(values()).collect(Collectors.toMap(WalletOverlayPosition::toString, (n) -> n));
+
+        WalletOverlayPosition () {
+
+        }
+
+        @Nullable
+        public static WalletOverlayPosition byName (@Nullable String name) {
+            return name == null ? null : NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
         }
     }
 }

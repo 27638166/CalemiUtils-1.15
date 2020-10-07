@@ -25,55 +25,12 @@ public class ScreenTradingPost extends ContainerScreenBase<ContainerTradingPost>
     private final TileEntityTradingPost tePost;
     private final int upY = 40;
     private final int downY = 59;
-    private ButtonRect sellModeButton;
+    private ButtonRect sellModeBtn;
     private FakeSlot fakeSlot;
 
     public ScreenTradingPost (Container container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, new StringTextComponent("Wallet"));
         tePost = (TileEntityTradingPost) getTileEntity();
-    }
-
-    @Override
-    public int getGuiSizeY () {
-        return 223;
-    }
-
-    @Override
-    protected void drawGuiForeground (int mouseX, int mouseY) {
-
-        if (tePost.getBank() != null) {
-            GL11.glColor3f(1, 1, 1);
-            addCurrencyInfo(mouseX, mouseY, ((ICurrencyNetworkBank) tePost.getBank()).getStoredCurrency(), ((ICurrencyNetworkBank) tePost.getBank()).getMaxCurrency());
-        }
-
-        GL11.glDisable(GL11.GL_LIGHTING);
-        fakeSlot.renderButton(mouseX, mouseY, 150);
-
-        addInfoIcon(0);
-        addInfoIconText(mouseX, mouseY, "Button Click Info", "Shift: 10, Ctrl: 100, Shift + Ctrl: 1,000");
-    }
-
-    @Override
-    public String getGuiTextureName () {
-        return "trading_post";
-    }
-
-    @Override
-    protected void drawGuiBackground (int mouseX, int mouseY) {
-
-        GL11.glPushMatrix();
-        GL11.glTranslatef(0, 0, 50);
-
-        // Titles
-        minecraft.fontRenderer.drawString("Amount", getScreenX() + 10, getScreenY() + upY + 4, TEXT_COLOR);
-        minecraft.fontRenderer.drawString("Price", getScreenX() + 10, getScreenY() + downY + 4, TEXT_COLOR);
-
-        ScreenHelper.drawCenteredString(StringHelper.printCommas(tePost.amountForSale), getScreenX() + getGuiSizeX() / 2, getScreenY() + upY + 4, 0, TEXT_COLOR);
-        ScreenHelper.drawCenteredString(StringHelper.printCommas(tePost.salePrice), getScreenX() + getGuiSizeX() / 2, getScreenY() + downY + 4, 0, TEXT_COLOR);
-
-        GL11.glPopMatrix();
-
-        sellModeButton.setMessage(tePost.buyMode ? "Buying" : "Selling");
     }
 
     @Override
@@ -110,40 +67,64 @@ public class ScreenTradingPost extends ContainerScreenBase<ContainerTradingPost>
         //Reset Price
         addButton(new ButtonRect(getScreenX() + 130, getScreenY() + downY, 16, "R", (btn) -> resetPrice()));
 
-        sellModeButton = addButton(new ButtonRect(getScreenX() + 21, getScreenY() + 19, 39, tePost.buyMode ? "Buying" : "Selling", (btn) -> toggleMode()));
+        sellModeBtn = addButton(new ButtonRect(getScreenX() + 21, getScreenY() + 19, 39, tePost.buyMode ? "Buying" : "Selling", (btn) -> toggleMode()));
 
         fakeSlot = addButton(new FakeSlot(getScreenX() + 80, getScreenY() + 19, itemRenderer, (btn) -> setFakeSlot()));
         fakeSlot.setItemStack(tePost.getStackForSale());
     }
 
+    /**
+     * Called when a "-" or "+" amount button is pressed.
+     * Adds to or subtracts from the amount value and syncs it.
+     */
     private void changeAmount (int change) {
         int value = MathHelper.clamp(tePost.amountForSale + change, 1, 64);
         tePost.amountForSale = value;
         CalemiUtils.network.sendToServer(new PacketTradingPost("syncoptions", tePost.getPos(), value, tePost.salePrice));
     }
 
+    /**
+     * Called when a "-" or "+" price button is pressed.
+     * Adds to or subtracts from the price value and syncs it.
+     */
     private void changePrice (int change) {
         int value = MathHelper.clamp(tePost.salePrice + change, 0, 9999);
         tePost.salePrice = value;
         CalemiUtils.network.sendToServer(new PacketTradingPost("syncoptions", tePost.getPos(), tePost.amountForSale, value));
     }
 
+    /**
+     * Called when a "R" amount button is pressed.
+     * Resets the amount value and syncs it.
+     */
     private void resetAmount () {
         tePost.amountForSale = 0;
         CalemiUtils.network.sendToServer(new PacketTradingPost("syncoptions", tePost.getPos(), 0, tePost.salePrice));
     }
 
+    /**
+     * Called when a "R" price button is pressed.
+     * Resets the price value and syncs it.
+     */
     private void resetPrice () {
         tePost.salePrice = 0;
         CalemiUtils.network.sendToServer(new PacketTradingPost("syncoptions", tePost.getPos(), tePost.amountForSale, 0));
     }
 
+    /**
+     * Called when a sellModeBtn is pressed.
+     * Toggles the current mode and syncs it.
+     */
     private void toggleMode () {
         boolean mode = !tePost.buyMode;
         CalemiUtils.network.sendToServer(new PacketTradingPost("syncmode", tePost.getPos(), mode));
         tePost.buyMode = mode;
     }
 
+    /**
+     * Called when a fakeSlot button is pressed.
+     * Sets fakeSlot's icon to the hovered Stack and syncs it.
+     */
     private void setFakeSlot () {
 
         ItemStack stack = new ItemStack(playerInventory.getItemStack().getItem(), 1);
@@ -153,4 +134,48 @@ public class ScreenTradingPost extends ContainerScreenBase<ContainerTradingPost>
         tePost.setStackForSale(stack);
         fakeSlot.setItemStack(stack);
     }
+
+    @Override
+    protected void drawGuiBackground (int mouseX, int mouseY) {
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef(0, 0, 50);
+
+        // Titles
+        minecraft.fontRenderer.drawString("Amount", getScreenX() + 10, getScreenY() + upY + 4, TEXT_COLOR_GRAY);
+        minecraft.fontRenderer.drawString("Price", getScreenX() + 10, getScreenY() + downY + 4, TEXT_COLOR_GRAY);
+
+        ScreenHelper.drawCenteredString(StringHelper.printCommas(tePost.amountForSale), getScreenX() + getGuiSizeX() / 2, getScreenY() + upY + 4, 0, TEXT_COLOR_GRAY);
+        ScreenHelper.drawCenteredString(StringHelper.printCommas(tePost.salePrice), getScreenX() + getGuiSizeX() / 2, getScreenY() + downY + 4, 0, TEXT_COLOR_GRAY);
+
+        GL11.glPopMatrix();
+
+        sellModeBtn.setMessage(tePost.buyMode ? "Buying" : "Selling");
+    }
+
+    @Override
+    protected void drawGuiForeground (int mouseX, int mouseY) {
+
+        if (tePost.getBank() != null) {
+            GL11.glColor3f(1, 1, 1);
+            addCurrencyTab(mouseX, mouseY, ((ICurrencyNetworkBank) tePost.getBank()).getStoredCurrency(), ((ICurrencyNetworkBank) tePost.getBank()).getMaxCurrency());
+        }
+
+        GL11.glDisable(GL11.GL_LIGHTING);
+        fakeSlot.renderButton(mouseX, mouseY, 150);
+
+        addInfoIcon(0);
+        addInfoHoveringText(mouseX, mouseY, "Button Click Info", "Shift: 10, Ctrl: 100, Shift + Ctrl: 1,000");
+    }
+
+    @Override
+    public int getGuiSizeY () {
+        return 223;
+    }
+
+    @Override
+    public String getGuiTextureName () {
+        return "trading_post";
+    }
 }
+

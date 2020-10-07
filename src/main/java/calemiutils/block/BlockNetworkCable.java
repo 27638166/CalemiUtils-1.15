@@ -51,103 +51,6 @@ public class BlockNetworkCable extends BlockNetworkCableOpaque {
         setDefaultState(stateContainer.getBaseState().with(UP, false).with(DOWN, false).with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(DOWNUP, false).with(NORTHSOUTH, false).with(EASTWEST, false));
     }
 
-    /*
-        Methods for Block properties.
-     */
-
-    @Override
-    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
-        return false;
-    }
-
-    @Override
-    public BlockState updatePostPlacement (BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
-        return getState(world, pos);
-    }
-
-    @Override
-    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    public VoxelShape getShape (BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return getCollision(state);
-    }
-
-    @Override
-    public VoxelShape getCollisionShape (BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return getCollision(state);
-    }
-
-    /*
-        Methods for Blocks that are not full and solid cubes.
-     */
-
-    private VoxelShape getCollision (BlockState state) {
-
-        List<VoxelShape> collidingBoxes = new ArrayList<>();
-
-        if (state.get(DOWN)) collidingBoxes.add(DOWN_AABB);
-        if (state.get(UP)) collidingBoxes.add(UP_AABB);
-        if (state.get(NORTH)) collidingBoxes.add(NORTH_AABB);
-        if (state.get(EAST)) collidingBoxes.add(EAST_AABB);
-        if (state.get(SOUTH)) collidingBoxes.add(SOUTH_AABB);
-        if (state.get(WEST)) collidingBoxes.add(WEST_AABB);
-
-        if (state.get(DOWNUP)) collidingBoxes.add(DOWNUP_AABB);
-        if (state.get(NORTHSOUTH)) collidingBoxes.add(NORTHSOUTH_AABB);
-        if (state.get(EASTWEST)) collidingBoxes.add(EASTWEST_AABB);
-
-        VoxelShape[] shapes = new VoxelShape[collidingBoxes.size()];
-
-        for (int i = 0; i < shapes.length; i++) {
-            shapes[i] = collidingBoxes.get(i);
-        }
-
-        return VoxelShapes.or(CORE_AABB, shapes);
-    }
-
-    @Override
-    public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
-        return true;
-    }
-
-    @Override
-    public BlockState getStateForPlacement (BlockItemUseContext context) {
-        return getState(context.getWorld(), context.getPos());
-    }
-
-    private BlockState getState (IWorld world, BlockPos pos) {
-
-        boolean down = canCableConnectTo(world, pos, Direction.DOWN);
-        boolean up = canCableConnectTo(world, pos, Direction.UP);
-        boolean north = canCableConnectTo(world, pos, Direction.NORTH);
-        boolean east = canCableConnectTo(world, pos, Direction.EAST);
-        boolean south = canCableConnectTo(world, pos, Direction.SOUTH);
-        boolean west = canCableConnectTo(world, pos, Direction.WEST);
-
-        boolean downup = down && up && (!north && !east && !south && !west);
-        boolean northsouth = north && south && (!down && !up && !east && !west);
-        boolean eastwest = east && west && (!north && !south && !down && !up);
-
-        if (downup || northsouth || eastwest) {
-            down = false;
-            up = false;
-            north = false;
-            east = false;
-            south = false;
-            west = false;
-        }
-
-        return getDefaultState().with(DOWN, down).with(UP, up).with(NORTH, north).with(EAST, east).with(SOUTH, south).with(WEST, west).with(DOWNUP, downup).with(NORTHSOUTH, northsouth).with(EASTWEST, eastwest);
-    }
-
     /**
      * Checks if the Block at the given pos can connect to the Block given by the Direction.
      */
@@ -182,14 +85,111 @@ public class BlockNetworkCable extends BlockNetworkCableOpaque {
         return false;
     }
 
+    /*
+        Methods for Block properties.
+     */
+
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
-        return 1.0F;
+    public BlockState getStateForPlacement (BlockItemUseContext context) {
+        return getState(context.getWorld(), context.getPos());
+    }
+
+    private BlockState getState (IWorld world, BlockPos pos) {
+
+        boolean down = canCableConnectTo(world, pos, Direction.DOWN);
+        boolean up = canCableConnectTo(world, pos, Direction.UP);
+        boolean north = canCableConnectTo(world, pos, Direction.NORTH);
+        boolean east = canCableConnectTo(world, pos, Direction.EAST);
+        boolean south = canCableConnectTo(world, pos, Direction.SOUTH);
+        boolean west = canCableConnectTo(world, pos, Direction.WEST);
+
+        boolean downup = down && up && (!north && !east && !south && !west);
+        boolean northsouth = north && south && (!down && !up && !east && !west);
+        boolean eastwest = east && west && (!north && !south && !down && !up);
+
+        if (downup || northsouth || eastwest) {
+            down = false;
+            up = false;
+            north = false;
+            east = false;
+            south = false;
+            west = false;
+        }
+
+        return getDefaultState().with(DOWN, down).with(UP, up).with(NORTH, north).with(EAST, east).with(SOUTH, south).with(WEST, west).with(DOWNUP, downup).with(NORTHSOUTH, northsouth).with(EASTWEST, eastwest);
+    }
+
+    @Override
+    public BlockState updatePostPlacement (BlockState state, Direction facing, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+        return getState(world, pos);
     }
 
     @Override
     protected void fillStateContainer (StateContainer.Builder<Block, BlockState> builder) {
         builder.add(UP, DOWN, NORTH, SOUTH, EAST, WEST, DOWNUP, NORTHSOUTH, EASTWEST);
+    }
+
+    /*
+        Methods for Blocks that are not full and solid cubes.
+     */
+
+    private VoxelShape getCollision (BlockState state) {
+
+        List<VoxelShape> collidingBoxes = new ArrayList<>();
+
+        if (state.get(DOWN)) collidingBoxes.add(DOWN_AABB);
+        if (state.get(UP)) collidingBoxes.add(UP_AABB);
+        if (state.get(NORTH)) collidingBoxes.add(NORTH_AABB);
+        if (state.get(EAST)) collidingBoxes.add(EAST_AABB);
+        if (state.get(SOUTH)) collidingBoxes.add(SOUTH_AABB);
+        if (state.get(WEST)) collidingBoxes.add(WEST_AABB);
+
+        if (state.get(DOWNUP)) collidingBoxes.add(DOWNUP_AABB);
+        if (state.get(NORTHSOUTH)) collidingBoxes.add(NORTHSOUTH_AABB);
+        if (state.get(EASTWEST)) collidingBoxes.add(EASTWEST_AABB);
+
+        VoxelShape[] shapes = new VoxelShape[collidingBoxes.size()];
+
+        for (int i = 0; i < shapes.length; i++) {
+            shapes[i] = collidingBoxes.get(i);
+        }
+
+        return VoxelShapes.or(CORE_AABB, shapes);
+    }
+
+    @Override
+    public VoxelShape getShape (BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return getCollision(state);
+    }
+
+    @Override
+    public VoxelShape getCollisionShape (BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return getCollision(state);
+    }
+
+    @Override
+    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
+    public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
+        return true;
+    }
+
+    @Override
+    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
+        return false;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
+        return 1.0F;
     }
 }

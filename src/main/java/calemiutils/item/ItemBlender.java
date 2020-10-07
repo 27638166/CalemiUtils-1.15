@@ -36,35 +36,46 @@ public class ItemBlender extends ItemBase {
         LoreHelper.addControlsLore(tooltip, "Drink", LoreHelper.Type.USE);
         LoreHelper.addControlsLore(tooltip, "Toggle Processing Mode", LoreHelper.Type.SNEAK_USE, true);
         LoreHelper.addBlankLine(tooltip);
-        tooltip.add(new StringTextComponent("Process Food: " + ChatFormatting.AQUA + (ItemHelper.getNBT(stack).getBoolean("process") ? "ON" : "OFF")));
-        tooltip.add(new StringTextComponent("Juice: " + ChatFormatting.AQUA + StringHelper.printCommas((int) ItemHelper.getNBT(stack).getFloat("juice")) + " / " + StringHelper.printCommas(CUConfig.misc.blenderMaxJuice.get())));
+        tooltip.add(new StringTextComponent("Blend Food: " + ChatFormatting.AQUA + (ItemHelper.getNBT(stack).getBoolean("blend") ? "ON" : "OFF")));
+        tooltip.add(new StringTextComponent("Juice: " + ChatFormatting.AQUA + StringHelper.printCommas((int) getJuice(ItemHelper.getNBT(stack))) + " / " + StringHelper.printCommas(CUConfig.misc.blenderMaxJuice.get())));
     }
 
-    @Override
-    public boolean hasEffect (ItemStack stack) {
-        return ItemHelper.getNBT(stack).getBoolean("process");
+    /**
+     * Used to get the amount of juice stored in the Blender.
+     */
+    private float getJuice (CompoundNBT nbt) {
+        return nbt.getFloat("blend");
     }
 
+    /**
+     * Used to remove an amount of juice from the Blender.
+     */
+    private void changeJuice (CompoundNBT nbt, float amount) {
+        nbt.putFloat("blend", nbt.getFloat("blend") + amount);
+    }
+
+    /**
+     * Handles toggling blend mode & drinking.
+     */
     @Override
     public ActionResult<ItemStack> onItemRightClick (World worldIn, PlayerEntity playerIn, Hand handIn) {
 
         ItemStack stack = playerIn.getHeldItem(handIn);
-        float juice = ItemHelper.getNBT(stack).getFloat("juice");
+        float juice = getJuice(ItemHelper.getNBT(stack));
 
+        //If the Player is crouching, toggle the blend mode.
         if (playerIn.isCrouching()) {
-
-            ItemHelper.getNBT(stack).putBoolean("process", !ItemHelper.getNBT(stack).getBoolean("process"));
+            ItemHelper.getNBT(stack).putBoolean("blend", !ItemHelper.getNBT(stack).getBoolean("blend"));
             SoundHelper.playClick(worldIn, playerIn);
-
             return new ActionResult<>(ActionResultType.SUCCESS, stack);
         }
 
+        //If the Player is not crouching, handle drinking.
         else {
 
+            //Checks if the player needs food and if there is at least 1 juice in the Blender.
             if (playerIn.getFoodStats().needFood() && juice >= 1) {
-
                 playerIn.setActiveHand(handIn);
-
                 return new ActionResult<>(ActionResultType.SUCCESS, stack);
             }
         }
@@ -72,67 +83,70 @@ public class ItemBlender extends ItemBase {
         return new ActionResult<>(ActionResultType.FAIL, stack);
     }
 
+    /**
+     * Handles adding food to Player after drinking.
+     */
     @Override
     public ItemStack onItemUseFinish (ItemStack stack, World worldIn, LivingEntity entityLiving) {
 
         CompoundNBT nbt = ItemHelper.getNBT(stack);
 
+        //Loop infinitely until broken.
         while (true) {
 
             FoodStats stats = ((PlayerEntity) entityLiving).getFoodStats();
 
-            if (!stats.needFood()) {
-                break;
-            }
+            //If Player doesn't need food anymore, stop the loop.
+            if (!stats.needFood()) break;
 
-            float juice = nbt.getFloat("juice");
+            float juice = getJuice(ItemHelper.getNBT(stack));
 
             int missingFood = 20 - stats.getFoodLevel();
-
             int addedFood = 0;
             int addedSat = 0;
 
+            //If Blender has enough juice, add to data to variables.
             if (juice >= 1) {
-
-                if (missingFood > 0) {
-                    addedFood += 1;
-                    addedSat += 2;
-                }
-
-                decreaseJuice(nbt, 1);
-
-                stats.addStats(addedFood, addedSat);
+                changeJuice(nbt, -1);
+                stats.addStats(1, 2);
             }
 
-            else {
-                break;
-            }
+            else break;
         }
 
         return stack;
     }
 
+    /**
+     * Handles blending food.
+     */
     @Override
     public void inventoryTick (ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
 
-        if (ItemHelper.getNBT(stack).getBoolean("process")) {
+        //Checks if entity is Player.
+        if (entityIn instanceof PlayerEntity) {
 
-            if (entityIn instanceof PlayerEntity) {
+            //Checks if in blend mode.
+            if (ItemHelper.getNBT(stack).getBoolean("blend")) {
 
                 PlayerEntity player = (PlayerEntity) entityIn;
 
+                //Iterate through the Player's inventory slots.
                 for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 
                     ItemStack currentStack = player.inventory.getStackInSlot(i);
 
-                    if (!currentStack.isEmpty() && currentStack.isFood() && currentStack.getItem().getFood() != null) {
+                    //Checks if the current Item is food.
+                    if (currentStack.isFood() && currentStack.getItem().getFood() != null) {
 
+                        CompoundNBT nbt = ItemHelper.getNBT(currentStack);
                         float food = (float) (currentStack.getItem().getFood().getHealing()) / 2;
 
-                        if (ItemHelper.getNBT(stack).getFloat("juice") + food <= CUConfig.misc.blenderMaxJuice.get()) {
+                        //Checks if the added juice can fit.
+                        if (getJuice(ItemHelper.getNBT(stack)) + food <= CUConfig.misc.blenderMaxJuice.get()) {
 
                             InventoryHelper.consumeItem(player.inventory, 1, currentStack);
-                            ItemHelper.getNBT(stack).putFloat("juice", ItemHelper.getNBT(stack).getFloat("juice") + food);
+                            changeJuice(nbt, food);
                         }
                     }
                 }
@@ -141,17 +155,17 @@ public class ItemBlender extends ItemBase {
     }
 
     @Override
+    public int getUseDuration (ItemStack stack) {
+        return 64;
+    }
+
+    @Override
     public UseAction getUseAction (ItemStack stack) {
         return UseAction.DRINK;
     }
 
     @Override
-    public int getUseDuration (ItemStack stack) {
-        return 64;
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private void decreaseJuice (CompoundNBT nbt, float amount) {
-        nbt.putFloat("juice", nbt.getFloat("juice") - amount);
+    public boolean hasEffect (ItemStack stack) {
+        return ItemHelper.getNBT(stack).getBoolean("process");
     }
 }

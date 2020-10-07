@@ -32,4 +32,8 @@ public class SoundHelper {
     public static void playWarp (World world, PlayerEntity player, Location location) {
         world.playSound(player, location.getBlockPos(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, player.getSoundCategory(), 0.9F, 1.1F);
     }
+
+    public static void playSlime (World world, PlayerEntity player, Location location) {
+        world.playSound(player, location.getBlockPos(), SoundEvents.ENTITY_SLIME_ATTACK, player.getSoundCategory(), 0.9F, 1.0F);
+    }
 }

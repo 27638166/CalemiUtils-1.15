@@ -1,6 +1,7 @@
 package calemiutils.item;
 
 import calemiutils.CalemiUtils;
+import calemiutils.integration.curios.CuriosIntegration;
 import calemiutils.item.base.ItemBase;
 import calemiutils.util.Location;
 import calemiutils.util.helper.*;
@@ -11,12 +12,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -35,11 +38,22 @@ public class ItemTorchBelt extends ItemBase {
         tooltip.add(new StringTextComponent("Status: " + ChatFormatting.AQUA + (ItemHelper.getNBT(stack).getBoolean("on") ? "ON" : "OFF")));
     }
 
+    /**
+     * Adds behaviours to the Torch Belt as a curios Item.
+     */
     @Override
-    public boolean hasEffect (ItemStack stack) {
-        return ItemHelper.getNBT(stack).getBoolean("on");
+    public ICapabilityProvider initCapabilities(final ItemStack stack, CompoundNBT unused) {
+
+        if (CalemiUtils.curiosLoaded) {
+            return CuriosIntegration.torchBeltCapability();
+        }
+
+        return super.initCapabilities(stack, unused);
     }
 
+    /**
+     * Handles toggle the state.
+     */
     @Override
     public ActionResult<ItemStack> onItemRightClick (World worldIn, PlayerEntity playerIn, Hand handIn) {
 
@@ -51,31 +65,44 @@ public class ItemTorchBelt extends ItemBase {
         return new ActionResult<>(ActionResultType.SUCCESS, stack);
     }
 
+    /**
+     * Handles calling tick when in inventory.
+     */
     @Override
     public void inventoryTick (ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         tick(stack, worldIn, entityIn);
     }
 
-    private void tick (ItemStack stack, World worldIn, Entity entityIn) {
+    /**
+     * Handles placing Torches.
+     */
+    public static void tick (ItemStack stack, World worldIn, Entity entityIn) {
 
-        if (entityIn instanceof PlayerEntity && ItemHelper.getNBT(stack).getBoolean("on")) {
+        //Checks if the entity is a Player
+        if (entityIn instanceof PlayerEntity) {
 
-            PlayerEntity player = (PlayerEntity) entityIn;
+            //Checks if the state is on.
+            if (ItemHelper.getNBT(stack).getBoolean("on")) {
 
-            Location location = new Location(worldIn, (int) Math.floor(player.getPosition().getX()), (int) Math.floor(player.getPosition().getY()), (int) Math.floor(player.getPosition().getZ()));
+                PlayerEntity player = (PlayerEntity) entityIn;
+                Location location = new Location(worldIn, (int) Math.floor(player.getPosition().getX()), (int) Math.floor(player.getPosition().getY()), (int) Math.floor(player.getPosition().getZ()));
 
-            if (location.getLightValue() <= 7) {
+                //Checks if the Player has a Torch. Bypassed by creative mode.
+                if (player.inventory.hasItemStack(new ItemStack(Blocks.TORCH)) || player.abilities.isCreativeMode) {
 
-                if (player.abilities.isCreativeMode || player.inventory.hasItemStack(new ItemStack(Blocks.TORCH))) {
-
+                    //Checks if a torch can be placed on the Player's Location.
                     if (TorchHelper.canPlaceTorchAt(location)) {
 
                         location.setBlock(Blocks.TORCH);
-
                         if (!player.abilities.isCreativeMode) InventoryHelper.consumeItem(player.inventory, 1, new ItemStack(Blocks.TORCH));
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public boolean hasEffect (ItemStack stack) {
+        return ItemHelper.getNBT(stack).getBoolean("on");
     }
 }

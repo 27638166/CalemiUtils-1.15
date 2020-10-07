@@ -13,22 +13,31 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class MobBeaconEvent {
 
+    /**
+     * Handles the Mob Beacon's spawning prevention.
+     */
     @SubscribeEvent
     public void onEntitySpawn (LivingSpawnEvent.CheckSpawn event) {
 
+        //Checks if its a natural spawn or a reinforcement.
         if (event.getSpawnReason() == SpawnReason.NATURAL || event.getSpawnReason() == SpawnReason.REINFORCEMENT) {
 
+            //Checks if the entity is a monster.
             if (event.getEntity() instanceof MonsterEntity) {
 
                 IWorld world = event.getWorld();
                 MonsterEntity entity = (MonsterEntity) event.getEntity();
                 IChunk chunk = world.getChunk(entity.getPosition());
 
+                //Iterate through all Tile Entities within the entity's chunk.
                 for (BlockPos tePos : chunk.getTileEntitiesPos()) {
 
                     TileEntity te = world.getTileEntity(tePos);
 
+                    //Checks if the Tile Entity is a Mob Beacon.
                     if (te instanceof TileEntityMobBeacon) {
+
+                        //Prevents the entity from spawning.
                         event.setResult(Event.Result.DENY);
                         return;
                     }

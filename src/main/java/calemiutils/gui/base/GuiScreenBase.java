@@ -18,6 +18,50 @@ public abstract class GuiScreenBase extends Screen {
         this.hand = hand;
     }
 
+    /**
+     * Used to obtain the GUI's texture so it can render it.
+     */
+    protected abstract String getGuiTextureName ();
+
+    /**
+     * Used to render anything in the background layer.
+     */
+    protected abstract void drawGuiBackground (int mouseX, int mouseY);
+
+    /**
+     * Used to render anything in the foreground layer.
+     */
+    protected abstract void drawGuiForeground (int mouseX, int mouseY);
+
+    /**
+     * Used to determine the width of the GUI.
+     */
+    protected abstract int getGuiSizeX ();
+
+    /**
+     * Used to determine the height of the GUI.
+     */
+    protected abstract int getGuiSizeY ();
+
+    /**
+     * Used to determine the left of the GUI.
+     */
+    protected int getScreenX () {
+        return (this.width - getGuiSizeX()) / 2;
+    }
+
+    /**
+     * Used to determine the top of the GUI.
+     */
+    protected int getScreenY () {
+        return (this.height - getGuiSizeY()) / 2;
+    }
+
+    protected abstract boolean canCloseWithInvKey ();
+
+    /**
+     * The base render method. Handles ALL rendering.
+     */
     @Override
     public void render (int mouseX, int mouseY, float f1) {
 
@@ -33,30 +77,9 @@ public abstract class GuiScreenBase extends Screen {
         drawGuiForeground(mouseX, mouseY);
     }
 
-    @SuppressWarnings("SameReturnValue")
-    protected abstract String getGuiTextureName ();
-
-    protected int getScreenX () {
-
-        return (this.width - getGuiSizeX()) / 2;
-    }
-
-    protected int getScreenY () {
-
-        return (this.height - getGuiSizeY()) / 2;
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    protected abstract int getGuiSizeX ();
-
-    @SuppressWarnings("SameReturnValue")
-    protected abstract int getGuiSizeY ();
-
-    protected abstract void drawGuiBackground (int mouseX, int mouseY);
-
-    @SuppressWarnings("EmptyMethod")
-    protected abstract void drawGuiForeground (int mouseX, int mouseY);
-
+    /**
+     * Handles closing the GUI when the inventory key is pressed.
+     */
     @Override
     public boolean keyPressed (int i1, int i2, int i3) {
         super.keyPressed(i1, i2, i3);
@@ -70,6 +93,4 @@ public abstract class GuiScreenBase extends Screen {
 
         return false;
     }
-
-    protected abstract boolean canCloseWithInvKey ();
 }
