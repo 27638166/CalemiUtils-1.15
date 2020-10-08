@@ -24,12 +24,17 @@ public class PacketTradingPost {
     public PacketTradingPost () {}
 
     /**
-     * Use this constructor to sync the current mode.
+     * Used to sync the data of the Trading Post.
+     * @param command Used to determine the type of packet to send.
+     * @param pos The Block position of the Tile Entity.
+     * @param stackStrSize The String size of the Item Stack packet.
+     * @param nbtStrSize The String size of the Item Stack's NBT packet.
+     * @param stack The Item Stack's string conversion.
+     * @param nbt The Item Stack's NBT string conversion.
+     * @param buyMode The state of the buyMode option.
+     * @param amount The number of the amount option.
+     * @param price The number of the price option.
      */
-    public PacketTradingPost (String command, BlockPos pos, boolean buyMode) {
-        this(command, pos, 0, 0, "", "", buyMode, 0, 0);
-    }
-
     public PacketTradingPost (String command, BlockPos pos, int stackStrSize, int nbtStrSize, String stack, String nbt, boolean buyMode, int amount, int price) {
         this.command = command;
         this.pos = pos;
@@ -40,6 +45,13 @@ public class PacketTradingPost {
         this.buyMode = buyMode;
         this.amount = amount;
         this.price = price;
+    }
+
+    /**
+     * Use this constructor to sync the current mode.
+     */
+    public PacketTradingPost (String command, BlockPos pos, boolean buyMode) {
+        this(command, pos, 0, 0, "", "", buyMode, 0, 0);
     }
 
     /**
@@ -92,14 +104,17 @@ public class PacketTradingPost {
 
                 Location location = new Location(player.world, pos);
 
+                //Checks if the Tile Entity is a Trading Post.
                 if (location.getTileEntity() instanceof TileEntityTradingPost) {
 
                     TileEntityTradingPost tPost = (TileEntityTradingPost) location.getTileEntity();
 
+                    //Handles syncing the buyMode option.
                     if (command.equalsIgnoreCase("syncmode")) {
                         tPost.buyMode = this.buyMode;
                     }
 
+                    //Handles syncing the Item Stack for sale.
                     else if (command.equalsIgnoreCase("syncstack")) {
 
                         ItemStack stackForSale = ItemHelper.getStackFromString(stack);
@@ -111,6 +126,7 @@ public class PacketTradingPost {
                         tPost.setStackForSale(stackForSale);
                     }
 
+                    //Handles syncing the options on the server.
                     else if (command.equalsIgnoreCase("syncoptions")) {
                         tPost.amountForSale = this.amount;
                         tPost.salePrice = this.price;

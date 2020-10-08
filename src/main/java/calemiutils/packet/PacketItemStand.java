@@ -21,6 +21,17 @@ public class PacketItemStand {
 
     public PacketItemStand () {}
 
+    /**
+     * Handles syncing the options of the Item Stand.
+     * @param command Used to determine the type of packet to send.
+     * @param pos The Block position of the Item Stand.
+     * @param displayId The type of display.
+     * @param translation The translation option.
+     * @param rotation The rotation option.
+     * @param spin The spin option.
+     * @param scale The scale option.
+     * @param pivot The pivot option.
+     */
     public PacketItemStand (String command, BlockPos pos, int displayId, Vector3f translation, Vector3f rotation, Vector3f spin, Vector3f scale, Vector3f pivot) {
         this.command = command;
         this.pos = pos;
@@ -80,15 +91,18 @@ public class PacketItemStand {
 
                 Location location = new Location(player.world, pos);
 
+                //Checks if the Tile Entity is an Item Stand.
                 if (location.getTileEntity() instanceof TileEntityItemStand) {
 
                     TileEntityItemStand stand = (TileEntityItemStand) location.getTileEntity();
 
+                    //Handles syncing the display of the Item Stand.
                     if (command.equalsIgnoreCase("syncdisplay")) {
                         location.setBlock(stand.getBlockState().with(BlockItemStand.DISPLAY_ID, displayId));
                         location.world.setTileEntity(location.getBlockPos(), stand);
                     }
 
+                    //Handles syncing the options of the Item Stand.
                     if (command.equalsIgnoreCase("syncoptions")) {
                         stand.translation = translation;
                         stand.rotation = rotation;

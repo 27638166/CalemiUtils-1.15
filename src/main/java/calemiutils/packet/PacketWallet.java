@@ -21,6 +21,11 @@ public class PacketWallet {
 
     public PacketWallet () {}
 
+    /**
+     * Used to handle withdrawal from the Wallet.
+     * @param buttonId The id of the button.
+     * @param multiplier The multiplier; from shift-clicking & ctrl-clicking.
+     */
     public PacketWallet (int buttonId, int multiplier) {
         this.buttonId = buttonId;
         this.multiplier = multiplier;
@@ -46,6 +51,7 @@ public class PacketWallet {
 
                 ItemStack walletStack = CurrencyHelper.getCurrentWalletStack(player);
 
+                //Checks if the Wallet exists.
                 if (walletStack != null) {
 
                     ItemWallet wallet = (ItemWallet) walletStack.getItem();
@@ -57,10 +63,12 @@ public class PacketWallet {
                         item = InitItems.COIN_NICKEL.get();
                         price = ((ItemCurrency) InitItems.COIN_NICKEL.get()).value;
                     }
+
                     else if (buttonId == 2) {
                         item = InitItems.COIN_QUARTER.get();
                         price = ((ItemCurrency) InitItems.COIN_QUARTER.get()).value;
                     }
+
                     else if (buttonId == 3) {
                         item = InitItems.COIN_DOLLAR.get();
                         price = ((ItemCurrency) InitItems.COIN_DOLLAR.get()).value;
@@ -68,8 +76,8 @@ public class PacketWallet {
 
                     price *= multiplier;
 
+                    //Handles syncing the new balance to the server & spawning the coins.
                     if (!walletStack.isEmpty()) {
-
                         CompoundNBT nbt = ItemHelper.getNBT(walletStack);
                         nbt.putInt("balance", nbt.getInt("balance") - price);
                         ItemHelper.spawnItem(player.world, player, new ItemStack(item, multiplier));

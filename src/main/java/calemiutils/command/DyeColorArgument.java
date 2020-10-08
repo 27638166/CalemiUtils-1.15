@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class DyeColorArgument implements ArgumentType<DyeColor> {
+public class DyeColorArgument implements ArgumentType<String> {
 
     private static final Collection<String> EXAMPLES = Arrays.asList("red", "green");
 
@@ -23,23 +23,23 @@ public class DyeColorArgument implements ArgumentType<DyeColor> {
         return new DyeColorArgument();
     }
 
-    public static DyeColor getColor (CommandContext<CommandSource> context, String name) {
-        return context.getArgument(name, DyeColor.class);
+    public static String getColor (CommandContext<CommandSource> context, String name) {
+        return context.getArgument(name, String.class);
     }
 
     @Override
-    public DyeColor parse (StringReader reader) {
+    public String parse (StringReader reader) {
 
         String colorArg = reader.readUnquotedString();
 
         for (DyeColor color : DyeColor.values()) {
 
             if (colorArg.equalsIgnoreCase(color.getName())) {
-                return color;
+                return color.getName();
             }
         }
 
-        return DyeColor.BLUE;
+        return "blue";
     }
 
     @Override

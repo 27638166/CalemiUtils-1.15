@@ -7,7 +7,9 @@ import calemiutils.item.ItemBrush;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
 import calemiutils.util.helper.ChatHelper;
+import calemiutils.util.helper.ColorHelper;
 import calemiutils.util.helper.WorldEditHelper;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -30,8 +32,9 @@ public class CUCommandBase {
      */
     public static void register (CommandDispatcher<CommandSource> dispatcher) {
 
-        dispatcher.register(LiteralArgumentBuilder.<CommandSource>literal("cu")
-                .requires(commandSource -> true)
+        LiteralArgumentBuilder<CommandSource> cuCommand = Commands.literal("cu");
+
+        cuCommand.requires(commandSource -> true)
                 .then(help())
                 .then(reload())
                 .then(brushWithHollow("fill"))
@@ -40,7 +43,9 @@ public class CUCommandBase {
                 .then(brushCircular("circle"))
                 .then(brushCircular("cylinder"))
                 .then(brushCircular("sphere"))
-                .then(brushWithHollow("pyramid")));
+                .then(brushWithHollow("pyramid"));
+
+        dispatcher.register(cuCommand);
     }
 
     /**
@@ -63,7 +68,7 @@ public class CUCommandBase {
             ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu cylinder <color> (hollow) - Creates a cylinder of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
             ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu sphere <color> (hollow) - Creates a sphere of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
             ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu pyramid <color> (hollow) - Creates a pyramid of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
-            return 1;
+            return Command.SINGLE_SUCCESS;
         });
     }
 
@@ -71,7 +76,7 @@ public class CUCommandBase {
      * The reload command.
      */
     private static ArgumentBuilder<CommandSource, ?> reload () {
-        return Commands.literal("reload").executes(ctx -> 1);
+        return Commands.literal("reload").executes(ctx -> Command.SINGLE_SUCCESS);
     }
 
     /**
@@ -122,12 +127,15 @@ public class CUCommandBase {
     /**
      * Handles all of the Brush commands.
      * @param shape     Used to determine what specific shape command was executed.
-     * @param color1    Used to color the Blueprint placed.
-     * @param color2    Used for the mask for the Blueprint to replace.
+     * @param strColor1    Used to color the Blueprint placed.
+     * @param strColor2    Used for the mask for the Blueprint to replace.
      * @param hollow    Used to determine if the shape is hollow.
      * @param thickness The amount of thickness of the shape.
      */
-    private static int executeBrush (PlayerEntity player, String shape, DyeColor color1, DyeColor color2, boolean hollow, int thickness) {
+    private static int executeBrush (PlayerEntity player, String shape, String strColor1, String strColor2, boolean hollow, int thickness) {
+
+        DyeColor color1 = ColorHelper.getColorFromString(strColor1);
+        DyeColor color2 = ColorHelper.getColorFromString(strColor2);
 
         //Determines which hand has a Brush
         ItemStack stackMainHand = player.getHeldItemMainhand();
@@ -233,7 +241,7 @@ public class CUCommandBase {
                 WorldEditHelper.generateCommand(blocksToPlace, BLUEPRINT.getDefaultState().with(BlockBlueprint.COLOR, color1), Blocks.AIR.getDefaultState(), player, unitChatMessage);
             }
 
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
         else {

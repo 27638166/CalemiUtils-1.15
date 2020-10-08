@@ -140,17 +140,16 @@ public class CUConfig {
     }
 
     public enum WalletOverlayPosition {
+
         TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT;
 
         private static final Map<String, WalletOverlayPosition> NAME_LOOKUP = Arrays.stream(values()).collect(Collectors.toMap(WalletOverlayPosition::toString, (n) -> n));
 
-        WalletOverlayPosition () {
-
-        }
+        WalletOverlayPosition () {}
 
         @Nullable
         public static WalletOverlayPosition byName (@Nullable String name) {
-            return name == null ? null : NAME_LOOKUP.get(name.toLowerCase(Locale.ROOT));
+            return name == null ? null : NAME_LOOKUP.get(name.toUpperCase(Locale.ROOT));
         }
     }
 }

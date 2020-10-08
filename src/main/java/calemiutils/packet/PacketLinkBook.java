@@ -22,18 +22,26 @@ public class PacketLinkBook {
     public PacketLinkBook () {}
 
     /**
-     * Use this constructor to name the Link Book
+     * Handles syncing the data of the Link Book.
+     * @param command Used to determine the type of packet to send.
+     * @param hand The hand the Link Book is held.
+     * @param name The custom name.
+     * @param pos The linked location.
+     * @param dim The linked dimension.
      */
-    public PacketLinkBook (String command, Hand hand, String name) {
-        this(command, hand, name, new BlockPos(0, 0, 0), 0);
-    }
-
     public PacketLinkBook (String command, Hand hand, String name, BlockPos pos, int dim) {
         this.command = command;
         this.offHand = (hand != Hand.MAIN_HAND);
         this.name = name;
         this.pos = pos;
         this.dim = dim;
+    }
+
+    /**
+     * Use this constructor to name the Link Book
+     */
+    public PacketLinkBook (String command, Hand hand, String name) {
+        this(command, hand, name, new BlockPos(0, 0, 0), 0);
     }
 
     /**
@@ -89,20 +97,24 @@ public class PacketLinkBook {
                 final ItemStack stack = player.getHeldItem(hand);
                 Location location = new Location(player.world, pos);
 
+                //Handles teleportation on the server.
                 if (command.equalsIgnoreCase("teleport")) {
                     ItemLinkBookLocation.teleport(player.world, player, location, dim);
                 }
 
                 else if (stack.getItem() instanceof ItemLinkBookLocation) {
 
+                    //Handles syncing the custom name.
                     if (command.equalsIgnoreCase("name")) {
                         ItemLinkBookLocation.bindName(stack, name);
                     }
 
+                    //Handles syncing the reset options.
                     else if (command.equalsIgnoreCase("reset")) {
                         ItemLinkBookLocation.resetLocation(stack, player);
                     }
 
+                    //Handles binding the new Location on the server.
                     else if (command.equalsIgnoreCase("bind")) {
                         ItemLinkBookLocation.bindLocation(stack, player, location, true);
                     }

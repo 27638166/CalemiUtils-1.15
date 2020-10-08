@@ -1,6 +1,7 @@
 package calemiutils;
 
 import calemiutils.command.CUCommandBase;
+import calemiutils.command.DyeColorArgument;
 import calemiutils.event.*;
 import calemiutils.gui.*;
 import calemiutils.init.*;
@@ -13,6 +14,8 @@ import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.command.arguments.ArgumentSerializer;
+import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
@@ -36,6 +39,8 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.server.command.EnumArgument;
+import net.minecraftforge.server.command.ModIdArgument;
 import top.theillusivec4.curios.api.CuriosAPI;
 import top.theillusivec4.curios.api.imc.CurioIMCMessage;
 
@@ -88,6 +93,8 @@ public class CalemiUtils {
         MinecraftForge.EVENT_BUS.register(new MobBeaconEvent());
 
         DeferredWorkQueue.runLater(WorldGenOre::onCommonSetup);
+
+        ArgumentTypes.register("cu:color", DyeColorArgument.class, new ArgumentSerializer<>(DyeColorArgument::color));
     }
 
     private void doClientStuff (final FMLClientSetupEvent event) {
@@ -118,7 +125,6 @@ public class CalemiUtils {
         InitKeyBindings.init();
     }
 
-    @SubscribeEvent
     public void onServerStarting (FMLServerStartingEvent event) {
         CUCommandBase.register(event.getCommandDispatcher());
     }

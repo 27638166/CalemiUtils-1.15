@@ -17,6 +17,11 @@ public class PacketOpenWallet {
 
     public PacketOpenWallet () {}
 
+    /**
+     * Currently called by the key input.
+     * Opens the Wallet GUI on the server.
+     * @param slotId The slot the Wallet is in.
+     */
     public PacketOpenWallet (int slotId) {
         this.slotId = slotId;
     }

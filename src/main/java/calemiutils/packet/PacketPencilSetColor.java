@@ -16,6 +16,11 @@ public class PacketPencilSetColor {
 
     public PacketPencilSetColor () {}
 
+    /**
+     * Used to sync the color data of the Pencil.
+     * @param colorId The color id from which a color can be created from.
+     * @param hand The hand the Pencil is held.
+     */
     public PacketPencilSetColor (int colorId, Hand hand) {
         this.colorId = colorId;
         this.offHand = (hand != Hand.MAIN_HAND);
@@ -44,6 +49,7 @@ public class PacketPencilSetColor {
 
                 final ItemStack stack = player.getHeldItem(hand);
 
+                //Checks if the held item is a Pencil.
                 if (stack.getItem() instanceof ItemPencil) {
 
                     ItemPencil pencil = (ItemPencil) stack.getItem();

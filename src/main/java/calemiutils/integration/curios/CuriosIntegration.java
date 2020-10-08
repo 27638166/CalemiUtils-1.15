@@ -19,6 +19,9 @@ import javax.annotation.Nullable;
 
 public class CuriosIntegration {
 
+    /**
+     * Adds the Curios capability to the Wallet.
+     */
     public static ICapabilityProvider walletCapability () {
 
         ICurio curio = new ICurio() {
@@ -51,6 +54,9 @@ public class CuriosIntegration {
         };
     }
 
+    /**
+     * Adds the Curios capability to the Torch Belt.
+     */
     public static ICapabilityProvider torchBeltCapability () {
 
         ICurio curio = new ICurio() {

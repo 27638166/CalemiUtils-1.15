@@ -16,6 +16,11 @@ public class PacketEnableTileEntity {
 
     public PacketEnableTileEntity () {}
 
+    /**
+     * Handles syncing the state of the "enable" value to any Tile Entity Base.
+     * @param enable The Tile Entity's enable state.
+     * @param pos The Block position of the Tile Entity.
+     */
     public PacketEnableTileEntity (boolean enable, BlockPos pos) {
         this.enable = enable;
         this.pos = pos;
@@ -43,8 +48,8 @@ public class PacketEnableTileEntity {
 
                 Location location = new Location(player.world, pos);
 
+                //Checks if the Tile Entity at the given Location is a Tile Entity Base.
                 if (location.getTileEntity() instanceof TileEntityBase) {
-
                     ((TileEntityBase) location.getTileEntity()).enable = enable;
                 }
             }

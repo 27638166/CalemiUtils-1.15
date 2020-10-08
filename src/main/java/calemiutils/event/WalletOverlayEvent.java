@@ -3,6 +3,7 @@ package calemiutils.event;
 import calemiutils.CUConfig;
 import calemiutils.item.ItemWallet;
 import calemiutils.util.helper.CurrencyHelper;
+import calemiutils.util.helper.LogHelper;
 import calemiutils.util.helper.ScreenHelper;
 import calemiutils.util.helper.StringHelper;
 import net.minecraft.client.Minecraft;
@@ -47,6 +48,8 @@ public class WalletOverlayEvent {
                 if (CUConfig.wallet.walletOverlay.get() && !walletStack.isEmpty() && mc.currentScreen == null) {
 
                     CUConfig.WalletOverlayPosition walletPosition = CUConfig.WalletOverlayPosition.byName(CUConfig.wallet.walletOverlayPosition.get());
+
+                    LogHelper.log(walletPosition);
 
                     int currency = ItemWallet.getBalance(walletStack);
                     String currencyStr = StringHelper.printCurrency(currency);
