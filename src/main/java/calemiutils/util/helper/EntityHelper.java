@@ -32,8 +32,6 @@ public class EntityHelper {
         Location groundLocation = new Location(legLocation, Direction.DOWN);
         Location headLocation = new Location(legLocation, Direction.UP);
 
-        System.out.println(groundLocation.toString());
-
         return groundLocation.doesBlockHaveCollision() && !legLocation.doesBlockHaveCollision() && !headLocation.doesBlockHaveCollision();
     }
 }

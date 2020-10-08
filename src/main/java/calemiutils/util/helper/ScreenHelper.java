@@ -27,12 +27,11 @@ public class ScreenHelper {
     public static void drawHoveringTextBox (int mouseX, int mouseY, int zLevel, ScreenRect rect, String... text) {
 
         if (rect.contains(mouseX, mouseY)) {
-
-            drawTextBox(mouseX, mouseY, zLevel, text);
+            drawTextBox(mouseX + 8, mouseY - 10, zLevel, false, text);
         }
     }
 
-    public static void drawTextBox (int x, int y, int zLevel, String... text) {
+    public static void drawTextBox (int x, int y, int zLevel, boolean centeredString, String... text) {
 
         GL11.glPushMatrix();
         GL11.glTranslatef(0, 0, zLevel);
@@ -47,19 +46,19 @@ public class ScreenHelper {
         }
 
         bindGuiTextures();
-        drawCappedRect(x + 7, y - 13, 0, 138, 0, maxLength + 5, 13 + ((text.length - 1) * 9), 256, 102);
+        drawCappedRect(x + (centeredString ? - maxLength / 2 : 0), y, 0, 138, 0, maxLength + 5, 13 + ((text.length - 1) * 9), 256, 102);
 
         for (int i = 0; i < text.length; i++) {
 
             String str = text[i];
 
             GL11.glTranslatef(0, 0, 100);
-            mc.fontRenderer.drawString(ChatFormatting.WHITE + str, (x + 10), (y - 10) + (i * 9), 0xFFFFFF);
+            mc.fontRenderer.drawString(ChatFormatting.WHITE + str, x + 3 + (centeredString ? -(int)(mc.fontRenderer.getStringWidth(str) / 2) : 0), y + 3 + (i * 9), 0xFFFFFF);
         }
 
         GL11.glTranslatef(0, 0, 0);
-        GL11.glPopMatrix();
         GL11.glColor4f(1, 1, 1, 1);
+        GL11.glPopMatrix();
     }
 
     /*public static void drawOneLineHoveringTextBox(String text, int mouseX, int mouseY, GuiRect rect) {

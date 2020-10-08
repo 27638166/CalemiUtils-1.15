@@ -49,8 +49,6 @@ public class WalletOverlayEvent {
 
                     CUConfig.WalletOverlayPosition walletPosition = CUConfig.WalletOverlayPosition.byName(CUConfig.wallet.walletOverlayPosition.get());
 
-                    LogHelper.log(walletPosition);
-
                     int currency = ItemWallet.getBalance(walletStack);
                     String currencyStr = StringHelper.printCurrency(currency);
 

@@ -36,7 +36,7 @@ public class FakeSlot extends Button {
     @Override
     public void renderButton (int mouseX, int mouseY, float partialTicks) {
 
-        if (this.visible) {
+        if (this.visible && !stack.isEmpty()) {
 
             List<String> list = new ArrayList<>();
             List<ITextComponent> lore = stack.getTooltip(Minecraft.getInstance().player, ITooltipFlag.TooltipFlags.NORMAL);
@@ -49,9 +49,12 @@ public class FakeSlot extends Button {
             StringHelper.removeCharFromList(list, "Shift", "Ctrl");
 
             ScreenHelper.drawItemStack(itemRender, getItemStack(), rect.x, rect.y);
-            if (!stack.isEmpty()) ScreenHelper.drawHoveringTextBox(mouseX, mouseY, 300, rect, StringHelper.getArrayFromList(list));
 
-            GL11.glColor3f(1, 1, 1);
+            GL11.glPushMatrix();
+            GL11.glColor4f(1, 1, 1, 0.75F);
+            ScreenHelper.drawHoveringTextBox(mouseX, mouseY, 300, rect, StringHelper.getArrayFromList(list));
+            GL11.glColor4f(1, 1, 1, 1);
+            GL11.glPopMatrix();
         }
     }
 

@@ -2,21 +2,25 @@ package calemiutils.event;
 
 import calemiutils.tileentity.TileEntityTradingPost;
 import calemiutils.util.Location;
+import calemiutils.util.helper.LoreHelper;
 import calemiutils.util.helper.RayTraceHelper;
 import calemiutils.util.helper.ScreenHelper;
 import calemiutils.util.helper.StringHelper;
+import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TradingPostOverlayEvent {
@@ -56,25 +60,34 @@ public class TradingPostOverlayEvent {
                     if (post.hasValidTradeOffer) {
 
                         ItemStack stackForSale = post.getStackForSale();
-                        List<ITextComponent> stackForSaleLore = post.getStackForSale().getTooltip(Minecraft.getInstance().player, ITooltipFlag.TooltipFlags.NORMAL);
+
+                        List<String> list = new ArrayList<>();
+                        List<ITextComponent> lore = post.getStackForSale().getTooltip(Minecraft.getInstance().player, ITooltipFlag.TooltipFlags.NORMAL);
 
                         String postName = post.adminMode ? ("Admin Post") : (post.getSecurityProfile().getOwnerName() + "'s Trading Post");
                         String sellingStr = (post.buyMode ? "Buying " : "Selling ") + StringHelper.printCommas(post.amountForSale) + "x " + post.getStackForSale().getDisplayName().getFormattedText() + " for " + (post.salePrice > 0 ? (StringHelper.printCurrency(post.salePrice)) : "free");
 
-                        int boxWidth = mc.fontRenderer.getStringWidth(sellingStr) + 5;
-                        int boxHeight = 23;
+                        list.add(postName);
+                        list.add(sellingStr);
 
-                        //If the Stack for sale has lore, increase the box size.
-                        if (stackForSaleLore.size() == 2) boxHeight += 11;
+                        if (player.isCrouching()) {
+
+                            for (ITextComponent component : lore) {
+                                list.add(component.getFormattedText());
+                            }
+
+                            list.remove(2);
+
+                            StringHelper.removeNullsFromList(list);
+                            StringHelper.removeCharFromList(list, "Shift", "Ctrl");
+                        }
+
+                        else {
+                            list.add(ChatFormatting.GRAY + "[" + ChatFormatting.AQUA + "Shift" + ChatFormatting.GRAY + "]" + ChatFormatting.GRAY + " Info");
+                        }
 
                         ScreenHelper.bindGuiTextures();
-                        ScreenHelper.drawCappedRect(midX - boxWidth / 2, midY + 12, 0, 138, 0, boxWidth, boxHeight, 256, 102);
-
-                        ScreenHelper.drawCenteredString(postName, midX, midY + 15, 5, 0xFFFFFFFF);
-                        ScreenHelper.drawCenteredString(sellingStr, midX, midY + 15 + 10, 5, 0xFFFFFFFF);
-
-                        //If the Stack for sale has lore, draw the string.
-                        if (stackForSaleLore.size() == 2) ScreenHelper.drawCenteredString(stackForSaleLore.get(1).getFormattedText(), midX, midY + 15 + 20, 5, 0xFFFFFFFF);
+                        ScreenHelper.drawTextBox(midX - 3, midY + 12, 0, true, StringHelper.getArrayFromList(list));
                     }
                 }
             }
