@@ -204,8 +204,9 @@ public abstract class ContainerScreenBase<T extends ContainerBase> extends Conta
 
                 String name = tileEntitySecurity.getSecurityProfile().getOwnerName();
                 int width = minecraft.fontRenderer.getStringWidth(name) + 7;
+
                 ScreenHelper.drawCappedRect(getScreenX() + (getGuiSizeX() / 2) - (width / 2), getScreenY() + getGuiSizeY() - 1, 0, 116, 0, width, 13, 256, 22);
-                ScreenHelper.drawCenteredString(name, getScreenX() + (getGuiSizeX() / 2) + 1, getScreenY() + getGuiSizeY() + 2, 50, TEXT_COLOR_GRAY);
+                ScreenHelper.drawCenteredString(name, getScreenX() + (getGuiSizeX() / 2) + (width % 2 == 0 ? 0 : 1), getScreenY() + getGuiSizeY() + 2, 50, TEXT_COLOR_GRAY);
                 GL11.glColor3f(1, 1, 1);
             }
 

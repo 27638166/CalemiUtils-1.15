@@ -38,34 +38,34 @@ public class ScreenTradingPost extends ContainerScreenBase<ContainerTradingPost>
         super.init();
 
         //Subtract Amount
-        addButton(new ButtonRect(getScreenX() + 49, getScreenY() + upY, 16, "-", (btn) -> {
+        addButton(new ButtonRect(getScreenX() + 50, getScreenY() + upY, 16, "-", (btn) -> {
             int i = ShiftHelper.getShiftCtrlInt(1, 10, 100, 1000);
             changeAmount(-i);
         }));
 
         //Add Amount
-        addButton(new ButtonRect(getScreenX() + 111, getScreenY() + upY, 16, "+", (btn) -> {
+        addButton(new ButtonRect(getScreenX() + 110, getScreenY() + upY, 16, "+", (btn) -> {
             int i = ShiftHelper.getShiftCtrlInt(1, 10, 100, 1000);
             changeAmount(i);
         }));
 
         //Subtract Price
-        addButton(new ButtonRect(getScreenX() + 49, getScreenY() + downY, 16, "-", (btn) -> {
+        addButton(new ButtonRect(getScreenX() + 50, getScreenY() + downY, 16, "-", (btn) -> {
             int i = ShiftHelper.getShiftCtrlInt(1, 10, 100, 1000);
             changePrice(-i);
         }));
 
         //Add Price
-        addButton(new ButtonRect(getScreenX() + 111, getScreenY() + downY, 16, "+", (btn) -> {
+        addButton(new ButtonRect(getScreenX() + 110, getScreenY() + downY, 16, "+", (btn) -> {
             int i = ShiftHelper.getShiftCtrlInt(1, 10, 100, 1000);
             changePrice(i);
         }));
 
         //Reset Amount
-        addButton(new ButtonRect(getScreenX() + 130, getScreenY() + upY, 16, "R", (btn) -> resetAmount()));
+        addButton(new ButtonRect(getScreenX() + 128, getScreenY() + upY, 16, "R", (btn) -> resetAmount()));
 
         //Reset Price
-        addButton(new ButtonRect(getScreenX() + 130, getScreenY() + downY, 16, "R", (btn) -> resetPrice()));
+        addButton(new ButtonRect(getScreenX() + 128, getScreenY() + downY, 16, "R", (btn) -> resetPrice()));
 
         sellModeBtn = addButton(new ButtonRect(getScreenX() + 21, getScreenY() + 19, 39, tePost.buyMode ? "Buying" : "Selling", (btn) -> toggleMode()));
 
@@ -170,7 +170,7 @@ public class ScreenTradingPost extends ContainerScreenBase<ContainerTradingPost>
 
     @Override
     public int getGuiSizeY () {
-        return 223;
+        return 232;
     }
 
     @Override

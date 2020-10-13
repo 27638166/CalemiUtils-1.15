@@ -20,36 +20,20 @@ public class ScreenTorchPlacer extends ContainerScreenBase<ContainerTorchPlacer>
         super(container, playerInventory, title);
     }
 
-    @Override
-    public int getGuiSizeY () {
-        return 192;
-    }
-
-    @Override
-    protected void drawGuiForeground (int mouseX, int mouseY) {}
-
-    @Override
-    protected String getGuiTextureName () {
-        return "torch_placer";
-    }
-
-    @Override
-    protected void drawGuiBackground (int mouseX, int mouseY) {}
-
+    /**
+     * @return The Tile Entities current enable state.
+     */
+    private String getEnabledText () {
+        return getTileEntity().enable ? "Enabled" : "Disabled";
+    }    
+    
     @Override
     protected void init () {
         super.init();
 
         int btnWidth = 62;
         activateBtn = addButton(new ButtonRect(getScreenX() + (getGuiSizeX() / 2) - (btnWidth / 2), getScreenY() + 24, btnWidth, getEnabledText(), (btn) -> toggleActivate()));
-    }
-
-    /**
-     * @return The Tile Entities current enable state.
-     */
-    private String getEnabledText () {
-        return getTileEntity().enable ? "Enabled" : "Disabled";
-    }
+    }    
 
     /**
      * Called when the activateBtn is pressed.
@@ -63,5 +47,21 @@ public class ScreenTorchPlacer extends ContainerScreenBase<ContainerTorchPlacer>
         getTileEntity().enable = value;
 
         activateBtn.setMessage(getEnabledText());
+    }
+
+    @Override
+    protected void drawGuiForeground (int mouseX, int mouseY) {}
+
+    @Override
+    protected void drawGuiBackground (int mouseX, int mouseY) {}
+
+    @Override
+    public int getGuiSizeY () {
+        return 201;
+    }
+
+    @Override
+    protected String getGuiTextureName () {
+        return "torch_placer";
     }
 }

@@ -13,7 +13,7 @@ public class ContainerTradingPost extends ContainerBase {
     }
 
     public ContainerTradingPost (final int windowId, final PlayerInventory playerInventory, final TileEntityTradingPost tileEntity) {
-        super(InitContainersTypes.TRADING_POST.get(), windowId, playerInventory, tileEntity, 8, 141);
+        super(InitContainersTypes.TRADING_POST.get(), windowId, playerInventory, tileEntity, 8, 150);
         addTileEntityStorageInv(tileEntity.getInventory(), 0, 8, 83, 3);
     }
 }

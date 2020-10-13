@@ -85,6 +85,20 @@ public class ItemLinkBookLocation extends ItemBase {
     }
 
     /**
+     * @return the linked rotation
+     */
+    public static float getLinkedRotation (ItemStack bookStack) {
+
+        CompoundNBT nbt = ItemHelper.getNBT(bookStack);
+
+        if (isLinked(bookStack)) {
+            return nbt.getFloat("Rot");
+        }
+
+        return 0;
+    }
+
+    /**
      * @return the linked Dimension if set.
      */
     public static int getLinkedDimensionId (ItemStack bookStack) {
@@ -110,6 +124,7 @@ public class ItemLinkBookLocation extends ItemBase {
         nbt.remove("X");
         nbt.remove("Y");
         nbt.remove("Z");
+        nbt.remove("Rot");
         nbt.remove("Dim");
         nbt.remove("DimName");
 
@@ -130,6 +145,7 @@ public class ItemLinkBookLocation extends ItemBase {
         nbt.putInt("X", location.x);
         nbt.putInt("Y", location.y);
         nbt.putInt("Z", location.z);
+        nbt.putFloat("Rot", player.rotationYawHead);
         nbt.putInt("Dim", player.world.dimension.getType().getId());
         nbt.putString("DimName", player.world.dimension.getType().getRegistryName().toString().split(":")[1].toUpperCase());
 
@@ -153,7 +169,7 @@ public class ItemLinkBookLocation extends ItemBase {
     /**
      * Teleports the given player to the given location. Only happens if they are in the same Dimension.
      */
-    public static void teleport (World world, PlayerEntity player, Location location, int dim) {
+    public static void teleport (World world, PlayerEntity player, Location location, float yaw, int dim) {
 
         //Checks if on server.
         if (!world.isRemote) {
@@ -164,7 +180,7 @@ public class ItemLinkBookLocation extends ItemBase {
                 //Checks if it's safe to teleport to the link Location.
                 if (EntityHelper.canTeleportAt((ServerPlayerEntity) player, location)) {
 
-                    EntityHelper.teleportPlayer((ServerPlayerEntity) player, location);
+                    EntityHelper.teleportPlayer((ServerPlayerEntity) player, location, yaw);
                     getUnitChatMessage(player).printMessage(TextFormatting.GREEN, "Teleported you to " + location.toString());
                 }
 

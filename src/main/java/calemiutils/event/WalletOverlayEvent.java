@@ -45,7 +45,7 @@ public class WalletOverlayEvent {
                 ItemStack walletStack = CurrencyHelper.getCurrentWalletStack(player);
 
                 //Checks if the config option is true and the Player is not looking at a screen.
-                if (CUConfig.wallet.walletOverlay.get() && !walletStack.isEmpty() && mc.currentScreen == null) {
+                if (CUConfig.wallet.walletOverlay.get() && !walletStack.isEmpty() && mc.currentScreen == null && !mc.gameSettings.showDebugInfo) {
 
                     CUConfig.WalletOverlayPosition walletPosition = CUConfig.WalletOverlayPosition.byName(CUConfig.wallet.walletOverlayPosition.get());
 

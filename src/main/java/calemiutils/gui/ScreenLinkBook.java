@@ -139,10 +139,12 @@ public class ScreenLinkBook extends GuiScreenBase {
 
                 BlockPos pos = location.getBlockPos();
                 int dim = ItemLinkBookLocation.getLinkedDimensionId(bookStack);
+                float yaw = ItemLinkBookLocation.getLinkedRotation(bookStack);
 
                 SoundHelper.playWarp(player.world, player, location);
                 SoundHelper.playWarp(player.world, player);
-                CalemiUtils.network.sendToServer(new PacketLinkBook("teleport", hand, pos, dim));
+
+                CalemiUtils.network.sendToServer(new PacketLinkBook("teleport", hand, pos, yaw, dim));
 
                 player.closeScreen();
             }

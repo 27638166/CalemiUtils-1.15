@@ -48,7 +48,7 @@ import top.theillusivec4.curios.api.imc.CurioIMCMessage;
 @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
 public class CalemiUtils {
 
-    public static final ResourceLocation EMPTY_WALLET_SLOT = new ResourceLocation(CUReference.MOD_ID, "items/empty_wallet_slot");
+    public static final ResourceLocation EMPTY_WALLET_SLOT = new ResourceLocation(CUReference.MOD_ID, "gui/empty_wallet_slot");
     public static boolean curiosLoaded = false;
 
     public static final ItemGroup TAB = new CUTab();

@@ -2,8 +2,15 @@ package calemiutils.integration.curios;
 
 import calemiutils.init.InitItems;
 import calemiutils.item.ItemTorchBelt;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -19,6 +26,8 @@ import javax.annotation.Nullable;
 
 public class CuriosIntegration {
 
+    private static final ItemStack modelStack = new ItemStack(InitItems.WALLET.get());
+
     /**
      * Adds the Curios capability to the Wallet.
      */
@@ -27,8 +36,32 @@ public class CuriosIntegration {
         ICurio curio = new ICurio() {
 
             @Override
-            public boolean canRightClickEquip () {
-                return false;
+            public void render (String identifier, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, LivingEntity livingEntity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+
+                ICurio.RenderHelper.translateIfSneaking(matrixStack, livingEntity);
+                ICurio.RenderHelper.rotateIfSneaking(matrixStack, livingEntity);
+
+                matrixStack.func_227860_a_();
+
+                //Translate
+                matrixStack.func_227861_a_(0.26D, 0.85D, 0.0D);
+
+                //Rotate
+                matrixStack.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(90));
+                matrixStack.func_227863_a_(Vector3f.field_229178_a_.func_229187_a_(180));
+
+                //Scale
+                matrixStack.func_227862_a_(0.5F, 0.5F, 0.9F);
+
+                Minecraft.getInstance().getItemRenderer().func_229110_a_(modelStack, ItemCameraTransforms.TransformType.GROUND, combinedLight, OverlayTexture.field_229196_a_, matrixStack, buffer);
+
+                //Pop
+                matrixStack.func_227865_b_();
+            }
+
+            @Override
+            public void playEquipSound (LivingEntity entityLivingBase) {
+                entityLivingBase.world.playSound(null, entityLivingBase.getPosition(), SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA, SoundCategory.NEUTRAL, 1.0F, 1.0F);
             }
 
             @Override
@@ -37,8 +70,13 @@ public class CuriosIntegration {
             }
 
             @Override
-            public void playEquipSound (LivingEntity entityLivingBase) {
-                entityLivingBase.world.playSound(null, entityLivingBase.getPosition(), SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+            public boolean hasRender (String identifier, LivingEntity livingEntity) {
+                return true;
+            }
+
+            @Override
+            public boolean canRightClickEquip () {
+                return false;
             }
         };
 
@@ -62,11 +100,6 @@ public class CuriosIntegration {
         ICurio curio = new ICurio() {
 
             @Override
-            public boolean canRightClickEquip () {
-                return false;
-            }
-
-            @Override
             public void onCurioTick (String identifier, int index, LivingEntity livingEntity) {
 
                 if (livingEntity instanceof PlayerEntity) {
@@ -80,13 +113,18 @@ public class CuriosIntegration {
             }
 
             @Override
+            public void playEquipSound (LivingEntity entityLivingBase) {
+                entityLivingBase.world.playSound(null, entityLivingBase.getPosition(), SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+            }
+
+            @Override
             public boolean canEquip (String identifier, LivingEntity entityLivingBase) {
                 return !CuriosAPI.getCurioEquipped(InitItems.TORCH_BELT.get(), entityLivingBase).isPresent();
             }
 
             @Override
-            public void playEquipSound (LivingEntity entityLivingBase) {
-                entityLivingBase.world.playSound(null, entityLivingBase.getPosition(), SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+            public boolean canRightClickEquip () {
+                return false;
             }
         };
 

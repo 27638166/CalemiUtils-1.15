@@ -10,16 +10,20 @@ import java.util.Set;
 
 public class EntityHelper {
 
-    public static void teleportPlayer (ServerPlayerEntity entity, Location location) {
-        teleport(entity, location);
+    public static void teleportPlayer (ServerPlayerEntity entity, Location location, float yaw) {
+        teleport(entity, location, yaw, 0);
     }
 
-    private static void teleport (ServerPlayerEntity entity, Location location) {
+    public static void teleportPlayer (ServerPlayerEntity entity, Location location) {
+        teleportPlayer(entity, location, 0);
+    }
+
+    private static void teleport (ServerPlayerEntity entity, Location location, float yaw, float pitch) {
 
         Set<SPlayerPositionLookPacket.Flags> set = EnumSet.noneOf(SPlayerPositionLookPacket.Flags.class);
 
         entity.stopRiding();
-        entity.connection.setPlayerLocation(location.x + 0.5F, location.y, location.z + 0.5F, 0, 0, set);
+        entity.connection.setPlayerLocation(location.x + 0.5F, location.y, location.z + 0.5F, yaw, 0, set);
 
         if (!entity.isElytraFlying()) {
             entity.setMotion(0, 0, 0);

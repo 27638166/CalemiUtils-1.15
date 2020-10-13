@@ -23,7 +23,7 @@ public class BlockTorchPlacer extends BlockInventoryContainerBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Places torch in dark areas within a radius.", true);
+        LoreHelper.addInformationLore(tooltip, "Places torches in dark areas within a radius.", true);
         LoreHelper.addControlsLore(tooltip, "Open Inventory", LoreHelper.Type.USE, true);
     }
 

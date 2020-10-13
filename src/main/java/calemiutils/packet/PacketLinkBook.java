@@ -17,6 +17,7 @@ public class PacketLinkBook {
     private boolean offHand;
     private String name;
     private BlockPos pos;
+    private float yaw;
     private int dim;
 
     public PacketLinkBook () {}
@@ -29,11 +30,12 @@ public class PacketLinkBook {
      * @param pos The linked location.
      * @param dim The linked dimension.
      */
-    public PacketLinkBook (String command, Hand hand, String name, BlockPos pos, int dim) {
+    public PacketLinkBook (String command, Hand hand, String name, BlockPos pos, float yaw, int dim) {
         this.command = command;
         this.offHand = (hand != Hand.MAIN_HAND);
         this.name = name;
         this.pos = pos;
+        this.yaw = yaw;
         this.dim = dim;
     }
 
@@ -41,28 +43,28 @@ public class PacketLinkBook {
      * Use this constructor to name the Link Book
      */
     public PacketLinkBook (String command, Hand hand, String name) {
-        this(command, hand, name, new BlockPos(0, 0, 0), 0);
+        this(command, hand, name, new BlockPos(0, 0, 0), 0, 0);
     }
 
     /**
      * Use this constructor to bind a Location to the Link Book
      */
     public PacketLinkBook (String command, Hand hand, BlockPos pos) {
-        this(command, hand, "", pos, 0);
+        this(command, hand, "", pos, 0, 0);
     }
 
     /**
      * Use this constructor to reset the Lick Book's data.
      */
     public PacketLinkBook (String command, Hand hand) {
-        this(command, hand, "", new BlockPos(0, 0, 0), 0);
+        this(command, hand, "", new BlockPos(0, 0, 0), 0, 0);
     }
 
     /**
      * Use this constructor to teleport to the Link Book's linked location.
      */
-    public PacketLinkBook (String command, Hand hand, BlockPos pos, int dim) {
-        this(command, hand, "", pos, dim);
+    public PacketLinkBook (String command, Hand hand, BlockPos pos, float yaw, int dim) {
+        this(command, hand, "", pos, yaw, dim);
     }
 
     public PacketLinkBook (PacketBuffer buf) {
@@ -70,6 +72,7 @@ public class PacketLinkBook {
         offHand = buf.readBoolean();
         name = buf.readString(32);
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
+        yaw = buf.readFloat();
         dim = buf.readInt();
     }
 
@@ -80,6 +83,7 @@ public class PacketLinkBook {
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());
+        buf.writeFloat(yaw);
         buf.writeInt(dim);
     }
 
@@ -99,7 +103,7 @@ public class PacketLinkBook {
 
                 //Handles teleportation on the server.
                 if (command.equalsIgnoreCase("teleport")) {
-                    ItemLinkBookLocation.teleport(player.world, player, location, dim);
+                    ItemLinkBookLocation.teleport(player.world, player, location, yaw, dim);
                 }
 
                 else if (stack.getItem() instanceof ItemLinkBookLocation) {
