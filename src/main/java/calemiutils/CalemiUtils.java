@@ -39,8 +39,6 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
-import net.minecraftforge.server.command.EnumArgument;
-import net.minecraftforge.server.command.ModIdArgument;
 import top.theillusivec4.curios.api.CuriosAPI;
 import top.theillusivec4.curios.api.imc.CurioIMCMessage;
 
@@ -91,6 +89,7 @@ public class CalemiUtils {
         MinecraftForge.EVENT_BUS.register(new WrenchEvent());
         MinecraftForge.EVENT_BUS.register(new SecurityEvent());
         MinecraftForge.EVENT_BUS.register(new MobBeaconEvent());
+        MinecraftForge.EVENT_BUS.register(new AddTradesEvent());
 
         DeferredWorkQueue.runLater(WorldGenOre::onCommonSetup);
 
@@ -125,6 +124,7 @@ public class CalemiUtils {
         InitKeyBindings.init();
     }
 
+    @SubscribeEvent
     public void onServerStarting (FMLServerStartingEvent event) {
         CUCommandBase.register(event.getCommandDispatcher());
     }
@@ -143,8 +143,8 @@ public class CalemiUtils {
 
         if (curiosLoaded) {
             InterModComms.sendTo("curios", CuriosAPI.IMC.REGISTER_TYPE, () -> new CurioIMCMessage("wallet").setSize(1));
-            InterModComms.sendTo("curios", CuriosAPI.IMC.REGISTER_TYPE, () -> new CurioIMCMessage("belt").setSize(1));
             InterModComms.sendTo("curios", CuriosAPI.IMC.REGISTER_ICON, () -> new Tuple<>("wallet", EMPTY_WALLET_SLOT));
+            InterModComms.sendTo("curios", CuriosAPI.IMC.REGISTER_TYPE, () -> new CurioIMCMessage("belt").setSize(1));
         }
     }
 }

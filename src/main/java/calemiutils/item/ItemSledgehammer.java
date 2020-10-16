@@ -3,7 +3,6 @@ package calemiutils.item;
 import calemiutils.CalemiUtils;
 import calemiutils.init.InitEnchantments;
 import calemiutils.init.InitItems;
-import calemiutils.tool.SledgehammerTiers;
 import calemiutils.util.Location;
 import calemiutils.util.VeinScan;
 import calemiutils.util.helper.LoreHelper;
@@ -19,10 +18,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.PickaxeItem;
-import net.minecraft.item.UseAction;
+import net.minecraft.item.*;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -160,7 +156,7 @@ public class ItemSledgehammer extends PickaxeItem {
                 }
 
                 nextLocation.breakBlock(player, heldStack);
-                heldStack.damageItem(1, player, (i) -> i.sendBreakAnimation(EquipmentSlotType.MAINHAND));
+                damageHammer(heldStack, player);
                 damage++;
             }
         }
@@ -191,7 +187,7 @@ public class ItemSledgehammer extends PickaxeItem {
             //Checks if the next Location can be mined.
             if (canBreakBlock(nextLocation)) {
                 nextLocation.breakBlock(player, heldStack);
-                if (heldStack.getItem() != InitItems.SLEDGEHAMMER_STARLIGHT.get()) heldStack.damageItem(1, player, (i) -> i.sendBreakAnimation(EquipmentSlotType.MAINHAND));
+                damageHammer(heldStack, player);
                 damage++;
             }
         }
@@ -212,16 +208,32 @@ public class ItemSledgehammer extends PickaxeItem {
      * Handles damaging when the Sledgehammer breaks a Block.
      */
     @Override
-    public boolean onBlockDestroyed (ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity entityLiving) {
+    public boolean onBlockDestroyed (ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity livingEntity) {
 
         //Checks if on server & if the block has hardness.
         if (!world.isRemote && state.getBlockHardness(world, pos) != 0.0F) {
 
             //If not a Starlight Sledgehammer, damage the item.
-            if (stack.getItem() != InitItems.SLEDGEHAMMER_STARLIGHT.get()) stack.damageItem(1, entityLiving, (i) -> i.sendBreakAnimation(EquipmentSlotType.MAINHAND));
+            damageHammer(stack, livingEntity);
         }
 
         return true;
+    }
+
+    /**
+     * Handles damaging when the Sledgehammer hits an Entity.
+     */
+    @Override
+    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        damageHammer(stack, attacker);
+        return true;
+    }
+
+    /**
+     * Used to damage the Sledgehammer if its not a Starlight one.
+     */
+    private void damageHammer(ItemStack stack, LivingEntity livingEntity) {
+        if (stack.getItem() != InitItems.SLEDGEHAMMER_STARLIGHT.get()) stack.damageItem(1, livingEntity, (i) -> i.sendBreakAnimation(EquipmentSlotType.MAINHAND));
     }
 
     /**
@@ -235,7 +247,7 @@ public class ItemSledgehammer extends PickaxeItem {
         if (equipmentSlot == EquipmentSlotType.MAINHAND) {
 
             multimap.clear();
-            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Tool modifier", attackDamage, AttributeModifier.Operation.ADDITION));
+            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Tool modifier", attackDamage - 3, AttributeModifier.Operation.ADDITION));
             multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Tool modifier", attackSpeed - 4, AttributeModifier.Operation.ADDITION));
         }
 
@@ -270,5 +282,11 @@ public class ItemSledgehammer extends PickaxeItem {
     @Override
     public boolean hasEffect (ItemStack stack) {
         return this == InitItems.SLEDGEHAMMER_STARLIGHT.get() || stack.isEnchanted();
+    }
+
+    @Override
+    public Rarity getRarity(ItemStack stack) {
+        if (stack.getItem() == InitItems.SLEDGEHAMMER_STARLIGHT.get()) return Rarity.RARE;
+        return Rarity.COMMON;
     }
 }

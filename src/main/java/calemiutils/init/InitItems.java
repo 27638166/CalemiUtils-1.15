@@ -5,9 +5,10 @@ import calemiutils.block.*;
 import calemiutils.block.base.BlockItemBase;
 import calemiutils.item.*;
 import calemiutils.item.base.ItemBase;
-import calemiutils.tool.SledgehammerTiers;
+import calemiutils.item.SledgehammerTiers;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.Rarity;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -68,7 +69,7 @@ public class InitItems {
     public static final RegistryObject<Item> COIN_PENNY = ITEMS.register("coin_penny", () -> new ItemCurrency(1));
     public static final RegistryObject<Item> COIN_NICKEL = ITEMS.register("coin_nickel", () -> new ItemCurrency(5));
     public static final RegistryObject<Item> COIN_QUARTER = ITEMS.register("coin_quarter", () -> new ItemCurrency(25));
-    public static final RegistryObject<Item> COIN_DOLLAR = ITEMS.register("coin_dollar", () -> new ItemCurrency(100));
+    public static final RegistryObject<Item> COIN_DOLLAR = ITEMS.register("coin_dollar", () -> new ItemCurrency(100).setRarity(Rarity.UNCOMMON));
 
     public static final RegistryObject<Item> GOLD_CHIP = ITEMS.register("gold_chip", ItemBase::new);
     public static final RegistryObject<Item> MOTOR = ITEMS.register("motor", ItemBase::new);
@@ -77,7 +78,7 @@ public class InitItems {
     public static final RegistryObject<Item> KNOB_IRON = ITEMS.register("knob_iron", ItemBase::new);
     public static final RegistryObject<Item> KNOB_GOLD = ITEMS.register("knob_gold", ItemBase::new);
     public static final RegistryObject<Item> KNOB_DIAMOND = ITEMS.register("knob_diamond", ItemBase::new);
-    public static final RegistryObject<Item> KNOB_STARLIGHT = ITEMS.register("knob_starlight", () -> new ItemBase().setEffect());
+    public static final RegistryObject<Item> KNOB_STARLIGHT = ITEMS.register("knob_starlight", () -> new ItemBase().setEffect().setRarity(Rarity.RARE));
 
     public static final RegistryObject<Item> SLEDGEHAMMER_WOOD = ITEMS.register("sledgehammer_wood", () -> new ItemSledgehammer(SledgehammerTiers.WOOD));
     public static final RegistryObject<Item> SLEDGEHAMMER_STONE = ITEMS.register("sledgehammer_stone", () -> new ItemSledgehammer(SledgehammerTiers.STONE));
@@ -97,5 +98,5 @@ public class InitItems {
     public static final RegistryObject<Item> SPEED_UPGRADE = ITEMS.register("speed_upgrade", ItemUpgrade::new);
     public static final RegistryObject<Item> RANGE_UPGRADE = ITEMS.register("range_upgrade", ItemUpgrade::new);
 
-    public static final RegistryObject<Item> LINK_BOOK_LOCATION = ITEMS.register("link_book_location", ItemLinkBookLocation::new);
+    public static final RegistryObject<Item> LINK_BOOK_LOCATION = ITEMS.register("link_book_location", () -> new ItemLinkBookLocation().setRarity(Rarity.RARE));
 }

@@ -28,7 +28,7 @@ repositories {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 
-version = "1.0.6-MC1.15.2"
+version = "1.0.7-MC1.15.2"
 group = "com.calemi.calemiutils"
 
 minecraft {
@@ -68,6 +68,6 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.4")
 
     //Curios API
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-1.15.2-2.0.2.6")
     compileOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-1.15.2-2.0.2.6:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:FORGE-1.15.2-2.0.2.6")
 }

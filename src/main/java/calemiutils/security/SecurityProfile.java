@@ -8,22 +8,18 @@ public class SecurityProfile {
     private String ownerName = "";
 
     public String getOwnerName () {
-
         return ownerName;
     }
 
     public void setOwner (PlayerEntity player) {
-
         ownerName = player.getName().getFormattedText();
     }
 
     public boolean hasOwner () {
-
         return ownerName.isEmpty();
     }
 
     public boolean isOwner (String ownerName) {
-
         return this.ownerName.equalsIgnoreCase(ownerName);
     }
 

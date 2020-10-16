@@ -33,7 +33,7 @@ public class TradingPostOverlayEvent {
     public void render (RenderGameOverlayEvent.Post event) {
 
         //Checks if the current render is on the "HOTBAR" layer, so we can use transparency.
-        if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
+        if (event.getType() == RenderGameOverlayEvent.ElementType.CHAT) {
 
             Minecraft mc = Minecraft.getInstance();
             World world = mc.world;
@@ -70,20 +70,23 @@ public class TradingPostOverlayEvent {
                         list.add(postName);
                         list.add(sellingStr);
 
-                        if (player.isCrouching()) {
+                        if (lore.size() > 2) {
 
-                            for (ITextComponent component : lore) {
-                                list.add(component.getFormattedText());
+                            if (player.isCrouching()) {
+
+                                for (ITextComponent component : lore) {
+                                    list.add(component.getFormattedText());
+                                }
+
+                                list.remove(2);
+
+                                StringHelper.removeNullsFromList(list);
+                                StringHelper.removeCharFromList(list, "Shift", "Ctrl");
                             }
 
-                            list.remove(2);
-
-                            StringHelper.removeNullsFromList(list);
-                            StringHelper.removeCharFromList(list, "Shift", "Ctrl");
-                        }
-
-                        else {
-                            list.add(ChatFormatting.GRAY + "[" + ChatFormatting.AQUA + "Shift" + ChatFormatting.GRAY + "]" + ChatFormatting.GRAY + " Info");
+                            else {
+                                list.add(ChatFormatting.GRAY + "[" + ChatFormatting.AQUA + "Shift" + ChatFormatting.GRAY + "]" + ChatFormatting.GRAY + " Info");
+                            }
                         }
 
                         ScreenHelper.bindGuiTextures();
