@@ -1,5 +1,43 @@
 # Changelog
 
+**-----v1.1.0 (Money Update)-----**
+
+**Added** Market.  
+The Market is A server-wide Market that allows Players to buy and sell Items.  
+The Market's trades are edited by config, allowing server admins to create trades that every Player can see.  
+There is an example config file showing how it works here:  
+
+**Added** Coin Stack.
+There is a coin stack for every type of Coin.  
+They can be placed by holding 8 or more coins.  
+They show up in caves and are pretty uncommon.  
+Their generation rarity value and the ability to disable their generation are in the config.
+
+**Added** Cheap Money Bag * Rich Money Bag.  
+The Money Bags contain a random amount of Coins when opened.  
+They are currently not obtainable through crafting/loot.  
+Instead, this Item could be placed in the Market or as a quest reward from another mod.  
+Their random range values are in the config.  
+
+**Added** the ability to broadcast a Trading Post.  
+There is a button in the Trading Post GUI that, when pressed, sends a message to everyone on the server containing information about the trade.  
+There is a delay when the button is pressed (currently 10 seconds) that the player must wait untill broadcasting again, preventing major spam.  
+The broadcast delay value and the ability to disable broadcasts are in the config.  
+
+**Added** Coin sound effects for collecting Coins, trading in the Market, and opening Money Bags.
+
+**Changed** the location of the config file!  
+If you want to keep your old config values, please make sure you transfer your old file into the folder located at "config/CalemiUtils/".
+
+**Changed** the "/cu" command to "/cutils".
+The "/cu" command was conflicting with some mods.
+
+**Fixed** Trading Post not working well with certain stack sizes.  
+**Fixed** Trading Post not working well with certain NBTs.  
+**Fixed** Trading Post's overlay not showing some info.  
+
+**Refined** code by more organizing and comments. 
+
 **-----v1.0.7-----**
 
 **Added** Villager trade (1 emerald for a quarter).  
@@ -11,9 +49,9 @@
 **-----v1.0.6-----**
 
 **Added** a feature that allows Link Book to save the Player's rotation when linking & teleporting.  
-**Added** quark & forge tags for cobblestone. This will allow different cobblestones from other mods to work with this mod too.  
+**Added** Quark & Forge tags for Cobblestone. This will allow different Cobblestones from other mods to work with this mod too.  
 
-**Changed** Wallet's curios slot to look more like the others.  
+**Changed** Wallet's Curios slot to look more like the others.  
 **Changed** Trading Post's GUI elements to fit better with Inventory Sorter.  
 
 **Fixed** Wallet's overlay showing when in F3.  
@@ -33,9 +71,9 @@
 
 **Added** Curios Support.  
 
-**Refined** code by more organizing and comments.  
-
 **Fixed** minor bugs and crashes.  
+
+**Refined** code by more organizing and comments.  
 
 **-----v1.0.2-----**
 
@@ -66,11 +104,11 @@
 
 **Updated** mod to Minecraft 1.15.2  
 
-**Added** Item Stand  
+**Added** Item Stand.  
 The Item Stand can display any Item or Block you want. 
 It can change into 4 different forms (one is invisible), and it contains options to transform, rotate, spin, and scale the displayed Item. 
 It is excellent for shop signs, interior design, and adding extra detail to builds.
 
-**Added** Mob Beacon  
+**Added** Mob Beacon.  
 The Mob Beacon will prevent natural enemy spawning in its placed chunk. 
 This was added due to the lack of Mob prevention options in mods for 1.15.2.
