@@ -5,7 +5,7 @@
 **Added** Market.  
 The Market is A server-wide Market that allows Players to buy and sell Items.  
 The Market's trades are edited by config, allowing server admins to create trades that every Player can see.  
-There is an example config file showing how it works here:  
+There is an example config file showing how it works here: https://github.com/Calemi/CalemiUtils-1.15/blob/master/MarketItemsListExample.json  
 
 **Added** Cheap Money Bag * Rich Money Bag.  
 The Money Bags contain a random amount of Coins when opened.  
