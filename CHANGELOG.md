@@ -3,9 +3,10 @@
 **-----v1.1.0 (Money Update)-----**
 
 **Added** Market.  
-The Market is A server-wide Market that allows Players to buy and sell Items.  
+The Market is a server-wide shop that allows Players to buy and sell Items.  
 The Market's trades are edited by config, allowing server admins to create trades that every Player can see.  
-There is an example config file showing how it works here: https://github.com/Calemi/CalemiUtils-1.15/blob/master/MarketItemsListExample.json  
+There is an example config file showing how it works here: https://github.com/Calemi/CalemiUtils-1.15/blob/master/MarketItemsListExample.json.  
+The Market can also be automated by connecting a Bank and placing an inventory on top of the Market.  
 
 **Added** Cheap Money Bag * Rich Money Bag.  
 The Money Bags contain a random amount of Coins when opened.  
@@ -14,7 +15,7 @@ Instead, this Item could be placed in the Market or as a quest reward from anoth
 Their random range values are in the config.  
 
 **Added** Coin Stack.
-There is a coin stack for every type of Coin.  
+There is a Coin Stack for every type of Coin.  
 They can be placed by holding 8 or more coins.  
 They show up in caves and are pretty uncommon.  
 Their generation rarity value and the ability to disable their generation are in the config.
