@@ -7,12 +7,12 @@ If you want to use this file,
 
 Market Item Structure
 {
-  "(name here)": {                            This name must be unique. The name is used in the code and doesn't do anything visually.
-      "index": 0,                             The "index" number must be unique and greater than -1. It is used to sort the items in the Market. 
-      "stackStr": "minecraft:cobblestone",    The "stringStr" text is used to determine the Item.
-      "stackNBT": "",                         The "stackNBT" text is used to determine the Item's NBT. There must be \'s before every quotation mark.
-      "amount": 32,                           The "amount" number must be greater than -1. It is is used to determine the amount.
-      "value": 16                             The "value" number must be greater than -1. It is is used to determine the cost or sell value of the item.
+  "(name here)": {                            "This name must be unique. The name is used in the code and doesn't do anything visually."
+      "index": 0,                             "The 'index' number must be unique and greater than -1. It is used to sort the items in the Market."
+      "stackStr": "minecraft:cobblestone",    "The 'stringStr' text is used to determine the Item."
+      "stackNBT": "",                         "The 'stackNBT' text is used to determine the Item's NBT. There must be a (\) before every quotation mark."
+      "amount": 32,                           "The 'amount' number must be greater than -1. It is is used to determine the amount."
+      "value": 16                             "The 'value' number must be greater than -1. It is is used to determine the cost or sell value of the item."
   }
 }
 

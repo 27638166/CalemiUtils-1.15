@@ -1,5 +1,9 @@
 # Changelog
 
+**-----v1.1.1 Hotfix-----**  
+
+**Fixed** crash from printing the error message when a Player wrenched a Block that wasn't theirs.  
+
 **-----v1.1.0 (Money Update)-----**
 
 **Added** Market.  
@@ -8,10 +12,10 @@ The Market's trades are edited by config, allowing server admins to create trade
 There is an example config file showing how it works here: https://github.com/Calemi/CalemiUtils-1.15/blob/master/MarketItemsListExample.json.  
 The Market can also be automated by connecting a Bank and placing an inventory on top of the Market.  
 
-**Added** Cheap Money Bag * Rich Money Bag.  
+**Added** Cheap Money Bag & Rich Money Bag.  
 The Money Bags contain a random amount of Coins when opened.  
 They are currently not obtainable through crafting/loot.  
-Instead, this Item could be placed in the Market or as a quest reward from another mod.  
+Instead, this Item could be obtained by a quest reward from another mod or some other way.  
 Their random range values are in the config.  
 
 **Added** Coin Stack.
@@ -32,6 +36,8 @@ If you want to keep your old config values, please make sure you transfer your o
 
 **Changed** the "/cu" command to "/cutils".
 The "/cu" command was conflicting with some mods.
+
+**Removed** Villager trade. 
 
 **Fixed** Trading Post not working well with certain stack sizes.  
 **Fixed** Trading Post not working well with certain NBTs.  
