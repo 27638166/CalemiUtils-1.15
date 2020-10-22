@@ -53,6 +53,7 @@
 
   "itemGroup.calemiutils.tabMain": "Calemi's Utils",
   "enchantment.calemiutils.crushing": "Crushing",
+  "enchantment.calemiutils.crushing.desc": "Increases the range of the Sledgehammer charge ability.",
 
 
   "item.coin_sound": "Coin Sound",
