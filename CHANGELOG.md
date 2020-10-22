@@ -7,17 +7,17 @@ The Market is A server-wide Market that allows Players to buy and sell Items.
 The Market's trades are edited by config, allowing server admins to create trades that every Player can see.  
 There is an example config file showing how it works here:  
 
-**Added** Coin Stack.
-There is a coin stack for every type of Coin.  
-They can be placed by holding 8 or more coins.  
-They show up in caves and are pretty uncommon.  
-Their generation rarity value and the ability to disable their generation are in the config.
-
 **Added** Cheap Money Bag * Rich Money Bag.  
 The Money Bags contain a random amount of Coins when opened.  
 They are currently not obtainable through crafting/loot.  
 Instead, this Item could be placed in the Market or as a quest reward from another mod.  
 Their random range values are in the config.  
+
+**Added** Coin Stack.
+There is a coin stack for every type of Coin.  
+They can be placed by holding 8 or more coins.  
+They show up in caves and are pretty uncommon.  
+Their generation rarity value and the ability to disable their generation are in the config.
 
 **Added** the ability to broadcast a Trading Post.  
 There is a button in the Trading Post GUI that, when pressed, sends a message to everyone on the server containing information about the trade.  
