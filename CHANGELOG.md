@@ -4,6 +4,7 @@
 
 **Added** Villager trade (1 emerald for a quarter).  
 **Added** rarity to some items (only changes the name color).  
+
 **Fixed** commands not being registered.  
 **Removed** empty lore in the Trading Post overlay.  
 
@@ -11,8 +12,10 @@
 
 **Added** a feature that allows Link Book to save the Player's rotation when linking & teleporting.  
 **Added** quark & forge tags for cobblestone. This will allow different cobblestones from other mods to work with this mod too.  
+
 **Changed** Wallet's curios slot to look more like the others.  
 **Changed** Trading Post's GUI elements to fit better with Inventory Sorter.  
+
 **Fixed** Wallet's overlay showing when in F3.  
 
 **-----v1.0.5-----**
@@ -29,13 +32,17 @@
 **-----v1.0.3-----**
 
 **Added** Curios Support.  
+
 **Refined** code by more organizing and comments.  
+
 **Fixed** minor bugs and crashes.  
 
 **-----v1.0.2-----**
 
 **Added** an overlay when the cursor is over a Trading Post. This overlay will display information about the trade.   
+
 **Changed** tooltip background texture to be transparent.  
+
 **Fixed** crash when Book Stand is broken.  
 **Fixed** crash when Link Book is right-clicked into a Book Stand.  
 **Fixed** currency added to Bank not syncing to the client.  
@@ -45,7 +52,9 @@
 **-----v1.0.1-----**
 
 **Added** the ability to rename Blocks with inventories (like a Chest does when used in Anvil).  
+
 **Removed** Blueprint from Creative Tab.  
+
 **Fixed** crash when opening the Trading Post GUI.  
 **Fixed** Trading Posts not using NBT when trading.  
 **Fixed** Trading Posts amount values and price values being unrestricted. Previously you were allowed to sell items with a negative price value and or amount.  
