@@ -33,6 +33,8 @@ If you want to keep your old config values, please make sure you transfer your o
 **Changed** the "/cu" command to "/cutils".
 The "/cu" command was conflicting with some mods.
 
+**Removed** Villager trade. 
+
 **Fixed** Trading Post not working well with certain stack sizes.  
 **Fixed** Trading Post not working well with certain NBTs.  
 **Fixed** Trading Post's overlay not showing some info.  
