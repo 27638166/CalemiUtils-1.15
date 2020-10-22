@@ -1,6 +1,6 @@
 package calemiutils.item;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.CalemiUtils;
 import calemiutils.event.WrenchEvent;
 import calemiutils.item.base.ItemBase;

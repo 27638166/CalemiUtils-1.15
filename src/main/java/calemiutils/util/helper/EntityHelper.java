@@ -1,9 +1,11 @@
 package calemiutils.util.helper;
 
 import calemiutils.util.Location;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.SPlayerPositionLookPacket;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.EnumSet;
 import java.util.Set;

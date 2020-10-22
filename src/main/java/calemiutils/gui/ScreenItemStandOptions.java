@@ -63,6 +63,7 @@ public class ScreenItemStandOptions extends GuiScreenBase {
             int xSpread = 45;
             int xOffset = -70;
             int yOffset = -20;
+
             transXField = initField(stand.translation.getX(), -xSpread + xOffset, yOffset);
             transYField = initField(stand.translation.getY(), xOffset, yOffset);
             transZField = initField(stand.translation.getZ(), xSpread + xOffset, yOffset);

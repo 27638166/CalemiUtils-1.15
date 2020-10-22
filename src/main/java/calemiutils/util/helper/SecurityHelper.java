@@ -1,6 +1,6 @@
 package calemiutils.util.helper;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.security.ISecurity;
 import calemiutils.tileentity.base.TileEntityBase;
 import calemiutils.util.Location;
@@ -20,28 +20,19 @@ public class SecurityHelper {
             ISecurity security = (ISecurity) tileEntity;
 
             if (security.getSecurityProfile().isOwner(player.getName().getFormattedText()) || player.isCreative() || !CUConfig.misc.useSecurity.get()) {
-
                 return true;
             }
 
             else if (printError) printErrorMessage(location, player);
+
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     public static void printErrorMessage (Location location, PlayerEntity player) {
-
         UnitChatMessage message = new UnitChatMessage(location.getBlock().getNameTextComponent().getFormattedText(), player);
         if (!player.world.isRemote) message.printMessage(TextFormatting.RED, "This unit doesn't belong to you!");
-    }
-
-    public static String getSecuredGuiName (TileEntityBase te) {
-
-        if (te instanceof ISecurity) {
-            return " (" + ((ISecurity) te).getSecurityProfile().getOwnerName() + ")";
-        }
-
-        return "";
     }
 }

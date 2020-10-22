@@ -4,10 +4,11 @@ import calemiutils.util.Location;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -28,11 +29,13 @@ public class ItemHelper {
 
     public static String getStringFromStack (ItemStack stack) {
 
-        if (stack.isEmpty()) {
+        ResourceLocation resourcelocation = Registry.ITEM.getKey(stack.getItem());
+
+        if (stack.isEmpty() || resourcelocation == null) {
             return "null";
         }
 
-        return Item.getIdFromItem(stack.getItem()) + "&" + stack.getCount();
+        return resourcelocation.toString() + "&" + stack.getCount();
     }
 
     public static String getNBTFromStack (ItemStack stack) {
@@ -52,10 +55,10 @@ public class ItemHelper {
 
             if (data.length == 2) {
 
-                int itemId = Integer.parseInt(data[0]);
+                String registryName = data[0];
                 int stackSize = Integer.parseInt(data[1]);
 
-                return new ItemStack(Item.getItemById(itemId), stackSize);
+                return new ItemStack(Registry.ITEM.getOrDefault(new ResourceLocation(registryName)), stackSize);
             }
         }
 
@@ -74,46 +77,54 @@ public class ItemHelper {
     }
 
     public static String countByStacks (int count) {
-
         int remainder = (count % 64);
-
         return StringHelper.printCommas(count) + " blocks" + ((count > 64) ? " (" + ((int) Math.floor((float) count / 64)) + " stack(s)" + ((remainder > 0) ? (" + " + remainder + " blocks)") : ")") : "");
     }
 
-    public static ItemEntity spawnItem (World world, Location location, ItemStack is) {
-
-        return spawnItem(world, location.x + 0.5F, location.y + 0.5F, location.z + 0.5F, is);
+    public static void spawnStacksAtLocation(World world, Location location, List<ItemStack> stack) {
+        spawnStacks(world, location.x + 0.5F, location.y + 0.5F, location.z + 0.5F, stack);
     }
 
-    private static ItemEntity spawnItem (World world, float x, float y, float z, ItemStack is) {
+    private static void spawnStacks(World world, float x, float y, float z, List<ItemStack> stacks) {
+        for (ItemStack stack : stacks) {
+            spawnStack(world, x, y, z, stack);
+        }
+    }
 
-        ItemEntity item = new ItemEntity(world, x, y, z, is);
+    public static void spawnOverflowingStackAtEntity(World world, Entity entity, ItemStack stack) {
+        spawnOverflowingStack(world, (float) entity.getPosition().getX() + 0.5F, (float) entity.getPosition().getY() + 0.5F, (float) entity.getPosition().getZ() + 0.5F, stack);
+    }
+
+    private static void spawnOverflowingStack(World world, float x, float y, float z, ItemStack stack) {
+
+        if (stack.getCount() > stack.getMaxStackSize()) {
+
+            int amountLeft = stack.getCount();
+
+            while (amountLeft > 0) {
+                ItemStack spawnStack = stack.copy();
+                spawnStack.setCount(Math.min(amountLeft, stack.getMaxStackSize()));
+                ItemHelper.spawnStack(world, x, y, z, spawnStack);
+                amountLeft -= spawnStack.getCount();
+            }
+        }
+
+        else ItemHelper.spawnStack(world, x, y, z, stack);
+    }
+
+    public static ItemEntity spawnStackAtLocation(World world, Location location, ItemStack stack) {
+        return spawnStack(world, location.x + 0.5F, location.y + 0.5F, location.z + 0.5F, stack);
+    }
+
+    public static ItemEntity spawnStackAtEntity(World world, Entity entity, ItemStack stack) {
+        return spawnStack(world, (float) entity.getPosition().getX() + 0.5F, (float) entity.getPosition().getY() + 0.5F, (float) entity.getPosition().getZ() + 0.5F, stack);
+    }
+
+    private static ItemEntity spawnStack(World world, float x, float y, float z, ItemStack stack) {
+        ItemEntity item = new ItemEntity(world, x, y, z, stack);
         item.setNoPickupDelay();
         item.setMotion(-0.05F + rand.nextFloat() * 0.1F, -0.05F + rand.nextFloat() * 0.1F, -0.05F + rand.nextFloat() * 0.1F);
         world.addEntity(item);
         return item;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public static ItemEntity spawnItem (World world, Entity entity, ItemStack is) {
-
-        return spawnItem(world, (float) entity.getPosition().getX(), (float) entity.getPosition().getY(), (float) entity.getPosition().getZ(), is);
-    }
-
-    public static void spawnItems (World world, Location location, List<ItemStack> is) {
-
-        spawnItems(world, location.x + 0.5F, location.y + 0.5F, location.z + 0.5F, is);
-    }
-
-    private static void spawnItems (World world, float x, float y, float z, List<ItemStack> stacks) {
-
-        for (ItemStack is : stacks) {
-
-            ItemEntity item = new ItemEntity(world, x, y, z, is);
-            item.setNoPickupDelay();
-            item.setNoPickupDelay();
-            item.setMotion(-0.05F + rand.nextFloat() * 0.1F, -0.05F + rand.nextFloat() * 0.1F, -0.05F + rand.nextFloat() * 0.1F);
-            world.addEntity(item);
-        }
     }
 }

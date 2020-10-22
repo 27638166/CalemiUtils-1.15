@@ -2,6 +2,8 @@ package calemiutils;
 
 import calemiutils.command.CUCommandBase;
 import calemiutils.command.DyeColorArgument;
+import calemiutils.config.CUConfig;
+import calemiutils.config.MarketItemsFile;
 import calemiutils.event.*;
 import calemiutils.gui.*;
 import calemiutils.init.*;
@@ -9,7 +11,7 @@ import calemiutils.packet.*;
 import calemiutils.render.RenderBookStand;
 import calemiutils.render.RenderItemStand;
 import calemiutils.render.RenderTradingPost;
-import calemiutils.world.WorldGenOre;
+import calemiutils.world.WorldGen;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -62,15 +64,17 @@ public class CalemiUtils {
         MOD_EVENT_BUS.addListener(this::setup);
         MOD_EVENT_BUS.addListener(this::doClientStuff);
 
+        InitSounds.SOUNDS.register(MOD_EVENT_BUS);
         InitTileEntityTypes.TILE_ENTITY_TYPES.register(MOD_EVENT_BUS);
         InitContainersTypes.CONTAINER_TYPES.register(MOD_EVENT_BUS);
         InitEnchantments.ENCHANTMENTS.register(MOD_EVENT_BUS);
 
         InitItems.init();
+        MarketItemsFile.init();
 
         instance = this;
         MinecraftForge.EVENT_BUS.register(this);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CUConfig.spec);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CUConfig.spec, CUReference.CONFIG_DIR + "/CalemiUtilsCommon.toml");
     }
 
     private void setup (final FMLCommonSetupEvent event) {
@@ -85,13 +89,15 @@ public class CalemiUtils {
         network.registerMessage(++id, PacketOpenWallet.class, PacketOpenWallet::toBytes, PacketOpenWallet::new, PacketOpenWallet::handle);
         network.registerMessage(++id, PacketBank.class, PacketBank::toBytes, PacketBank::new, PacketBank::handle);
         network.registerMessage(++id, PacketTradingPost.class, PacketTradingPost::toBytes, PacketTradingPost::new, PacketTradingPost::handle);
+        network.registerMessage(++id, PacketMarketOptions.class, PacketMarketOptions::toBytes, PacketMarketOptions::new, PacketMarketOptions::handle);
+        network.registerMessage(++id, PacketMarketTrade.class, PacketMarketTrade::toBytes, PacketMarketTrade::new, PacketMarketTrade::handle);
 
         MinecraftForge.EVENT_BUS.register(new WrenchEvent());
         MinecraftForge.EVENT_BUS.register(new SecurityEvent());
         MinecraftForge.EVENT_BUS.register(new MobBeaconEvent());
         MinecraftForge.EVENT_BUS.register(new AddTradesEvent());
 
-        DeferredWorkQueue.runLater(WorldGenOre::onCommonSetup);
+        DeferredWorkQueue.runLater(WorldGen::onCommonSetup);
 
         ArgumentTypes.register("cu:color", DyeColorArgument.class, new ArgumentSerializer<>(DyeColorArgument::color));
     }
@@ -103,6 +109,7 @@ public class CalemiUtils {
         MinecraftForge.EVENT_BUS.register(new TradingPostOverlayEvent());
         MinecraftForge.EVENT_BUS.register(new WalletOverlayEvent());
         MinecraftForge.EVENT_BUS.register(new WalletKeyEvent());
+        MinecraftForge.EVENT_BUS.register(new CoinPickupSoundEvent());
 
         RenderTypeLookup.setRenderLayer(InitItems.BLUEPRINT.get(), RenderType.func_228643_e_());
         RenderTypeLookup.setRenderLayer(InitItems.IRON_SCAFFOLD.get(), RenderType.func_228643_e_());

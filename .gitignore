@@ -1,6 +1,7 @@
 ## Based on GitHub's Eclipse .gitignore
 
 run/
+server/
 out/
 .gradle/
 gradle/

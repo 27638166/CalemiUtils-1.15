@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -65,12 +66,12 @@ public class TradingPostOverlayEvent {
                         List<ITextComponent> lore = post.getStackForSale().getTooltip(Minecraft.getInstance().player, ITooltipFlag.TooltipFlags.NORMAL);
 
                         String postName = post.adminMode ? ("Admin Post") : (post.getSecurityProfile().getOwnerName() + "'s Trading Post");
-                        String sellingStr = (post.buyMode ? "Buying " : "Selling ") + StringHelper.printCommas(post.amountForSale) + "x " + post.getStackForSale().getDisplayName().getFormattedText() + " for " + (post.salePrice > 0 ? (StringHelper.printCurrency(post.salePrice)) : "free");
+                        String sellingStr = (post.buyMode ? "Buying " : "Selling ") + StringHelper.printCommas(post.amountForSale) + "x " + post.getStackForSale().getDisplayName().getFormattedText() + " for " + (post.salePrice > 0 ? (TextFormatting.GOLD + StringHelper.printCurrency(post.salePrice)) : "free");
 
                         list.add(postName);
                         list.add(sellingStr);
 
-                        if (lore.size() > 2) {
+                        if (lore.size() > 1) {
 
                             if (player.isCrouching()) {
 

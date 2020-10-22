@@ -1,6 +1,6 @@
 package calemiutils.block;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.block.base.BlockBase;
 import calemiutils.util.helper.LoreHelper;
 import net.minecraft.block.Block;

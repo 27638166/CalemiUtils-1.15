@@ -1,6 +1,6 @@
 package calemiutils.util;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.tileentity.base.INetwork;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;

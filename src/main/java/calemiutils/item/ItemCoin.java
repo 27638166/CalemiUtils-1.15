@@ -1,10 +1,15 @@
 package calemiutils.item;
 
-import calemiutils.item.base.ItemBase;
+import calemiutils.block.base.BlockItemBase;
 import calemiutils.util.helper.StringHelper;
 import com.mojang.realmsclient.gui.ChatFormatting;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -12,11 +17,12 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemCurrency extends ItemBase {
+public class ItemCoin extends BlockItemBase {
 
     public final int value;
 
-    public ItemCurrency (int value) {
+    public ItemCoin(int value, Block coinStack) {
+        super(coinStack, true);
         this.value = value;
     }
 
@@ -27,5 +33,23 @@ public class ItemCurrency extends ItemBase {
         if (stack.getCount() > 1) {
             tooltipList.add(new StringTextComponent(ChatFormatting.GRAY + "Value (" + stack.getCount() + "): " + ChatFormatting.GOLD + StringHelper.printCurrency(value * stack.getCount())));
         }
+    }
+
+    @Override
+    public ActionResultType onItemUse(ItemUseContext context) {
+
+        ItemStack stack = context.getItem();
+
+        if (context.getPlayer().isCreative() || stack.getCount() >= 8) {
+            return tryPlace(new BlockItemUseContext(context));
+        }
+
+        return ActionResultType.FAIL;
+    }
+
+    @Override
+    protected boolean placeBlock(BlockItemUseContext context, BlockState state) {
+        context.getItem().shrink(7);
+        return context.getWorld().setBlockState(context.getPos(), state, 26);
     }
 }

@@ -1,18 +1,18 @@
 package calemiutils.gui;
 
-import calemiutils.CUConfig;
 import calemiutils.CalemiUtils;
+import calemiutils.config.CUConfig;
 import calemiutils.gui.base.ButtonRect;
 import calemiutils.gui.base.ContainerScreenBase;
 import calemiutils.inventory.ContainerBank;
 import calemiutils.item.ItemWallet;
 import calemiutils.packet.PacketBank;
 import calemiutils.tileentity.TileEntityBank;
-import calemiutils.util.helper.ItemHelper;
+import calemiutils.util.helper.CurrencyHelper;
 import calemiutils.util.helper.MathHelper;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -28,45 +28,45 @@ public class ScreenBank extends ContainerScreenBase<ContainerBank> {
     protected void init () {
         super.init();
 
-        TileEntityBank teBank = (TileEntityBank) getTileEntity();
+        TileEntityBank bank = (TileEntityBank) getTileEntity();
 
-        addButton(new ButtonRect(getScreenX() + (getGuiSizeX() / 2 - 25) + 30, getScreenY() + 40, 50, "Withdraw", (btn) -> withdraw(teBank)));
-        addButton(new ButtonRect(getScreenX() + (getGuiSizeX() / 2 - 25) - 30, getScreenY() + 40, 50, "Deposit", (btn) -> deposit(teBank)));
+        addButton(new ButtonRect(getScreenX() + (getGuiSizeX() / 2 - 25) + 30, getScreenY() + 40, 50, "Withdraw", (btn) -> withdraw(bank)));
+        addButton(new ButtonRect(getScreenX() + (getGuiSizeX() / 2 - 25) - 30, getScreenY() + 40, 50, "Deposit", (btn) -> deposit(bank)));
     }
 
     /**
      * Called when the withdraw button is pressed.
      * Handles withdrawals from the Bank.
      */
-    private void withdraw (TileEntityBank teBank) {
+    private void withdraw (TileEntityBank bank) {
 
         //Checks if there is a Wallet in the Wallet slot.
-        if (teBank.getInventory().getStackInSlot(1).getItem() instanceof ItemWallet) {
+        if (bank.getInventory().getStackInSlot(1).getItem() instanceof ItemWallet) {
 
-            CompoundNBT nbt = ItemHelper.getNBT(teBank.getInventory().getStackInSlot(1));
-            int walletBalance = ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1));
+            ItemStack walletStack = bank.getInventory().getStackInSlot(1);
+            int walletBalance = ItemWallet.getBalance(walletStack);
 
-            int amountToAdd = MathHelper.getAmountToAdd(walletBalance, teBank.storedCurrency, CUConfig.wallet.walletCurrencyCapacity.get());
+            int amountToAdd = MathHelper.getAmountToAdd(walletBalance, bank.storedCurrency, CUConfig.wallet.walletCurrencyCapacity.get());
 
             //If the Wallet can fit the currency, add it and subtract it from the Bank.
             if (amountToAdd > 0) {
-                teBank.addCurrency(-amountToAdd);
-                nbt.putInt("balance", walletBalance + amountToAdd);
+                CurrencyHelper.withdrawFromBank(bank, amountToAdd);
+                CurrencyHelper.depositToWallet(walletStack, amountToAdd);
             }
 
             //If the Wallet can't fit all the money, get how much is needed to fill it, then only used that much.
             else {
 
-                int amountToFill = MathHelper.getAmountToFill(walletBalance, teBank.storedCurrency, CUConfig.wallet.walletCurrencyCapacity.get());
+                int amountToFill = MathHelper.getAmountToFill(walletBalance, bank.storedCurrency, CUConfig.wallet.walletCurrencyCapacity.get());
 
                 if (amountToFill > 0) {
-                    teBank.addCurrency(-amountToFill);
-                    nbt.putInt("balance", walletBalance + amountToFill);
+                    CurrencyHelper.withdrawFromBank(bank, amountToFill);
+                    CurrencyHelper.depositToWallet(walletStack, amountToFill);
                 }
             }
 
             //Syncs the Bank's currency to the server.
-            CalemiUtils.network.sendToServer(new PacketBank(teBank.storedCurrency, ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1)), teBank.getPos()));
+            CalemiUtils.network.sendToServer(new PacketBank(bank.storedCurrency, ItemWallet.getBalance(bank.getInventory().getStackInSlot(1)), bank.getPos()));
         }
     }
 
@@ -74,34 +74,35 @@ public class ScreenBank extends ContainerScreenBase<ContainerBank> {
      * Called when the deposit button is pressed.
      * Handles deposits from the Bank.
      */
-    private void deposit (TileEntityBank teBank) {
+    private void deposit (TileEntityBank bank) {
 
         //Checks if there is a Wallet in the Wallet slot.
-        if (teBank.getInventory().getStackInSlot(1).getItem() instanceof ItemWallet) {
+        if (bank.getInventory().getStackInSlot(1).getItem() instanceof ItemWallet) {
 
-            CompoundNBT nbt = ItemHelper.getNBT(teBank.getInventory().getStackInSlot(1));
-            int currency = ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1));
+            ItemStack walletStack = bank.getInventory().getStackInSlot(1);
+            int walletBalance = ItemWallet.getBalance(walletStack);
 
-            int amountToAdd = MathHelper.getAmountToAdd(teBank.storedCurrency, currency, teBank.getMaxCurrency());
+            int amountToAdd = MathHelper.getAmountToAdd(bank.storedCurrency, walletBalance, bank.getMaxCurrency());
 
             //If the Bank can fit the currency, add it and subtract it from the Wallet.
             if (amountToAdd > 0) {
-                teBank.addCurrency(amountToAdd);
-                nbt.putInt("balance", currency - amountToAdd);
+                CurrencyHelper.depositToBank(bank, amountToAdd);
+                CurrencyHelper.withdrawFromWallet(walletStack, amountToAdd);
             }
 
             //If the Bank can't fit all the money, get how much is needed to fill it, then only used that much.
             else {
 
-                int remainder = MathHelper.getAmountToFill(teBank.storedCurrency, currency, teBank.getMaxCurrency());
+                int remainder = MathHelper.getAmountToFill(bank.storedCurrency, walletBalance, bank.getMaxCurrency());
 
                 if (remainder > 0) {
-                    teBank.addCurrency(remainder);
-                    nbt.putInt("balance", currency - remainder);
+
+                    CurrencyHelper.depositToBank(bank, remainder);
+                    CurrencyHelper.withdrawFromWallet(walletStack, remainder);
                 }
             }
 
-            CalemiUtils.network.sendToServer(new PacketBank(teBank.storedCurrency, ItemWallet.getBalance(teBank.getInventory().getStackInSlot(1)), teBank.getPos()));
+            CalemiUtils.network.sendToServer(new PacketBank(bank.storedCurrency, ItemWallet.getBalance(bank.getInventory().getStackInSlot(1)), bank.getPos()));
         }
     }
 

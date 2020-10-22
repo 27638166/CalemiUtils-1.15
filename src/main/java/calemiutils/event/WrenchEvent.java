@@ -24,7 +24,7 @@ public class WrenchEvent {
         ItemStack stack = new ItemStack(location.getBlock().asItem(), 1);
 
         if (!world.isRemote) {
-            ItemHelper.spawnItem(world, location, stack);
+            ItemHelper.spawnStackAtLocation(world, location, stack);
         }
 
         //Handles currency saving.

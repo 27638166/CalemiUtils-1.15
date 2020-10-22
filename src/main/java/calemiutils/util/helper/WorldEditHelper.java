@@ -1,6 +1,6 @@
 package calemiutils.util.helper;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
 import net.minecraft.block.BlockState;
@@ -71,7 +71,6 @@ public class WorldEditHelper {
     }
 
     public static ArrayList<Location> selectCubeFromRadius (Location location, int xRad, int yRad, int zRad) {
-
         return selectCubeFromRadius(location, xRad, -yRad, yRad, zRad);
     }
 
@@ -84,7 +83,6 @@ public class WorldEditHelper {
             for (int y = yRadMin; y <= yRadMax; y++) {
 
                 for (int z = -zRad; z <= zRad; z++) {
-
                     Location nextLocation = new Location(location.world, location.x + x, location.y + y, location.z + z);
                     list.add(nextLocation);
                 }
@@ -103,7 +101,6 @@ public class WorldEditHelper {
             for (int y = Math.min(loc1.y, loc2.y); y <= Math.max(loc1.y, loc2.y); y++) {
 
                 for (int z = Math.min(loc1.z, loc2.z); z <= Math.max(loc1.z, loc2.z); z++) {
-
                     list.add(new Location(loc1.world, x, y, z));
                 }
             }
@@ -154,7 +151,6 @@ public class WorldEditHelper {
         int maxY = Math.max(loc1.y, loc2.y);
 
         for (int y = minY; y <= maxY; y++) {
-
             list.addAll(selectCircleFromTwoPoints(new Location(loc1.world, loc1.x, y, loc1.z), new Location(loc2.world, loc2.x, y, loc2.z), hollow, thickness));
         }
 

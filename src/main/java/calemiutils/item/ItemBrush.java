@@ -32,7 +32,7 @@ public class ItemBrush extends ItemBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable World world, List<ITextComponent> tooltipList, ITooltipFlag advanced) {
-        LoreHelper.addInformationLore(tooltipList, "Creates shapes of blueprint for all your building needs! Use /cu for commands.", true);
+        LoreHelper.addInformationLore(tooltipList, "Creates shapes of blueprint for all your building needs! Use /cutils for commands.", true);
         LoreHelper.addControlsLore(tooltipList, "Marks the first point", LoreHelper.Type.USE, true);
         LoreHelper.addControlsLore(tooltipList, "Marks the second point", LoreHelper.Type.SNEAK_USE);
         LoreHelper.addBlankLine(tooltipList);

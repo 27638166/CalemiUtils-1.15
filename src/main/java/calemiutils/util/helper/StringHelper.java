@@ -1,6 +1,6 @@
 package calemiutils.util.helper;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -8,7 +8,6 @@ import java.util.List;
 public class StringHelper {
 
     public static String printCurrency (int amount) {
-
         return printCommas(amount) + CUConfig.economy.currencyName.get();
     }
 
@@ -49,18 +48,6 @@ public class StringHelper {
 
         return list;
     }
-
-    /*public static List<String> removeEmptiesFromList(List<String> list) {
-
-        for (int i = 0; i < list.size(); i++) {
-
-            if (list.get(i).isEmpty()) {
-                list.remove(i);
-            }
-        }
-
-        return list;
-    }*/
 
     public static List<String> removeNullsFromList (List<String> list) {
 

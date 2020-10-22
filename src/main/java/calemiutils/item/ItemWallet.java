@@ -1,6 +1,6 @@
 package calemiutils.item;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.CalemiUtils;
 import calemiutils.integration.curios.CuriosIntegration;
 import calemiutils.inventory.ContainerWallet;
@@ -46,23 +46,24 @@ public class ItemWallet extends ItemBase {
     }
 
     /**
-     * Adds behaviours to the Wallet as a curios Item.
-     */
-    @Override
-    public ICapabilityProvider initCapabilities(final ItemStack stack, CompoundNBT unused) {
-
-        if (CalemiUtils.curiosLoaded) {
-            return CuriosIntegration.walletCapability();
-        }
-
-        return super.initCapabilities(stack, unused);
-    }
-
-    /**
      * Gets the balance of the given Wallet Stack.
      */
     public static int getBalance (ItemStack stack) {
         return ItemHelper.getNBT(stack).getInt("balance");
+    }
+
+    /**
+     * Deposits currency into the given Wallet Stack.
+     */
+    public static void depositCurrency (ItemStack stack, int depsositAmount) {
+        ItemHelper.getNBT(stack).putInt("balance", getBalance(stack) + depsositAmount);
+    }
+
+    /**
+     * Deposits currency into the given Wallet Stack.
+     */
+    public static void withdrawCurrency (ItemStack stack, int withdrawAmount) {
+        ItemHelper.getNBT(stack).putInt("balance", getBalance(stack) - withdrawAmount);
     }
 
     /**
@@ -94,5 +95,18 @@ public class ItemWallet extends ItemBase {
         NetworkHooks.openGui(player, new SimpleNamedContainerProvider(
             (id, playerInventory, openPlayer) -> new ContainerWallet(id, playerInventory, new ItemStackInventory(stack, 1), player.inventory.currentItem), stack.getDisplayName()),
             (buffer) -> buffer.writeVarInt(selectedSlot));
+    }
+
+    /**
+     * Adds behaviours to the Wallet as a curios Item.
+     */
+    @Override
+    public ICapabilityProvider initCapabilities(final ItemStack stack, CompoundNBT unused) {
+
+        if (CalemiUtils.curiosLoaded) {
+            return CuriosIntegration.walletCapability();
+        }
+
+        return super.initCapabilities(stack, unused);
     }
 }

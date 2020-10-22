@@ -19,8 +19,11 @@ public class ScreenHelper {
     private static final int TEXTURE_SIZE = 256;
     private static final Minecraft mc = Minecraft.getInstance();
 
-    public static void bindTexture (String name) {
+    public static void bindGuiTextures () {
+        mc.getTextureManager().bindTexture(CUReference.GUI_TEXTURES);
+    }
 
+    public static void bindTexture (String name) {
         mc.getTextureManager().bindTexture(new ResourceLocation(CUReference.MOD_ID + ":textures/gui/" + name + ".png"));
     }
 
@@ -59,28 +62,6 @@ public class ScreenHelper {
         GL11.glTranslatef(0, 0, 0);
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glPopMatrix();
-    }
-
-    /*public static void drawOneLineHoveringTextBox(String text, int mouseX, int mouseY, GuiRect rect) {
-
-        if (rect.contains(mouseX, mouseY)) {
-
-            GL11.glPushMatrix();
-            GL11.glTranslatef(0, 0, 325);
-
-            bindGuiTextures();
-            drawCappedRect(mouseX + 2, mouseY - 13, 0, 168, 0, mc.fontRenderer.getStringWidth(text) + 5, 13, 256, 72);
-            mc.fontRenderer.drawString(text, mouseX + 5, mouseY - 10, 0xFFFFFF);
-
-            GL11.glPopMatrix();
-
-            GL11.glColor4f(1, 1, 1, 1);
-        }
-    }*/
-
-    public static void bindGuiTextures () {
-
-        mc.getTextureManager().bindTexture(CUReference.GUI_TEXTURES);
     }
 
     public static void drawCappedRect (int x, int y, int u, int v, int zLevel, int width, int height, int maxWidth, int maxHeight) {
@@ -125,40 +106,6 @@ public class ScreenHelper {
 
         GL11.glPopMatrix();
     }
-
-    /*
-    public static void drawLimitedCenteredString(String text, int x, int y, int maxWidth, int color) {
-
-        int xPos = (x - 3);
-        int yPos = y;
-
-        int stringWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(text);
-
-        if (stringWidth > maxWidth) {
-
-            ArrayList arrayList = new ArrayList();
-            Iterator iterator = mc.fontRenderer.listFormattedStringToWidth(text, maxWidth).iterator();
-
-            while (iterator.hasNext()) {
-                String s1 = (String) iterator.next();
-                arrayList.add(s1);
-            }
-
-            String[] string = (String[]) arrayList.toArray(new String[0]);
-            int yOffset = yPos + 5;
-
-            for (int i = 0; i < string.length; ++i) {
-
-                String s = string[i];
-                drawCenteredString(s, xPos + 3, yOffset, color);
-                yOffset += mc.fontRenderer.FONT_HEIGHT + 1;
-            }
-        }
-
-        else {
-            mc.fontRenderer.drawString(text, (xPos - (stringWidth / 2)) + 3, yPos + 5, color);
-        }
-    }*/
 
     public static void drawLimitedString (String text, int x, int y, int textLimit, int color) {
 
@@ -217,7 +164,7 @@ public class ScreenHelper {
 
     public static void drawItemStack (ItemRenderer itemRender, ItemStack stack, int x, int y) {
 
-        RenderHelper.func_227780_a_();
+        //RenderHelper.func_227780_a_();
         GL11.glTranslatef(0.0F, 0.0F, 0.0F);
         itemRender.zLevel = -100;
         itemRender.renderItemAndEffectIntoGUI(stack, x, y);

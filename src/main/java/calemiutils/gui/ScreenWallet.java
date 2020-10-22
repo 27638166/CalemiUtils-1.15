@@ -1,12 +1,12 @@
 package calemiutils.gui;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.CalemiUtils;
 import calemiutils.gui.base.ButtonRect;
 import calemiutils.gui.base.ContainerScreenBase;
 import calemiutils.init.InitItems;
 import calemiutils.inventory.ContainerWallet;
-import calemiutils.item.ItemCurrency;
+import calemiutils.item.ItemCoin;
 import calemiutils.item.ItemWallet;
 import calemiutils.packet.PacketWallet;
 import calemiutils.util.helper.*;
@@ -69,12 +69,12 @@ public class ScreenWallet extends ContainerScreenBase<ContainerWallet> {
 
             ItemWallet walletItem = (ItemWallet) walletStack.getItem();
 
-            int price = ((ItemCurrency) InitItems.COIN_PENNY.get()).value;
-            if (id == 1) price = ((ItemCurrency) InitItems.COIN_NICKEL.get()).value;
-            else if (id == 2) price = ((ItemCurrency) InitItems.COIN_QUARTER.get()).value;
-            else if (id == 3) price = ((ItemCurrency) InitItems.COIN_DOLLAR.get()).value;
+            int price = ((ItemCoin) InitItems.COIN_PENNY.get()).value;
+            if (id == 1) price = ((ItemCoin) InitItems.COIN_NICKEL.get()).value;
+            else if (id == 2) price = ((ItemCoin) InitItems.COIN_QUARTER.get()).value;
+            else if (id == 3) price = ((ItemCoin) InitItems.COIN_DOLLAR.get()).value;
 
-            int multiplier = ShiftHelper.getShiftCtrlInt(1, 16, 64, 9 * 64);
+            int multiplier = MathHelper.getShiftCtrlInt(1, 16, 64, 9 * 64);
             price *= multiplier;
 
             //If the Wallet's balance can afford the requested amount, give it to the player and sync the current balance.

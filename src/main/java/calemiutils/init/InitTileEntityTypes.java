@@ -19,4 +19,5 @@ public class InitTileEntityTypes {
     public static final RegistryObject<TileEntityType<TileEntityNetworkCable>> NETWORK_CABLE = TILE_ENTITY_TYPES.register("network_cable", () -> TileEntityType.Builder.create(TileEntityNetworkCable::new, InitItems.NETWORK_CABLE.get(), InitItems.NETWORK_CABLE_OPAQUE.get()).build(null));
     public static final RegistryObject<TileEntityType<TileEntityNetworkGate>> NETWORK_GATE = TILE_ENTITY_TYPES.register("network_gate", () -> TileEntityType.Builder.create(TileEntityNetworkGate::new, InitItems.NETWORK_GATE.get()).build(null));
     public static final RegistryObject<TileEntityType<TileEntityTradingPost>> TRADING_POST = TILE_ENTITY_TYPES.register("trading_post", () -> TileEntityType.Builder.create(TileEntityTradingPost::new, InitItems.TRADING_POST.get()).build(null));
+    public static final RegistryObject<TileEntityType<TileEntityMarket>> MARKET = TILE_ENTITY_TYPES.register("market", () -> TileEntityType.Builder.create(TileEntityMarket::new, InitItems.MARKET.get()).build(null));
 }

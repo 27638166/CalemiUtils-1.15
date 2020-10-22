@@ -2,8 +2,10 @@ package calemiutils.command;
 
 import calemiutils.CUReference;
 import calemiutils.block.BlockBlueprint;
+import calemiutils.config.MarketItemsFile;
 import calemiutils.init.InitItems;
 import calemiutils.item.ItemBrush;
+import calemiutils.tileentity.TileEntityMarket;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
 import calemiutils.util.helper.ChatHelper;
@@ -20,6 +22,7 @@ import net.minecraft.command.Commands;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
@@ -32,11 +35,11 @@ public class CUCommandBase {
      */
     public static void register (CommandDispatcher<CommandSource> dispatcher) {
 
-        LiteralArgumentBuilder<CommandSource> cuCommand = Commands.literal("cu");
+        LiteralArgumentBuilder<CommandSource> cuCommand = Commands.literal("cutils");
 
         cuCommand.requires(commandSource -> true)
                 .then(help())
-                .then(reload())
+                .then(reload().requires((player) -> player.hasPermissionLevel(2)))
                 .then(brushWithHollow("fill"))
                 .then(recolor())
                 .then(brush("walls"))
@@ -60,14 +63,14 @@ public class CUCommandBase {
 
             ChatHelper.printModMessage(TextFormatting.GREEN, "----- Help for " + CUReference.MOD_NAME + " -----", player);
             ChatHelper.printModMessage(TextFormatting.GREEN, "() are optional arguments.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, " /cu reload - Reloads the MarketItems and MiningUnitCosts files.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu fill <color> (hollow) - Creates a cube of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu recolor <color1> <color2> - Replaces the first color with the second. <color1> - Color of the Blueprint to replace. <color2> - New color of the Blueprint.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu walls <color> - Creates walls of blueprint. <color> - Color of the Blueprint.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu circle <color> (hollow) - Creates a circle of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu cylinder <color> (hollow) - Creates a cylinder of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu sphere <color> (hollow) - Creates a sphere of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
-            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cu pyramid <color> (hollow) - Creates a pyramid of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, " /cutils reload - Reloads the MarketItems files.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cutils fill <color> (hollow) - Creates a cube of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cutils recolor <color1> <color2> - Replaces the first color with the second. <color1> - Color of the Blueprint to replace. <color2> - New color of the Blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cutils walls <color> - Creates walls of blueprint. <color> - Color of the Blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cutils circle <color> (hollow) - Creates a circle of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cutils cylinder <color> (hollow) - Creates a cylinder of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cutils sphere <color> (hollow) - Creates a sphere of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
+            ChatHelper.printModMessage(TextFormatting.GREEN, holdBrush + " /cutils pyramid <color> (hollow) - Creates a pyramid of blueprint. <color> - Color of the Blueprint. (hollow) - Removes interior blueprint.", player);
             return Command.SINGLE_SUCCESS;
         });
     }
@@ -76,7 +79,23 @@ public class CUCommandBase {
      * The reload command.
      */
     private static ArgumentBuilder<CommandSource, ?> reload () {
-        return Commands.literal("reload").executes(ctx -> Command.SINGLE_SUCCESS);
+        return Commands.literal("reload").executes(ctx -> {
+
+            MarketItemsFile.init();
+
+            PlayerEntity player = ctx.getSource().asPlayer();
+
+            for (TileEntity te : player.world.loadedTileEntityList) {
+
+                if (te instanceof TileEntityMarket) {
+                    ((TileEntityMarket) te).dirtyFlag = true;
+                }
+            }
+
+            ChatHelper.printModMessage(TextFormatting.GREEN, "Successfully reloaded MarketItems files!", player);
+
+            return Command.SINGLE_SUCCESS;
+        });
     }
 
     /**

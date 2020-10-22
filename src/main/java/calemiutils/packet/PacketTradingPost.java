@@ -1,12 +1,16 @@
 package calemiutils.packet;
 
+import calemiutils.config.CUConfig;
 import calemiutils.tileentity.TileEntityTradingPost;
 import calemiutils.util.Location;
+import calemiutils.util.helper.ChatHelper;
 import calemiutils.util.helper.ItemHelper;
+import calemiutils.util.helper.StringHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -45,6 +49,13 @@ public class PacketTradingPost {
         this.buyMode = buyMode;
         this.amount = amount;
         this.price = price;
+    }
+
+    /**
+     * Use this constructor to broadcast.
+     */
+    public PacketTradingPost (String command, BlockPos pos) {
+        this(command, pos, 0, 0, "", "", false, 0, 0);
     }
 
     /**
@@ -107,11 +118,37 @@ public class PacketTradingPost {
                 //Checks if the Tile Entity is a Trading Post.
                 if (location.getTileEntity() instanceof TileEntityTradingPost) {
 
-                    TileEntityTradingPost tPost = (TileEntityTradingPost) location.getTileEntity();
+                    TileEntityTradingPost tePost = (TileEntityTradingPost) location.getTileEntity();
+
+                    //Handles broadcasting.
+                    if (command.equalsIgnoreCase("broadcast")) {
+
+                        if (tePost.hasValidTradeOffer)  {
+
+                            if (tePost.broadcastDelay <= 0) {
+
+                                StringBuilder message = new StringBuilder();
+                                message.append(player.getDisplayName().getFormattedText());
+                                message.append(" is ").append(tePost.buyMode ? "buying" : "selling");
+                                message.append(" x").append(tePost.amountForSale);
+                                message.append(" ").append(TextFormatting.AQUA).append(tePost.getStackForSale().getDisplayName().getFormattedText());
+                                message.append(TextFormatting.RESET).append(" for ").append(tePost.salePrice > 0 ? TextFormatting.GOLD + StringHelper.printCurrency(tePost.salePrice) : "free");
+                                message.append(TextFormatting.RESET).append(" at ").append(TextFormatting.AQUA).append(tePost.getLocation().toString());
+
+                                ChatHelper.broadcastMessage(player.world, message.toString());
+
+                                tePost.broadcastDelay = CUConfig.misc.tradingPostBroadcastDelay.get();
+                            }
+
+                            else tePost.getUnitName(player).printMessage(TextFormatting.RED, "You must wait " + StringHelper.printCommas(tePost.broadcastDelay) + " second(s) before broadcasting again!");
+                        }
+
+                        else tePost.getUnitName(player).printMessage(TextFormatting.RED, "The Trading Post is not set up properly!");
+                    }
 
                     //Handles syncing the buyMode option.
                     if (command.equalsIgnoreCase("syncmode")) {
-                        tPost.buyMode = this.buyMode;
+                        tePost.buyMode = this.buyMode;
                     }
 
                     //Handles syncing the Item Stack for sale.
@@ -123,14 +160,16 @@ public class PacketTradingPost {
                             ItemHelper.attachNBTFromString(stackForSale, nbt);
                         }
 
-                        tPost.setStackForSale(stackForSale);
+                        tePost.setStackForSale(stackForSale);
                     }
 
                     //Handles syncing the options on the server.
                     else if (command.equalsIgnoreCase("syncoptions")) {
-                        tPost.amountForSale = this.amount;
-                        tPost.salePrice = this.price;
+                        tePost.amountForSale = this.amount;
+                        tePost.salePrice = this.price;
                     }
+
+                    tePost.markForUpdate();
                 }
             }
         });

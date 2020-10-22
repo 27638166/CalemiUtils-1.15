@@ -1,6 +1,5 @@
 package calemiutils.block;
 
-import calemiutils.CUConfig;
 import calemiutils.block.base.BlockInventoryContainerBase;
 import calemiutils.init.InitItems;
 import calemiutils.init.InitTileEntityTypes;
@@ -16,10 +15,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -47,7 +44,7 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Used to buy and sell blocks and items.", true);
+        LoreHelper.addInformationLore(tooltip, "Used to buy and sell Items.", true);
         LoreHelper.addControlsLore(tooltip, "Show Trade Info", LoreHelper.Type.SNEAK_USE, true);
         LoreHelper.addControlsLore(tooltip, "Open Inventory", LoreHelper.Type.USE_WRENCH);
         LoreHelper.addControlsLore(tooltip, "Buy Item", LoreHelper.Type.USE_WALLET);
@@ -67,16 +64,21 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
 
         TileEntity te = location.getTileEntity();
 
-        //Makes sure the block is a Trading Post.
+        //Makes sure the Block is a Trading Post.
         if (te instanceof TileEntityTradingPost) {
 
             TileEntityTradingPost tePost = (TileEntityTradingPost) te;
             UnitChatMessage message = tePost.getUnitName(player);
 
-            //If the Player is crouching and holding a Security Wrench, open the gui.
+            //If the Player is crouching and holding a Security Wrench, open the GUI.
             if (!player.isCrouching() && heldStack.getItem() == InitItems.SECURITY_WRENCH.get()) {
 
-                return super.func_225533_a_(state, world, pos, player, hand, result);
+                if (tePost.adminMode) {
+                    if (player.isCreative()) return super.func_225533_a_(state, world, pos, player, hand, result);
+                    else if (!world.isRemote) message.printMessage(TextFormatting.RED, "Admin Posts can only be opened in creative mode.");
+                }
+
+                else return super.func_225533_a_(state, world, pos, player, hand, result);
             }
 
             //Else, if the Player is not crouching and has a Wallet, handle a possible trade.
@@ -89,11 +91,9 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
 
                 if (tePost.hasValidTradeOffer) {
 
-                    if (tePost.adminMode) {
-                        message.printMessage(TextFormatting.GREEN, (tePost.buyMode ? "Buying " : "Selling ") + StringHelper.printCommas(tePost.amountForSale) + "x " + tePost.getStackForSale().getDisplayName().getFormattedText() + " for " + (tePost.salePrice > 0 ? (StringHelper.printCurrency(tePost.salePrice)) : "free"));
-                    }
-
+                    if (tePost.adminMode) message.printMessage(TextFormatting.GREEN, (tePost.buyMode ? "Buying " : "Selling ") + StringHelper.printCommas(tePost.amountForSale) + "x " + tePost.getStackForSale().getDisplayName().getFormattedText() + " for " + (tePost.salePrice > 0 ? (StringHelper.printCurrency(tePost.salePrice)) : "free"));
                     else message.printMessage(TextFormatting.GREEN, tePost.getSecurityProfile().getOwnerName() + " is " + (tePost.buyMode ? "buying " : "selling ") + StringHelper.printCommas(tePost.amountForSale) + "x " + tePost.getStackForSale().getDisplayName().getFormattedText() + " for " + (tePost.salePrice > 0 ? (StringHelper.printCurrency(tePost.salePrice)) : "free"));
+
                     message.printMessage(TextFormatting.GREEN, "Hold a wallet in your inventory to make a purchase.");
                 }
 
@@ -126,9 +126,7 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
                 }
 
                 //If not, handle a purchase.
-                else {
-                    handlePurchase(message, walletStack, world, player, tePost);
-                }
+                else handlePurchase(message, walletStack, world, player, tePost);
             }
 
             else if (!world.isRemote) message.printMessage(TextFormatting.RED, "The trade is not set up properly!");
@@ -145,37 +143,43 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
         //Checks if the player has the required amount of items.
         if (InventoryHelper.countItems(player.inventory, true, tePost.getStackForSale()) >= tePost.amountForSale) {
 
+            //Generates the base Item Stack to purchase.
             ItemStack stackForSale = new ItemStack(tePost.getStackForSale().getItem(), tePost.amountForSale);
 
+            //Sets any NBT to the purchased item.
+            if (tePost.getStackForSale().hasTag()) {
+                stackForSale.setTag(tePost.getStackForSale().getTag());
+            }
+
             //Checks if the Trading Post can fit the amount of items being bought.
-            if (InventoryHelper.canInsertItem(stackForSale, tePost) || tePost.adminMode) {
+            if (InventoryHelper.canInsertStack(stackForSale, tePost.getInventory()) || tePost.adminMode) {
 
                 //Checks if the player's current Wallet can fit added funds.
-                if (CurrencyHelper.canFitAddedCurrencyToWallet(walletStack, tePost.salePrice)) {
+                if (CurrencyHelper.canDepositToWallet(walletStack, tePost.salePrice)) {
 
                     //Checks if the connected Bank has enough funds to spend. Bypasses this check if in admin mode
-                    if (tePost.getStoredCurrencyInBank() >= tePost.salePrice || tePost.adminMode) {
-
-                        CompoundNBT nbt = ItemHelper.getNBT(walletStack);
+                    if (CurrencyHelper.canWithdrawFromBank(tePost.getBank(), tePost.salePrice) || tePost.salePrice <= 0 || tePost.adminMode) {
 
                         //Removes the Items from the player.
-                        InventoryHelper.consumeItem(player.inventory, tePost.amountForSale, tePost.getStackForSale());
+                        InventoryHelper.consumeStack(player.inventory, tePost.amountForSale, true, tePost.getStackForSale());
 
                         //Checks if not in admin mode.
                         if (!tePost.adminMode) {
 
                             //Adds Items to the Trading Post
-                            InventoryHelper.insertItem(stackForSale, tePost.getInventory());
+                            InventoryHelper.insertOverflowingStack(tePost.getInventory(), stackForSale);
 
                             //Subtracts funds from the connected Bank
-                            tePost.decrStoredCurrencyInBank(tePost.salePrice);
+                            CurrencyHelper.withdrawFromBank(tePost.getBank(), tePost.salePrice);
                         }
 
-                        //Adds funds from the Player's current wallet.
-                        nbt.putInt("balance", ItemWallet.getBalance(walletStack) + tePost.salePrice);
+                        //Adds funds to the Player's current wallet.
+                        CurrencyHelper.depositToWallet(walletStack, tePost.salePrice);
+
+                        SoundHelper.playCoin(world, player);
                     }
 
-                    else if (!world.isRemote) message.printMessage(TextFormatting.RED, "The Trading Post is out of money");
+                    else if (!world.isRemote) message.printMessage(TextFormatting.RED, "The connected Bank is out of money!");
                 }
 
                 else if (!world.isRemote) message.printMessage(TextFormatting.RED, "Your Wallet is full of money!");
@@ -196,12 +200,10 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
         if (tePost.getStock() >= tePost.amountForSale || tePost.adminMode) {
 
             //Checks if the Player has enough funds in his current Wallet.
-            if (ItemWallet.getBalance(walletStack) >= tePost.salePrice) {
-
-                CompoundNBT walletNBT = ItemHelper.getNBT(walletStack);
+            if (CurrencyHelper.canWithdrawFromWallet(walletStack, tePost.salePrice)) {
 
                 //Checks if the connected Bank can store the possible funds.
-                if (tePost.getStoredCurrencyInBank() + tePost.salePrice < CUConfig.economy.bankCurrencyCapacity.get()) {
+                if (CurrencyHelper.canDepositToBank(tePost.getBank(), tePost.salePrice) || tePost.salePrice <= 0 || tePost.adminMode) {
 
                     //Generates the base Item Stack to purchase.
                     ItemStack stackForSale = new ItemStack(tePost.getStackForSale().getItem(), tePost.amountForSale);
@@ -211,55 +213,25 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
                         stackForSale.setTag(tePost.getStackForSale().getTag());
                     }
 
-                    //Checks if in admin mode
-                    if (tePost.adminMode) {
+                    if (!world.isRemote) {
 
-                        if (!world.isRemote) {
+                        //Generates and spawns the purchased Items.
+                        ItemHelper.spawnOverflowingStackAtEntity(player.world, player, stackForSale);
 
-                            //Generate and spawns the purchased item.
-                            ItemEntity dropItem;
-                            dropItem = ItemHelper.spawnItem(world, player, stackForSale);
+                        //Adds funds to the connected Bank.
+                        if (!tePost.adminMode) CurrencyHelper.depositToBank(tePost.getBank(), tePost.salePrice);
 
-                            //Sets any NBT to the spawned purchased item.
-                            if (stackForSale.hasTag()) {
-                                dropItem.getItem().setTag(stackForSale.getTag());
-                            }
-
-                            //Adds funds to the connected Bank.
-                            tePost.addStoredCurrencyInBank(tePost.salePrice);
-                            tePost.markForUpdate();
-
-                            //Subtracts funds from the Player's current wallet.
-                            walletNBT.putInt("balance", walletNBT.getInt("balance") - tePost.salePrice);
-                        }
+                        tePost.markForUpdate();
+                        tePost.write(tePost.getTileData());
                     }
 
-                    //Else handle a normal purchase.
-                    else {
+                    //Subtracts funds from the Player's current Wallet.
+                    CurrencyHelper.withdrawFromWallet(walletStack, tePost.salePrice);
 
-                        if (!world.isRemote) {
+                    //Removes the amount of Items for sale.
+                    if (!tePost.adminMode) InventoryHelper.consumeStack(tePost.getInventory(), tePost.amountForSale, true, tePost.getStackForSale());
 
-                            //Generates and spawns the purchased item.
-                            ItemEntity dropItem;
-                            dropItem = ItemHelper.spawnItem(world, player, stackForSale);
-
-                            //Sets any NBT to the spawned purchased item.
-                            if (stackForSale.hasTag()) {
-                                dropItem.getItem().setTag(stackForSale.getTag());
-                            }
-
-                            //Adds funds to the connected Bank.
-                            tePost.addStoredCurrencyInBank(tePost.salePrice);
-                            tePost.markForUpdate();
-                            tePost.write(tePost.getTileData());
-
-                            //Subtracts funds from the Player's current wallet.
-                            walletNBT.putInt("balance", walletNBT.getInt("balance") - tePost.salePrice);
-                        }
-
-                        //Removes the amount of Items for sale.
-                        InventoryHelper.consumeItem(0, tePost.getInventory(), tePost.amountForSale, true, tePost.getStackForSale());
-                    }
+                    SoundHelper.playCoin(world, player);
                 }
 
                 else if (!world.isRemote) message.printMessage(TextFormatting.RED, "Full of money!");
@@ -290,7 +262,7 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
 
                     TileEntityTradingPost tePost = (TileEntityTradingPost) te;
                     tePost.adminMode = true;
-                    if (!worldIn.isRemote) tePost.getUnitName(player).printMessage(TextFormatting.GREEN, "Admin Mode is enabled for this block. Sneak place this block to disable it.");
+                    if (!worldIn.isRemote) tePost.getUnitName(player).printMessage(TextFormatting.GREEN, "Admin Mode is enabled for this Block. Sneak place this Block to disable it.");
                 }
             }
         }

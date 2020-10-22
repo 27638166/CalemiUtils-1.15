@@ -1,4 +1,4 @@
-package calemiutils;
+package calemiutils.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
@@ -47,6 +47,15 @@ public class CUConfig {
         public final ForgeConfigSpec.ConfigValue<Integer> raritaniumOreGenMinY;
         public final ForgeConfigSpec.ConfigValue<Integer> raritaniumOreGenMaxY;
 
+        public final ForgeConfigSpec.ConfigValue<Boolean> coinStackPennyGen;
+        public final ForgeConfigSpec.ConfigValue<Double> coinStackPennyRarity;
+        public final ForgeConfigSpec.ConfigValue<Boolean> coinStackNickelGen;
+        public final ForgeConfigSpec.ConfigValue<Double> coinStackNickelRarity;
+        public final ForgeConfigSpec.ConfigValue<Boolean> coinStackQuarterGen;
+        public final ForgeConfigSpec.ConfigValue<Double> coinStackQuarterRarity;
+        public final ForgeConfigSpec.ConfigValue<Boolean> coinStackDollarGen;
+        public final ForgeConfigSpec.ConfigValue<Double> coinStackDollarRarity;
+
         public CategoryWorldGen (ForgeConfigSpec.Builder builder) {
 
             builder.push("WorldGen");
@@ -56,6 +65,15 @@ public class CUConfig {
             raritaniumVeinSize = builder.comment("Raritanium Vein Size").define("raritaniumVeinSize", 8);
             raritaniumOreGenMinY = builder.comment("Raritanium Ore Min Y").define("raritaniumOreGenMinY", 0);
             raritaniumOreGenMaxY = builder.comment("Raritanium Ore Max Y").define("raritaniumOreGenMaxY", 30);
+
+            coinStackPennyGen = builder.comment("Penny Coin Stack Gen").define("coinStackPennyGen", true);
+            coinStackPennyRarity = builder.comment("Penny Coin Stack Rarity", "The lower the value, the less often it appears.").defineInRange("coinStackPennyRarity", 0.3D, 0D, 10D);
+            coinStackNickelGen = builder.comment("Nickel Coin Stack Gen").define("coinStackNickelGen", true);
+            coinStackNickelRarity = builder.comment("Nickel Coin Stack Rarity", "The lower the value, the less often it appears.").defineInRange("coinStackNickelRarity", 0.2D, 0D, 10D);
+            coinStackQuarterGen = builder.comment("Quarter Coin Stack Gen").define("coinStackQuarterGen", true);
+            coinStackQuarterRarity = builder.comment("Quarter Coin Stack Rarity", "The lower the value, the less often it appears.").defineInRange("coinStackQuarterRarity", 0.1D, 0D, 10D);
+            coinStackDollarGen = builder.comment("Dollar Coin Stack Gen").define("coinStackDollarGen", true);
+            coinStackDollarRarity = builder.comment("Dollar Coin Stack Rarity", "The lower the value, the less often it appears.").defineInRange("coinStackDollarRarity", 0.05D, 0D, 10D);
 
             builder.pop();
         }
@@ -82,6 +100,10 @@ public class CUConfig {
         public final ForgeConfigSpec.ConfigValue<String> currencyName;
         public final ForgeConfigSpec.ConfigValue<Integer> bankCurrencyCapacity;
         public final ForgeConfigSpec.ConfigValue<Integer> postCurrencyCapacity;
+        public final ForgeConfigSpec.ConfigValue<Integer> cheapMoneyBagMin;
+        public final ForgeConfigSpec.ConfigValue<Integer> cheapMoneyBagMax;
+        public final ForgeConfigSpec.ConfigValue<Integer> richMoneyBagMin;
+        public final ForgeConfigSpec.ConfigValue<Integer> richMoneyBagMax;
 
         public CategoryEconomy (ForgeConfigSpec.Builder builder) {
 
@@ -90,6 +112,10 @@ public class CUConfig {
             currencyName = builder.comment("Currency Name").define("currencyName", "RC");
             bankCurrencyCapacity = builder.comment("Bank Currency Capacity", "The max amount of currency the Bank can store.").defineInRange("bankCurrencyCapacity", 1000000, 0, 99999999);
             postCurrencyCapacity = builder.comment("Trading Post Currency Capacity", "The max amount of currency the Trading Post can store.").defineInRange("postCurrencyCapacity", 1000000, 0, 99999999);
+            cheapMoneyBagMin = builder.comment("Cheap Money Bag Minimum Coins Amount", "The minimum of the random amount of currency the Cheap Money Bag gives.").defineInRange("cheapMoneyBagMin", 10, 0, 10000);
+            cheapMoneyBagMax = builder.comment("Cheap Money Bag Maximum Coins Amount", "The maximum of the random amount of currency the Cheap Money Bag gives.").defineInRange("cheapMoneyBagMax", 100, 0, 10000);
+            richMoneyBagMin = builder.comment("Rich Money Bag Minimum Coins Amount", "The minimum of the random amount of currency the Rich Money Bag gives.").defineInRange("richMoneyBagMin", 75, 0, 10000);
+            richMoneyBagMax = builder.comment("Rich Money Bag Maximum Coins Amount", "The maximum of the random amount of currency the Rich Money Bag gives.").defineInRange("richMoneyBagMax", 300, 0, 10000);
 
             builder.pop();
         }
@@ -98,8 +124,6 @@ public class CUConfig {
     public static class CategoryWallet {
 
         public final ForgeConfigSpec.ConfigValue<Integer> walletCurrencyCapacity;
-        public final ForgeConfigSpec.ConfigValue<Boolean> startingWallet;
-        public final ForgeConfigSpec.ConfigValue<Boolean> keepWallet;
         public final ForgeConfigSpec.ConfigValue<Boolean> walletOverlay;
         public final ForgeConfigSpec.ConfigValue<String> walletOverlayPosition;
 
@@ -108,8 +132,6 @@ public class CUConfig {
             builder.push("Wallet");
 
             walletCurrencyCapacity = builder.comment("Wallet Currency Capacity", "The max amount of currency the Wallet can store.").defineInRange("walletCurrencyCapacity", 1000000, 0, 99999999);
-            startingWallet = builder.comment("Give Starting Wallet", "Enable this to give Players a Wallet the first time they join the world.").define("startingWallet", false);
-            keepWallet = builder.comment("Keep Wallets on Death", "Enable this to spawn any Wallets at the Player spawnpoint when they die.").define("keepWallet", false);
             walletOverlay = builder.comment("Render Wallet Currency Overlay", "Enable this render an overlay on your game screen showing your Wallet stats.").define("walletOverlay", true);
             walletOverlayPosition = builder.comment("Wallet Currency Overlay Position", "The position of the screen of the Wallet overlay", "The valid values are {TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}").define("walletOverlayPosition", WalletOverlayPosition.TOP_LEFT.toString());
 
@@ -124,16 +146,20 @@ public class CUConfig {
         public final ForgeConfigSpec.ConfigValue<Integer> torchPlacerMaxRange;
         public final ForgeConfigSpec.ConfigValue<Integer> speedUpgradeCostMultiplier;
         public final ForgeConfigSpec.ConfigValue<Integer> blenderMaxJuice;
+        public final ForgeConfigSpec.ConfigValue<Boolean> tradingPostBroadcasts;
+        public final ForgeConfigSpec.ConfigValue<Integer> tradingPostBroadcastDelay;
 
         public CategoryMisc (ForgeConfigSpec.Builder builder) {
 
             builder.push("Misc");
 
-            useSecurity = builder.comment("Use Security", "Disable this to allow everyone access to anyone's blocks.").define("useSecurity", true);
+            useSecurity = builder.comment("Use Security", "Disable this to allow everyone access to anyone's Blocks.").define("useSecurity", true);
             scaffoldMaxHeightTp = builder.comment("Scaffold Max Height Teleport", "0 to Disable. The max height you can teleport to the top or bottom of a scaffold.").defineInRange("scaffoldMaxHeightTp", 256, 0, 256);
-            torchPlacerMaxRange = builder.comment("Torch Placer Max Range", "The max range the Torch Place can place torches.").defineInRange("torchPlacerMaxRange", 48, 10, 48);
-            speedUpgradeCostMultiplier = builder.comment("Speed Upgrade Cost Multiplier", "This value is multiplied and added to the current cost of the Unit. This value increases based on how many Speed Upgrades are in the slot.").defineInRange("speedUpgradeCostMultiplier", 0, 0, Integer.MAX_VALUE);
-            blenderMaxJuice = builder.comment("Blender Max Juice", "The max height amount of juice the blender can store.").defineInRange("blenderMaxJuice", 1000, 0, 1000000);
+            torchPlacerMaxRange = builder.comment("Torch Placer Max Range", "The max range the Torch Placer can place torches.").defineInRange("torchPlacerMaxRange", 48, 10, 48);
+            speedUpgradeCostMultiplier = builder.comment("Speed Upgrade Cost Multiplier", "This value is multiplied and added to the current cost of the Unit.", "This value increases based on how many Speed Upgrades are in the slot.").defineInRange("speedUpgradeCostMultiplier", 0, 0, Integer.MAX_VALUE);
+            blenderMaxJuice = builder.comment("Blender Max Juice", "The max height amount of juice the Blender can store.").defineInRange("blenderMaxJuice", 1000, 0, 1000000);
+            tradingPostBroadcasts = builder.comment("Trading Post Broadcasts", "Disable this to disallow Players broadcasting their Trading Posts").define("tradingPostBroadcasts", true);
+            tradingPostBroadcastDelay = builder.comment("Trading Post Broadcast Delay", "The amount of seconds before a Player can broadcasts their Trading Post.").defineInRange("tradingPostBroadcastDelay", 10, 0, 3600);
 
             builder.pop();
         }

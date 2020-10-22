@@ -90,8 +90,6 @@ public class BlockItemStand extends BlockInventoryContainerBase {
         return InitTileEntityTypes.ITEM_STAND.get().create();
     }
 
-
-
     /*
         Methods for Block properties
      */

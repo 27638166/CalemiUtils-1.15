@@ -1,6 +1,7 @@
 package calemiutils.block;
 
 import calemiutils.block.base.BlockContainerBase;
+import calemiutils.init.InitTileEntityTypes;
 import calemiutils.tileentity.TileEntityNetworkCable;
 import calemiutils.util.helper.LoreHelper;
 import net.minecraft.block.Block;
@@ -27,12 +28,12 @@ public class BlockNetworkCableOpaque extends BlockContainerBase {
 
     @Override
     public void addInformation (ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        LoreHelper.addInformationLore(tooltip, "Used to connect Trading Posts to Banks within a single network.", true);
+        LoreHelper.addInformationLore(tooltip, "Used to connect Trading Posts & Markets to Banks within a single network.", true);
     }
 
     @Nullable
     @Override
     public TileEntity createNewTileEntity (IBlockReader worldIn) {
-        return new TileEntityNetworkCable();
+        return InitTileEntityTypes.NETWORK_CABLE.get().create();
     }
 }

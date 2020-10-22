@@ -1,28 +1,33 @@
 package calemiutils.util.helper;
 
-import calemiutils.CUConfig;
 import calemiutils.CalemiUtils;
+import calemiutils.config.CUConfig;
 import calemiutils.init.InitItems;
 import calemiutils.item.ItemWallet;
+import calemiutils.tileentity.TileEntityBank;
 import calemiutils.tileentity.base.ICurrencyNetworkBank;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import top.theillusivec4.curios.api.CuriosAPI;
 
-import java.util.List;
-
 public class CurrencyHelper {
 
+    /**
+     * Used to find the Player's Wallet. If multiple, chooses by priority.
+     */
     public static ItemStack getCurrentWalletStack (PlayerEntity player) {
 
+        //Priority #1 - Held mainhand.
         if (player.getHeldItemMainhand().getItem() instanceof ItemWallet) {
             return player.getHeldItemMainhand();
         }
 
+        //Priority #2 - Held offhand.
         if (player.getHeldItemOffhand().getItem() instanceof ItemWallet) {
             return player.getHeldItemOffhand();
         }
 
+        //Priority #3 - Curios slot.
         if (CalemiUtils.curiosLoaded) {
 
             if (CuriosAPI.getCurioEquipped(InitItems.WALLET.get(), player).isPresent()) {
@@ -30,6 +35,7 @@ public class CurrencyHelper {
             }
         }
 
+        //Priority #4 - Inventory (lowest slot id wins).
         for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
 
             ItemStack stack = player.inventory.getStackInSlot(i);
@@ -39,29 +45,67 @@ public class CurrencyHelper {
             }
         }
 
+        //No Wallet was found.
         return ItemStack.EMPTY;
     }
 
-    private static void addWallet (List<ItemStack> walletList, ItemStack stackToAdd) {
+    /**
+     * Bank currency methods.
+     */
 
-        for (ItemStack stackInList : walletList) {
-
-            if (!ItemStack.areItemStacksEqual(stackToAdd, stackToAdd)) {
-                walletList.add(stackToAdd);
-            }
-        }
+    public static boolean canDepositToBank(ICurrencyNetworkBank bank, int depositAmount) {
+        if (bank == null) return false;
+        return bank.getStoredCurrency() + depositAmount <= bank.getMaxCurrency();
     }
 
-    public static boolean canFitAddedCurrencyToNetwork (ICurrencyNetworkBank network, int addAmount) {
-        return network.getStoredCurrency() + addAmount <= network.getMaxCurrency();
+    public static boolean canWithdrawFromBank(ICurrencyNetworkBank bank, int withdrawAmount) {
+        if (bank == null) return false;
+        return bank.getStoredCurrency() >= withdrawAmount;
     }
 
-    public static boolean canFitAddedCurrencyToWallet (ItemStack walletStack, int addAmount) {
+    public static void depositToBank(ICurrencyNetworkBank bank, int depositAmount) {
+        if (bank == null) return;
+        bank.depositCurrency(depositAmount);
+    }
+
+    public static void withdrawFromBank(ICurrencyNetworkBank bank, int withdrawAmount) {
+        if (bank == null) return;
+        bank.withdrawCurrency(withdrawAmount);
+    }
+
+    /**
+     * Wallet currency methods.
+     */
+
+    public static boolean canDepositToWallet(ItemStack walletStack, int depositAmount) {
 
         if (walletStack.getItem() instanceof ItemWallet) {
-            return ItemWallet.getBalance(walletStack) + addAmount <= CUConfig.wallet.walletCurrencyCapacity.get();
+            return ItemWallet.getBalance(walletStack) + depositAmount <= CUConfig.wallet.walletCurrencyCapacity.get();
         }
 
         return false;
+    }
+
+    public static boolean canWithdrawFromWallet(ItemStack walletStack, int withdrawAmount) {
+
+        if (walletStack.getItem() instanceof ItemWallet) {
+            return ItemWallet.getBalance(walletStack) >= withdrawAmount;
+        }
+
+        return false;
+    }
+
+    public static void depositToWallet(ItemStack walletStack, int depositAmount) {
+
+        if (walletStack.getItem() instanceof ItemWallet) {
+            ItemWallet.depositCurrency(walletStack, depositAmount);
+        }
+    }
+
+    public static void withdrawFromWallet(ItemStack walletStack, int withdrawAmount) {
+
+        if (walletStack.getItem() instanceof ItemWallet) {
+            ItemWallet.withdrawCurrency(walletStack, withdrawAmount);
+        }
     }
 }

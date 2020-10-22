@@ -1,6 +1,6 @@
 package calemiutils.tileentity;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.gui.ScreenTorchPlacer;
 import calemiutils.init.InitTileEntityTypes;
 import calemiutils.inventory.ContainerTorchPlacer;
@@ -53,7 +53,7 @@ public class TileEntityTorchPlacer extends TileEntityUpgradable {
                 if (isDoneAndReset()) {
 
                     darkSpot.setBlock(TORCH_BLOCK);
-                    InventoryHelper.consumeItem(getInventory(), 1, TORCH_STACK);
+                    InventoryHelper.consumeStack(getInventory(), 1, false, TORCH_STACK);
                 }
             }
         }
@@ -86,7 +86,7 @@ public class TileEntityTorchPlacer extends TileEntityUpgradable {
 
         for (Location nextLocation : locations) {
 
-            if (TorchHelper.canPlaceTorchAt(nextLocation)) {
+            if (BlockHelper.canPlaceTorchAt(nextLocation)) {
                 return nextLocation;
             }
         }

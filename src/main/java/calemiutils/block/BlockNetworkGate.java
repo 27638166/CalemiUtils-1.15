@@ -1,6 +1,7 @@
 package calemiutils.block;
 
 import calemiutils.init.InitItems;
+import calemiutils.init.InitTileEntityTypes;
 import calemiutils.tileentity.TileEntityNetworkGate;
 import calemiutils.util.Location;
 import calemiutils.util.helper.LoreHelper;
@@ -52,7 +53,7 @@ public class BlockNetworkGate extends BlockNetworkCableOpaque {
     @Nullable
     @Override
     public TileEntity createNewTileEntity (IBlockReader worldIn) {
-        return new TileEntityNetworkGate();
+        return InitTileEntityTypes.NETWORK_GATE.get().create();
     }
 
     /*

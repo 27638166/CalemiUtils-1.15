@@ -209,7 +209,7 @@ public class ItemLinkBookLocation extends ItemBase {
             TileEntityBookStand inv = (TileEntityBookStand) location.getTileEntity();
 
             //Insert the Link Book into the Book Stand if possible
-            if (InventoryHelper.insertHeldItemIntoSlot(player, hand, location, inv.getInventory(), 0, true)) {
+            if (InventoryHelper.insertHeldStackIntoSlot(player.getHeldItem(hand), inv.getInventory(), 0, true)) {
                 inv.markForUpdate();
                 return ActionResultType.SUCCESS;
             }

@@ -1,6 +1,6 @@
 package calemiutils.item;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.CalemiUtils;
 import calemiutils.item.base.ItemBase;
 import calemiutils.util.helper.*;
@@ -147,7 +147,7 @@ public class ItemBlender extends ItemBase {
                         //Checks if the added juice can fit.
                         if (food > 0 && getJuice(stack) + food <= CUConfig.misc.blenderMaxJuice.get()) {
 
-                            InventoryHelper.consumeItem(player.inventory, 1, currentStack);
+                            InventoryHelper.consumeStack(player.inventory, 1, false, currentStack);
                             changeJuice(stack, food);
                         }
                     }

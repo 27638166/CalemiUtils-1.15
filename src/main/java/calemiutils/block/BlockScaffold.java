@@ -1,14 +1,11 @@
 package calemiutils.block;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.block.base.BlockBase;
 import calemiutils.init.InitItems;
 import calemiutils.util.Location;
 import calemiutils.util.VeinScan;
-import calemiutils.util.helper.BlockHelper;
-import calemiutils.util.helper.EntityHelper;
-import calemiutils.util.helper.ItemHelper;
-import calemiutils.util.helper.LoreHelper;
+import calemiutils.util.helper.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -24,7 +21,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -36,8 +32,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockScaffold extends BlockBase {
-
-    private static final Direction[] HORIZONTAL_DIRECTIONS = {Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST};
 
     public BlockScaffold () {
         super(Block.Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(0.1F).harvestLevel(0).harvestTool(ToolType.PICKAXE).func_226896_b_().variableOpacity());
@@ -111,7 +105,7 @@ public class BlockScaffold extends BlockBase {
                     if (nextLocationDown.getBlock() != this) {
 
                         //Iterates through all the horizontal Locations.
-                        for (Direction dir : HORIZONTAL_DIRECTIONS) {
+                        for (Direction dir : DirectionHelper.HORIZONTAL_DIRECTIONS) {
 
                             Location sqrLocation = new Location(nextLocation, dir);
 
@@ -140,18 +134,14 @@ public class BlockScaffold extends BlockBase {
     @Override
     public void onBlockClicked (BlockState state, World world, BlockPos pos, PlayerEntity player) {
 
-        //Gets the Player's facing id and obtains his direction from it.
-        int face = MathHelper.floor((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-        Direction dir = HORIZONTAL_DIRECTIONS[face];
-
         //If the Player is crouching, then place the block horizontally.
         if (!player.isCrouching()) {
-            BlockHelper.placeBlockInArray(world, pos, player, this, dir);
+            BlockHelper.placeBlockRow(world, player, this, pos, DirectionHelper.getPlayerHorizontalDirection(player));
         }
 
         //If the Player is not crouching, then place the block downwards.
         else {
-            BlockHelper.placeBlockInArray(world, pos, player, this, Direction.DOWN);
+            BlockHelper.placeBlockRow(world, player, this, pos, Direction.DOWN);
         }
     }
 
@@ -183,7 +173,7 @@ public class BlockScaffold extends BlockBase {
 
                 //If the Player is not in Creative Mode, then give them the drops of the Block.
                 if (!player.abilities.isCreativeMode) {
-                    ItemHelper.spawnItem(world, new Location(player), new ItemStack(InitItems.IRON_SCAFFOLD.get()));
+                    ItemHelper.spawnStackAtLocation(world, new Location(player), new ItemStack(InitItems.IRON_SCAFFOLD.get()));
                 }
             }
         }
@@ -196,7 +186,7 @@ public class BlockScaffold extends BlockBase {
 
             //If the Player is not in Creative Mode, then give them the drops of the Block.
             if (!player.abilities.isCreativeMode) {
-                ItemHelper.spawnItem(world, new Location(player), new ItemStack(InitItems.IRON_SCAFFOLD.get()));
+                ItemHelper.spawnStackAtLocation(world, new Location(player), new ItemStack(InitItems.IRON_SCAFFOLD.get()));
             }
         }
     }

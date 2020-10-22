@@ -1,6 +1,6 @@
 package calemiutils.tileentity.base;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.util.helper.MathHelper;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.nbt.CompoundNBT;

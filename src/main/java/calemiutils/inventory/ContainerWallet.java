@@ -1,11 +1,10 @@
 package calemiutils.inventory;
 
-import calemiutils.CUConfig;
 import calemiutils.init.InitContainersTypes;
 import calemiutils.init.InitItems;
 import calemiutils.inventory.base.ContainerBase;
 import calemiutils.inventory.base.SlotIInventoryFilter;
-import calemiutils.item.ItemCurrency;
+import calemiutils.item.ItemCoin;
 import calemiutils.util.helper.CurrencyHelper;
 import calemiutils.util.helper.ItemHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -59,13 +58,13 @@ public class ContainerWallet extends ContainerBase {
 
         ItemStack returnStack = super.slotClick(slotId, dragType, clickTypeIn, player);
         ItemStack stackInInv = stackInv.getStackInSlot(0);
+        ItemStack walletStack = getCurrentWalletStack();
 
         //Checks if the Stack in the Wallet is a Coin.
-        if (stackInInv.getItem() instanceof ItemCurrency) {
+        if (stackInInv.getItem() instanceof ItemCoin) {
 
-            ItemCurrency currency = ((ItemCurrency) stackInInv.getItem());
+            ItemCoin currency = ((ItemCoin) stackInInv.getItem());
 
-            int balance = getNBT().getInt("balance");
             int amountToAdd = 0;
             int stacksToRemove = 0;
 
@@ -73,15 +72,15 @@ public class ContainerWallet extends ContainerBase {
             for (int i = 0; i < stackInInv.getCount(); i++) {
 
                 //Checks if the Wallet can fit the added money.
-                if (balance + currency.value <= CUConfig.wallet.walletCurrencyCapacity.get()) {
-
-                    balance += currency.value;
+                if (CurrencyHelper.canDepositToWallet(walletStack, currency.value)) {
                     amountToAdd += currency.value;
                     stacksToRemove++;
                 }
+
+                else break;
             }
 
-            getNBT().putInt("balance", getNBT().getInt("balance") + amountToAdd);
+            CurrencyHelper.depositToWallet(walletStack, amountToAdd);
             stackInv.decrStackSize(0, stacksToRemove);
         }
 

@@ -162,7 +162,7 @@ public class Location {
     
     public void breakBlock (PlayerEntity player, ItemStack heldItem) {
         SoundHelper.playBlockPlaceSound(world, player, getBlockState(), this);
-        if (!world.isRemote && (!player.isCreative())) ItemHelper.spawnItems(world, this, getDrops(player, heldItem));
+        if (!world.isRemote && (!player.isCreative())) ItemHelper.spawnStacksAtLocation(world, this, getDrops(player, heldItem));
         if (!world.isRemote) setBlockToAir();
     }
 
@@ -220,6 +220,6 @@ public class Location {
 
     @Override
     public String toString () {
-        return "(" + x + ", " + y + ", " + z + ")";
+        return "[" + x + ", " + y + ", " + z + "]";
     }
 }

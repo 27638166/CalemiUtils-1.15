@@ -1,10 +1,10 @@
 package calemiutils.tileentity;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.gui.ScreenBank;
 import calemiutils.init.InitTileEntityTypes;
 import calemiutils.inventory.ContainerBank;
-import calemiutils.item.ItemCurrency;
+import calemiutils.item.ItemCoin;
 import calemiutils.security.ISecurity;
 import calemiutils.security.SecurityProfile;
 import calemiutils.tileentity.base.ICurrencyNetworkBank;
@@ -79,41 +79,26 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
 
         if (!world.isRemote) {
 
-            if (getInventory().getStackInSlot(0) != null && getInventory().getStackInSlot(0).getItem() instanceof ItemCurrency) {
+            if (getInventory().getStackInSlot(0) != null && getInventory().getStackInSlot(0).getItem() instanceof ItemCoin) {
 
-                int amountToAdd = ((ItemCurrency) getInventory().getStackInSlot(0).getItem()).value;
+                int amountToAdd = ((ItemCoin) getInventory().getStackInSlot(0).getItem()).value;
                 int stackSize = 0;
 
                 for (int i = 0; i < getInventory().getStackInSlot(0).getCount(); i++) {
 
-                    if (canAddAmount(amountToAdd)) {
+                    if (canDeposit(amountToAdd)) {
                         stackSize++;
-                        amountToAdd += ((ItemCurrency) getInventory().getStackInSlot(0).getItem()).value;
+                        amountToAdd += ((ItemCoin) getInventory().getStackInSlot(0).getItem()).value;
                     }
                 }
 
                 if (stackSize != 0) {
 
-                    addCurrency(stackSize * ((ItemCurrency) getInventory().getStackInSlot(0).getItem()).value);
+                    depositCurrency(stackSize * ((ItemCoin) getInventory().getStackInSlot(0).getItem()).value);
                     getInventory().decrStackSize(0, stackSize);
                 }
             }
         }
-    }
-
-    private boolean canAddAmount (int amount) {
-        int storedAmount = storedCurrency;
-        return storedAmount + amount <= getMaxCurrency();
-    }
-
-    public void addCurrency (int amount) {
-        setCurrency(storedCurrency + amount);
-        markForUpdate();
-    }
-
-    @Override
-    public int getSizeInventory () {
-        return 2;
     }
 
     @Override
@@ -137,6 +122,36 @@ public class TileEntityBank extends TileEntityInventoryBase implements ICurrency
 
         storedCurrency = setAmount;
         markForUpdate();
+    }
+
+    @Override
+    public boolean canDeposit(int depositAmount) {
+        int storedAmount = storedCurrency;
+        return storedAmount + depositAmount <= getMaxCurrency();
+    }
+
+    @Override
+    public boolean canWithdraw(int withdrawAmount) {
+        return storedCurrency >= withdrawAmount;
+    }
+
+    @Override
+    public void depositCurrency(int depositAmount) {
+        int newAmount = storedCurrency + depositAmount;
+        if (newAmount > CUConfig.economy.bankCurrencyCapacity.get()) newAmount = CUConfig.economy.bankCurrencyCapacity.get();
+        setCurrency(newAmount);
+    }
+
+    @Override
+    public void withdrawCurrency(int withdrawAmount) {
+        int newAmount = storedCurrency - withdrawAmount;
+        if (newAmount < 0) newAmount = 0;
+        setCurrency(newAmount);
+    }
+
+    @Override
+    public int getSizeInventory () {
+        return 2;
     }
 
     @Override

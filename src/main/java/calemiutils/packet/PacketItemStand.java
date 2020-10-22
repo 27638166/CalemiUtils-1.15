@@ -44,7 +44,7 @@ public class PacketItemStand {
     }
 
     /**
-     * Use this constructor for syncing display.,
+     * Use this constructor for syncing display.
      */
     public PacketItemStand (String command, BlockPos pos, int displayId) {
         this(command, pos, displayId, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), new Vector3f(0, 0, 0));

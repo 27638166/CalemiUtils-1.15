@@ -1,111 +1,170 @@
 package calemiutils.util.helper;
 
 import calemiutils.tileentity.base.CUItemHandler;
-import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.util.Location;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Hand;
 import net.minecraft.world.World;
-
-import java.util.Objects;
 
 public class InventoryHelper {
 
-    public static boolean canInsertItem (ItemStack stack, IInventory inventory) {
+    private static int getSlotAmount(Object obj) {
 
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+        if (obj instanceof IInventory) {
+            return ((IInventory)obj).getSizeInventory();
+        }
 
-            ItemStack slot = inventory.getStackInSlot(i);
+        if (obj instanceof CUItemHandler) {
+            return ((CUItemHandler)obj).getSlots();
+        }
 
-            boolean equalAndNotFull = (ItemStack.areItemsEqual(slot, stack) && slot.getCount() + stack.getCount() < stack.getMaxStackSize());
+        return 0;
+    }
 
-            if (inventory.isItemValidForSlot(i, stack) && (slot.isEmpty() || equalAndNotFull)) {
-                return true;
-            }
+    private static boolean isStackValidForSlot(Object obj, ItemStack stack, int slotId) {
+
+        if (obj instanceof IInventory) {
+            return ((IInventory)obj).isItemValidForSlot(slotId, stack);
+        }
+
+        if (obj instanceof CUItemHandler) {
+            return ((CUItemHandler)obj).isItemValid(slotId, stack);
         }
 
         return false;
     }
 
-    public static boolean canInsertItem (ItemStack stack, TileEntityInventoryBase tileEntity) {
+    private static ItemStack getStackInSlot(Object obj, int slotId) {
 
-        for (int i = 0; i < tileEntity.getInventory().getSlots(); i++) {
-
-            ItemStack slot = tileEntity.getInventory().getStackInSlot(i);
-
-            boolean equalAndNotFull = (ItemStack.areItemsEqual(slot, stack) && slot.getCount() + stack.getCount() < stack.getMaxStackSize());
-
-            if (tileEntity.isItemValidForSlot(i, stack) && (slot.isEmpty() || equalAndNotFull)) {
-                return true;
-            }
+        if (obj instanceof IInventory) {
+            return ((IInventory)obj).getStackInSlot(slotId);
         }
 
-        return false;
+        if (obj instanceof CUItemHandler) {
+            return ((CUItemHandler)obj).getStackInSlot(slotId);
+        }
+
+        return ItemStack.EMPTY;
     }
 
-    public static void insertItem (ItemStack stack, CUItemHandler inventory) {
-        insertItem(stack, inventory, 0);
-    }
+    private static void setStackInSlot(Object obj, ItemStack stack, int slotId) {
 
-    public static void insertItem (ItemStack stack, IInventory inventory) {
-        insertItem(stack, inventory, 0);
-    }
+        if (obj instanceof IInventory) {
+            ((IInventory)obj).setInventorySlotContents(slotId, stack);
+        }
 
-    public static void insertItem (ItemStack stack, CUItemHandler inventory, int slotOffset) {
-
-        for (int i = slotOffset; i < inventory.getSlots(); i++) {
-
-            ItemStack slot = inventory.getStackInSlot(i);
-
-            if (ItemStack.areItemsEqual(slot, stack) && (slot.getCount() + stack.getCount() <= stack.getMaxStackSize())) {
-
-                inventory.setStackInSlot(i, new ItemStack(stack.getItem(), slot.getCount() + stack.getCount()));
-                return;
-            }
-
-            else if (slot.isEmpty()) {
-                inventory.setStackInSlot(i, stack);
-                return;
-            }
+        if (obj instanceof CUItemHandler) {
+            ((CUItemHandler)obj).setStackInSlot(slotId, stack);
         }
     }
 
-    public static void insertItem (ItemStack stack, IInventory inventory, int slotOffset) {
+    private static void decreaseCountFromSlot(Object obj, int slot, int decreaseAmount) {
 
-        for (int i = slotOffset; i < inventory.getSizeInventory(); i++) {
+        if (obj instanceof IInventory) {
+            ((IInventory)obj).decrStackSize(slot, decreaseAmount);
+        }
 
-            ItemStack slot = inventory.getStackInSlot(i);
+        if (obj instanceof CUItemHandler) {
+            ((CUItemHandler)obj).decrStackSize(slot, decreaseAmount);
+        }
+    }
 
-            if (ItemStack.areItemsEqual(slot, stack) && (slot.getCount() + stack.getCount() <= stack.getMaxStackSize())) {
+    public static boolean canInsertStack(ItemStack stack, Object obj) {
 
-                inventory.setInventorySlotContents(i, new ItemStack(stack.getItem(), slot.getCount() + stack.getCount()));
-                return;
+        int amountLeft = stack.getCount();
+
+        for (int slotId = 0; slotId < getSlotAmount(obj); slotId++) {
+
+            ItemStack stackInSlot = getStackInSlot(obj, slotId);
+
+            if (isStackValidForSlot(obj, stack, slotId)) {
+
+                if (stackInSlot.isEmpty()) {
+                    amountLeft -= stack.getMaxStackSize();
+                }
+
+                else if (ItemStack.areItemsEqual(stackInSlot, stack)) {
+
+                    if (stack.hasTag()) {
+
+                        if (!stackInSlot.hasTag() || ItemStack.areItemStackTagsEqual(stack, stackInSlot)) {
+                            continue;
+                        }
+                    }
+
+                    int spaceLeftInStack = stack.getMaxStackSize() - stackInSlot.getCount();
+                    amountLeft -= spaceLeftInStack;
+                }
+            }
+        }
+
+        return amountLeft <= 0;
+    }
+
+    public static void insertOverflowingStack(Object obj, ItemStack stack) {
+
+        if (stack.getCount() >= stack.getMaxStackSize()) {
+
+            int amountLeft = stack.getCount();
+
+            while (amountLeft > 0) {
+
+                ItemStack partialStack = stack.copy();
+                int stackSize = Math.min(amountLeft, stack.getMaxStackSize());
+                partialStack.setCount(stackSize);
+                amountLeft -= stackSize;
+
+                InventoryHelper.insertStack(obj, partialStack);
+            }
+        }
+
+        else InventoryHelper.insertStack(obj, stack);
+    }
+
+    public static void insertStack(Object obj, ItemStack stack) {
+        insertStackWithOffset(0, obj, stack);
+    }
+
+    public static void insertStackWithOffset(int slotOffset, Object obj, ItemStack stack) {
+
+        for (int slotId = slotOffset; slotId < getSlotAmount(obj); slotId++) {
+
+            ItemStack stackInSlot = getStackInSlot(obj, slotId);
+
+            if (ItemStack.areItemsEqual(stackInSlot, stack) && (stackInSlot.getCount() + stack.getCount() <= stack.getMaxStackSize())) {
+
+                if (stack.hasTag()) {
+
+                    if (!ItemStack.areItemStackTagsEqual(stackInSlot, stack)) {
+                        continue;
+                    }
+                }
+
+                ItemStack stack2 = stack.copy();
+                stack2.setCount(stackInSlot.getCount() + stack.getCount());
+
+                setStackInSlot(obj, stack2, slotId);
+                break;
             }
 
-            else if (slot.isEmpty()) {
-                inventory.setInventorySlotContents(i, stack);
-                return;
+            else if (stackInSlot.isEmpty()) {
+                setStackInSlot(obj, stack, slotId);
+                break;
             }
         }
     }
 
-    public static boolean insertHeldItemIntoSlot (PlayerEntity player, Hand hand, Location location, CUItemHandler inventory, int slot, boolean removeStack) {
+    public static boolean insertHeldStackIntoSlot(ItemStack stack, Object obj, int slotId, boolean removeStack) {
 
-        ItemStack stack = player.getHeldItem(hand);
-        TileEntity te = location.getTileEntity();
+        if (getSlotAmount(obj) > slotId) {
 
-        if (inventory.getSlots() > slot) {
+            if (!stack.isEmpty() && getStackInSlot(obj, slotId).isEmpty()) {
 
-            if (!stack.isEmpty() && inventory.getStackInSlot(slot).isEmpty()) {
-
-                inventory.setStackInSlot(slot, stack.copy());
+                setStackInSlot(obj, stack.copy(), slotId);
 
                 if (removeStack) {
-                    player.setHeldItem(hand, ItemStack.EMPTY);
+                    stack.setCount(0);
                 }
 
                 return true;
@@ -117,174 +176,95 @@ public class InventoryHelper {
 
     public static void breakInventory (World world, CUItemHandler inventory, Location location) {
 
-        for (int i = 0; i < inventory.getSlots(); i++) {
+        for (int slotId = 0; slotId < inventory.getSlots(); slotId++) {
 
-            ItemStack stack = inventory.getStackInSlot(i);
+            ItemStack stackInSlot = inventory.getStackInSlot(slotId);
 
-            if (!stack.isEmpty()) {
+            if (!stackInSlot.isEmpty()) {
 
-                ItemEntity dropEntity = ItemHelper.spawnItem(world, location, stack);
+                ItemEntity dropEntity = ItemHelper.spawnStackAtLocation(world, location, stackInSlot);
 
-                if (stack.hasTag()) {
-                    dropEntity.getItem().setTag(stack.getTag());
+                if (stackInSlot.hasTag()) {
+                    dropEntity.getItem().setTag(stackInSlot.getTag());
                 }
             }
         }
     }
 
-    public static void consumeItem (IInventory inventory, int amount, ItemStack... itemStack) {
-        consumeItem(0, inventory, amount, false, itemStack);
-    }
+    public static int countItems (Object obj, boolean useNBT, ItemStack stack) {
 
-    public static void consumeItem (CUItemHandler inventory, int amount, ItemStack... itemStack) {
-        consumeItem(0, inventory, amount, false, itemStack);
-    }
+        if (stack.getCount() > stack.getMaxStackSize()) {
 
-    public static void consumeItem (int slotOffset, CUItemHandler inventory, int amount, boolean useNBT, ItemStack... itemStacks) {
-
-        int amountLeft = amount;
-
-        if (countItems(inventory, useNBT, itemStacks) >= amount) {
-
-            for (int i = slotOffset; i < inventory.getSlots(); i++) {
-
-                if (amountLeft <= 0) {
-                    break;
-                }
-
-                ItemStack stack = inventory.getStackInSlot(i);
-
-                if (!stack.isEmpty()) {
-
-                    for (ItemStack itemStack : itemStacks) {
-
-                        if (stack.isItemEqual(itemStack)) {
-
-                            if (useNBT && itemStack.hasTag()) {
-
-                                if (!stack.hasTag() || !Objects.equals(stack.getTag(), itemStack.getTag())) {
-                                    continue;
-                                }
-                            }
-
-                            if (amountLeft >= stack.getCount()) {
-
-                                amountLeft -= stack.getCount();
-                                inventory.setStackInSlot(i, ItemStack.EMPTY);
-                            }
-
-                            else {
-
-                                ItemStack copy = stack.copy();
-
-                                inventory.decrStackSize(i, amountLeft);
-                                amountLeft -= copy.getCount();
-                            }
-                        }
-                    }
-                }
+            for (int i = 0; i < stack.getCount(); i++) {
+                stack.setCount(1);
+                countItems(obj, useNBT, stack);
             }
         }
-    }
-
-    public static void consumeItem (int slotOffset, IInventory inventory, int amount, boolean useNBT, ItemStack... itemStacks) {
-
-        int amountLeft = amount;
-
-        if (countItems(inventory, useNBT, itemStacks) >= amount) {
-
-            for (int i = slotOffset; i < inventory.getSizeInventory(); i++) {
-
-                if (amountLeft <= 0) {
-                    break;
-                }
-
-                ItemStack stack = inventory.getStackInSlot(i);
-
-                if (!stack.isEmpty()) {
-
-                    for (ItemStack itemStack : itemStacks) {
-
-                        if (stack.isItemEqual(itemStack)) {
-
-                            if (useNBT && itemStack.hasTag()) {
-
-                                if (!stack.hasTag() || !Objects.equals(stack.getTag(), itemStack.getTag())) {
-                                    continue;
-                                }
-                            }
-
-                            if (amountLeft >= stack.getCount()) {
-
-                                amountLeft -= stack.getCount();
-                                inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-                            }
-
-                            else {
-
-                                ItemStack copy = stack.copy();
-
-                                inventory.decrStackSize(i, amountLeft);
-                                amountLeft -= copy.getCount();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public static int countItems (IInventory inventory, boolean useNBT, ItemStack... itemStacks) {
 
         int count = 0;
 
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+        for (int slotId = 0; slotId < getSlotAmount(obj); slotId++) {
 
-            ItemStack stack = inventory.getStackInSlot(i);
+            ItemStack stackInSlot = getStackInSlot(obj, slotId);
 
-            for (ItemStack itemStack : itemStacks) {
+            if (stackInSlot.isItemEqual(stack)) {
 
-                if (stack.isItemEqual(itemStack)) {
+                if (useNBT && stack.hasTag()) {
 
-                    if (useNBT && itemStack.hasTag()) {
-
-                        if (stack.hasTag() && Objects.equals(stack.getTag(), itemStack.getTag())) {
-                            count += stack.getCount();
-                        }
+                    if (stackInSlot.hasTag() && stackInSlot.getTag().equals(stack.getTag())) {
+                        count += stackInSlot.getCount();
                     }
-
-                    count += stack.getCount();
                 }
+
+                else count += stackInSlot.getCount();
             }
         }
 
         return count;
     }
 
-    public static int countItems (CUItemHandler inventory, boolean useNBT, ItemStack... itemStacks) {
+    public static void consumeStack(Object obj, int amount, boolean useNBT, ItemStack stack) {
+        consumeStackWithOffset(obj, amount, useNBT, 0, stack);
+    }
 
-        int count = 0;
+    public static void consumeStackWithOffset(Object obj, int amount, boolean useNBT, int slotOffset, ItemStack stack) {
 
-        for (int i = 0; i < inventory.getSlots(); i++) {
+        int amountLeft = amount;
 
-            ItemStack stack = inventory.getStackInSlot(i);
+        if (countItems(obj, useNBT, stack) >= amount) {
 
-            for (ItemStack itemStack : itemStacks) {
+            for (int slotId = slotOffset; slotId < getSlotAmount(obj); slotId++) {
 
-                if (stack.isItemEqual(itemStack)) {
+                if (amountLeft <= 0) {
+                    break;
+                }
 
-                    if (useNBT && itemStack.hasTag()) {
+                ItemStack stackInSlot = getStackInSlot(obj, slotId);
 
-                        if (stack.hasTag() && Objects.equals(stack.getTag(), itemStack.getTag())) {
-                            count += stack.getCount();
+                if (!stackInSlot.isEmpty()) {
+
+                    if (stackInSlot.isItemEqual(stack)) {
+
+                        if (useNBT && stack.hasTag()) {
+
+                            if (!stackInSlot.hasTag() || !stackInSlot.getTag().equals(stack.getTag())) {
+                                continue;
+                            }
+                        }
+
+                        if (amountLeft >= stackInSlot.getCount()) {
+                            amountLeft -= stackInSlot.getCount();
+                            setStackInSlot(obj, ItemStack.EMPTY, slotId);
+                        }
+
+                        else {
+                            ItemStack copy = stackInSlot.copy();
+                            decreaseCountFromSlot(obj, slotId, amountLeft);
+                            amountLeft -= copy.getCount();
                         }
                     }
-
-                    count += stack.getCount();
                 }
             }
         }
-
-        return count;
     }
 }

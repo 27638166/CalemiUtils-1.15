@@ -1,6 +1,7 @@
 package calemiutils.block;
 
 import calemiutils.block.base.BlockInventoryContainerBase;
+import calemiutils.init.InitTileEntityTypes;
 import calemiutils.tileentity.TileEntityBank;
 import calemiutils.util.helper.LoreHelper;
 import net.minecraft.block.Block;
@@ -30,6 +31,6 @@ public class BlockBank extends BlockInventoryContainerBase {
     @Nullable
     @Override
     public TileEntity createNewTileEntity (IBlockReader worldIn) {
-        return new TileEntityBank();
+        return InitTileEntityTypes.BANK.get().create();
     }
 }

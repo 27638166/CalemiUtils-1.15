@@ -1,5 +1,6 @@
 package calemiutils.util.helper;
 
+import calemiutils.init.InitSounds;
 import calemiutils.util.Location;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
@@ -11,6 +12,23 @@ public class SoundHelper {
 
     public static void playBlockPlaceSound (World world, PlayerEntity player, IForgeBlockState state, Location location) {
         world.playSound(player, location.getBlockPos(), state.getBlockState().getBlock().getSoundType(state.getBlockState(), world, location.getBlockPos(), player).getPlaceSound(), SoundCategory.NEUTRAL, 1.5F, 0.9F);
+    }
+
+    public static void playMoneyBagCheapOpen (World world, PlayerEntity player) {
+        world.playSound(player, player.getPosition(), InitSounds.MONEY_BAG_CHEAP.get(), SoundCategory.PLAYERS, 0.1F, 1);
+    }
+
+    public static void playMoneyBagRichOpen (World world, PlayerEntity player) {
+        world.playSound(player, player.getPosition(), InitSounds.MONEY_BAG_RICH.get(), SoundCategory.PLAYERS, 0.1F, 1);
+    }
+
+    public static void playCoin (World world, PlayerEntity player) {
+
+        if (world.isRemote) {
+            world.playSound(player, player.getPosition(), InitSounds.COIN.get(), SoundCategory.PLAYERS, 0.1F, 1);
+        }
+
+        else world.playSound(null, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), InitSounds.COIN.get(), SoundCategory.PLAYERS, 0.1F, 1);
     }
 
     public static void playDing (World world, PlayerEntity player) {

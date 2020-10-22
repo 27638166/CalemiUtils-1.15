@@ -1,6 +1,7 @@
 package calemiutils.gui;
 
 import calemiutils.CalemiUtils;
+import calemiutils.config.CUConfig;
 import calemiutils.gui.base.ButtonRect;
 import calemiutils.gui.base.ContainerScreenBase;
 import calemiutils.gui.base.FakeSlot;
@@ -39,25 +40,25 @@ public class ScreenTradingPost extends ContainerScreenBase<ContainerTradingPost>
 
         //Subtract Amount
         addButton(new ButtonRect(getScreenX() + 50, getScreenY() + upY, 16, "-", (btn) -> {
-            int i = ShiftHelper.getShiftCtrlInt(1, 10, 100, 1000);
+            int i = calemiutils.util.helper.MathHelper.getShiftCtrlInt(1, 10, 100, 1000);
             changeAmount(-i);
         }));
 
         //Add Amount
         addButton(new ButtonRect(getScreenX() + 110, getScreenY() + upY, 16, "+", (btn) -> {
-            int i = ShiftHelper.getShiftCtrlInt(1, 10, 100, 1000);
+            int i = calemiutils.util.helper.MathHelper.getShiftCtrlInt(1, 10, 100, 1000);
             changeAmount(i);
         }));
 
         //Subtract Price
         addButton(new ButtonRect(getScreenX() + 50, getScreenY() + downY, 16, "-", (btn) -> {
-            int i = ShiftHelper.getShiftCtrlInt(1, 10, 100, 1000);
+            int i = calemiutils.util.helper.MathHelper.getShiftCtrlInt(1, 10, 100, 1000);
             changePrice(-i);
         }));
 
         //Add Price
         addButton(new ButtonRect(getScreenX() + 110, getScreenY() + downY, 16, "+", (btn) -> {
-            int i = ShiftHelper.getShiftCtrlInt(1, 10, 100, 1000);
+            int i = calemiutils.util.helper.MathHelper.getShiftCtrlInt(1, 10, 100, 1000);
             changePrice(i);
         }));
 
@@ -67,7 +68,8 @@ public class ScreenTradingPost extends ContainerScreenBase<ContainerTradingPost>
         //Reset Price
         addButton(new ButtonRect(getScreenX() + 128, getScreenY() + downY, 16, "R", (btn) -> resetPrice()));
 
-        sellModeBtn = addButton(new ButtonRect(getScreenX() + 21, getScreenY() + 19, 39, tePost.buyMode ? "Buying" : "Selling", (btn) -> toggleMode()));
+        sellModeBtn = addButton(new ButtonRect(getScreenX() + 21, getScreenY() + 19, 38, tePost.buyMode ? "Buying" : "Selling", (btn) -> toggleMode()));
+        if (CUConfig.misc.tradingPostBroadcasts.get()) addButton(new ButtonRect(getScreenX() + 105, getScreenY() + 19, 60, "Broadcast", (btn) -> broadcast()));
 
         fakeSlot = addButton(new FakeSlot(getScreenX() + 80, getScreenY() + 19, itemRenderer, (btn) -> setFakeSlot()));
         fakeSlot.setItemStack(tePost.getStackForSale());
@@ -119,6 +121,14 @@ public class ScreenTradingPost extends ContainerScreenBase<ContainerTradingPost>
         boolean mode = !tePost.buyMode;
         CalemiUtils.network.sendToServer(new PacketTradingPost("syncmode", tePost.getPos(), mode));
         tePost.buyMode = mode;
+    }
+
+    /**
+     * Called when a broadcastBtn is pressed.
+     * Sends a message to everyone containing information about the Trading Post.
+     */
+    private void broadcast () {
+        CalemiUtils.network.sendToServer(new PacketTradingPost("broadcast", tePost.getPos()));
     }
 
     /**

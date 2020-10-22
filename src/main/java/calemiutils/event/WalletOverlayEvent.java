@@ -1,9 +1,8 @@
 package calemiutils.event;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.item.ItemWallet;
 import calemiutils.util.helper.CurrencyHelper;
-import calemiutils.util.helper.LogHelper;
 import calemiutils.util.helper.ScreenHelper;
 import calemiutils.util.helper.StringHelper;
 import net.minecraft.client.Minecraft;

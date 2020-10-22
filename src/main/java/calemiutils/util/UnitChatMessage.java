@@ -10,7 +10,6 @@ public class UnitChatMessage {
     private final Entity[] players;
 
     public UnitChatMessage (String unitName, Entity... players) {
-
         this.unitName = unitName;
         this.players = players;
     }
@@ -25,7 +24,6 @@ public class UnitChatMessage {
     }
 
     private String getUnitName () {
-
         return "[" + unitName + "] ";
     }
 }

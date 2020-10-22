@@ -4,6 +4,8 @@
   "item.calemiutils.coin_nickel": "Nickel",
   "item.calemiutils.coin_quarter": "Quarter",
   "item.calemiutils.coin_dollar": "Dollar",
+  "item.calemiutils.money_bag_cheap": "Cheap Money Bag",
+  "item.calemiutils.money_bag_rich": "Rich Money Bag",
   "item.calemiutils.gold_chip": "Gold Chip",
   "item.calemiutils.motor": "Motor",
   "item.calemiutils.knob_wood": "Wood Knob",
@@ -31,6 +33,10 @@
 
 
   "block.calemiutils.raritanium_ore": "Raritanium Ore",
+  "block.calemiutils.coin_stack_penny": "Penny",
+  "block.calemiutils.coin_stack_nickel": "Nickel",
+  "block.calemiutils.coin_stack_quarter": "Quarter",
+  "block.calemiutils.coin_stack_dollar": "Dollar",
   "block.calemiutils.blueprint": "Blueprint",
   "block.calemiutils.iron_scaffold": "Iron Scaffold",
   "block.calemiutils.torch_placer": "Torch Placer",
@@ -42,10 +48,20 @@
   "block.calemiutils.network_cable_opaque": "Network Cable (Opaque)",
   "block.calemiutils.network_gate": "Network Gate",
   "block.calemiutils.trading_post": "Trading Post",
+  "block.calemiutils.market": "Market",
 
 
   "itemGroup.calemiutils.tabMain": "Calemi's Utils",
   "enchantment.calemiutils.crushing": "Crushing",
+
+
+  "item.coin_sound": "Coin Sound",
+  "item.coin_sound.sub": "Change",
+  "item.money_bag_cheap_sound": "Cheap Money Bag Sound",
+  "item.money_bag_cheap_sound.sub": "Cheap Money Bag Open",
+  "item.money_bag_rich_sound": "Rich Money Bag Sound",
+  "item.money_bag_rich_sound.sub": "Rich Money Bag Open",
+
 
   "curios.identifier.wallet" : "Wallet"
 }

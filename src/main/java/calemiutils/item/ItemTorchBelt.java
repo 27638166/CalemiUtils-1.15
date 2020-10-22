@@ -91,10 +91,10 @@ public class ItemTorchBelt extends ItemBase {
                 if (player.inventory.hasItemStack(new ItemStack(Blocks.TORCH)) || player.abilities.isCreativeMode) {
 
                     //Checks if a torch can be placed on the Player's Location.
-                    if (TorchHelper.canPlaceTorchAt(location)) {
+                    if (BlockHelper.canPlaceTorchAt(location)) {
 
                         location.setBlock(Blocks.TORCH);
-                        if (!player.abilities.isCreativeMode) InventoryHelper.consumeItem(player.inventory, 1, new ItemStack(Blocks.TORCH));
+                        if (!player.abilities.isCreativeMode) InventoryHelper.consumeStack(player.inventory, 1, false, new ItemStack(Blocks.TORCH));
                     }
                 }
             }

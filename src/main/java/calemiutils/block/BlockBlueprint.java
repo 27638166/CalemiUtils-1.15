@@ -1,6 +1,6 @@
 package calemiutils.block;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.block.base.BlockColoredBase;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
@@ -56,11 +56,6 @@ public class BlockBlueprint extends BlockColoredBase {
             if (heldStack.getItem() instanceof BlockItem) {
                 replaceAllBlocks(world, player, location, heldStack, scan, message);
             }
-
-            //Support for the Builder's Kit.
-            /*else if (heldStack.getItem() instanceof ItemBuildersKit) {
-                replaceAllBlocks(world, player, location, ((ItemBuildersKit) heldStack.getItem()).getBlockType(heldStack), scan, message);
-            }*/
         }
 
         //Checking if the held stack is air and if the Player is crouching.
@@ -92,7 +87,7 @@ public class BlockBlueprint extends BlockColoredBase {
             //Handles replacing only one Block.
             if (player.isCrouching()) {
                 replaceBlock(location, player, heldBlockState);
-                InventoryHelper.consumeItem(player.inventory, 1, heldStack);
+                InventoryHelper.consumeStack(player.inventory, 1, false, heldStack);
                 SoundHelper.playBlockPlaceSound(world, player, Block.getBlockFromItem(heldStack.getItem()).getDefaultState(), location);
             }
 
@@ -116,7 +111,7 @@ public class BlockBlueprint extends BlockColoredBase {
                         SoundHelper.playBlockPlaceSound(world, player, Block.getBlockFromItem(heldStack.getItem()).getDefaultState(), location);
 
                         if (!world.isRemote) message.printMessage(TextFormatting.GREEN, "Placed " + ItemHelper.countByStacks(amountToConsume));
-                        InventoryHelper.consumeItem(player.inventory, amountToConsume, heldStack);
+                        InventoryHelper.consumeStack(player.inventory, amountToConsume, false, heldStack);
                     }
                 }
 

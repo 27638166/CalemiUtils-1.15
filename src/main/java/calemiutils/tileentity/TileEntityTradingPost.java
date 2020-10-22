@@ -27,13 +27,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class TileEntityTradingPost extends TileEntityInventoryBase implements ITileEntityGuiHandler, ICurrencyNetworkUnit, ISecurity {
 
     private final SecurityProfile profile = new SecurityProfile();
+    private Location bankLocation;
+
+    private ItemStack stackForSale = ItemStack.EMPTY;
     public int amountForSale;
     public int salePrice;
-    public boolean hasValidTradeOffer;
-    public boolean adminMode = false;
     public boolean buyMode = false;
-    private Location bankLocation;
-    private ItemStack stackForSale = ItemStack.EMPTY;
+    public boolean adminMode = false;
+    public boolean hasValidTradeOffer;
+
+    public int broadcastDelay;
 
     public TileEntityTradingPost () {
         super(InitTileEntityTypes.TRADING_POST.get());
@@ -42,49 +45,21 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
         hasValidTradeOffer = false;
     }
 
-    public int getStoredCurrencyInBank () {
-
-        if (getBank() != null) {
-            return getBank().getStoredCurrency();
-        }
-
-        return 0;
-    }
-
-    public TileEntityBank getBank () {
-        TileEntityBank bank = NetworkHelper.getConnectedBank(getLocation(), bankLocation);
-        if (bank == null) bankLocation = null;
-        return bank;
-    }
-
-    public void addStoredCurrencyInBank (int amount) {
-
-        if (getBank() != null) {
-            getBank().setCurrency(getBank().getStoredCurrency() + amount);
-        }
-    }
-
-    public void decrStoredCurrencyInBank (int amount) {
-
-        if (getBank() != null) {
-            getBank().addCurrency(-amount);
-        }
-    }
-
     @Override
     public void tick () {
         super.tick();
 
         hasValidTradeOffer = getStackForSale() != null && !getStackForSale().isEmpty() && amountForSale >= 1;
-    }
 
-    public UnitChatMessage getUnitName (PlayerEntity player) {
+        if (!world.isRemote) {
 
-        if (adminMode) {
-            return new UnitChatMessage("Admin Post", player);
+            if (broadcastDelay > 0) {
+
+                if (world.getGameTime() % 20 == 0) {
+                    broadcastDelay--;
+                }
+            }
         }
-
-        return new UnitChatMessage(getSecurityProfile().getOwnerName() + "'s Trading Post", player);
     }
 
     public ItemStack getStackForSale () {
@@ -122,6 +97,15 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
         return 0;
     }
 
+    public UnitChatMessage getUnitName (PlayerEntity player) {
+
+        if (adminMode) {
+            return new UnitChatMessage("Admin Post", player);
+        }
+
+        return new UnitChatMessage(getSecurityProfile().getOwnerName() + "'s Trading Post", player);
+    }
+
     @Override
     public Location getBankLocation () {
         return bankLocation;
@@ -132,9 +116,10 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
         bankLocation = location;
     }
 
-    @Override
-    public int getSizeInventory () {
-        return 27;
+    public TileEntityBank getBank () {
+        TileEntityBank bank = NetworkHelper.getConnectedBank(getLocation(), bankLocation);
+        if (bank == null) bankLocation = null;
+        return bank;
     }
 
     @Override
@@ -150,6 +135,11 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
     @Override
     public ITextComponent getDefaultName () {
         return new StringTextComponent("Trading Post");
+    }
+
+    @Override
+    public int getSizeInventory () {
+        return 27;
     }
 
     @Override
@@ -179,6 +169,8 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
 
         adminMode = nbt.getBoolean("adminMode");
         buyMode = nbt.getBoolean("buyMode");
+
+        broadcastDelay = nbt.getInt("broadcastDelay");
     }
 
     @Override
@@ -201,6 +193,8 @@ public class TileEntityTradingPost extends TileEntityInventoryBase implements IT
 
         nbt.putBoolean("adminMode", adminMode);
         nbt.putBoolean("buyMode", buyMode);
+
+        nbt.putInt("broadcastDelay", broadcastDelay);
 
         return nbt;
     }

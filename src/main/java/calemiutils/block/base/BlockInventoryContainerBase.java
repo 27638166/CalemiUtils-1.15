@@ -1,11 +1,12 @@
 package calemiutils.block.base;
 
-import calemiutils.CUConfig;
+import calemiutils.config.CUConfig;
 import calemiutils.security.ISecurity;
 import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.tileentity.base.TileEntityUpgradable;
 import calemiutils.util.Location;
 import calemiutils.util.helper.InventoryHelper;
+import calemiutils.util.helper.SecurityHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -77,17 +78,9 @@ public abstract class BlockInventoryContainerBase extends BlockContainerBase {
 
         if (player instanceof ServerPlayerEntity && tileEntity instanceof INamedContainerProvider) {
 
-            //If it has security, then check if the player is the owner;
-            if (tileEntity instanceof ISecurity) {
-
-                ISecurity security = (ISecurity) tileEntity;
-
-                if (security.getSecurityProfile().isOwner(player.getName().getFormattedText()) || player.isCreative() || !CUConfig.misc.useSecurity.get()) {
-                    NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, pos);
-                }
+            if (SecurityHelper.openSecuredBlock(location, player, true)) {
+                NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, pos);
             }
-
-            else NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tileEntity, pos);
         }
 
         return ActionResultType.SUCCESS;

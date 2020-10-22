@@ -4,6 +4,10 @@ import net.minecraft.item.DyeColor;
 
 public class ColorHelper {
 
+    /**
+     * Searches all colors for a matching name. Returns BLUE as default.
+     * @param name The name of the color.
+     */
     public static DyeColor getColorFromString(String name) {
 
         if (name != null) {

@@ -2,6 +2,6 @@
   "parent": "block/cube_column",
   "textures": {
     "end": "calemiutils:blocks/unit_side",
-    "side": "calemiutils:blocks/bank"
+    "side": "calemiutils:blocks/bank_side"
   }
 }
