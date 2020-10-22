@@ -1,5 +1,8 @@
 # Changelog
 
+**-----v1.1.1 Hotfix-----**
+**Fixed** crash from printing the error message when a Player wrenched a Block that wasn't theirs.
+
 **-----v1.1.0 (Money Update)-----**
 
 **Added** Market.  
