@@ -32,7 +32,10 @@ public class SecurityHelper {
     }
 
     public static void printErrorMessage (Location location, PlayerEntity player) {
-        UnitChatMessage message = new UnitChatMessage(location.getBlock().getNameTextComponent().getFormattedText(), player);
-        if (!player.world.isRemote) message.printMessage(TextFormatting.RED, "This unit doesn't belong to you!");
+
+        if (player.world.isRemote) {
+            UnitChatMessage message = new UnitChatMessage(location.getBlock().getNameTextComponent().getFormattedText(), player);
+            message.printMessage(TextFormatting.RED, "This unit doesn't belong to you!");
+        }
     }
 }
