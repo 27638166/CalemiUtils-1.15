@@ -1,5 +1,13 @@
 # Changelog
 
+**-----v1.1.2 Hotfix-----**  
+**Added** some extra lore for Book Stands.  
+**Added** visual for selected Item in Market  
+
+**Fixed** crash when copying Link Books.  
+**Fixed** tooltip overlay stretching too far and looking weird.  
+**Fixed** air Items showing up in Market.  
+
 **-----v1.1.1 Hotfix-----**  
 
 **Fixed** crash from printing the error message when a Player wrenched a Block that wasn't theirs.  
