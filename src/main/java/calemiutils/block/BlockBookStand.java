@@ -54,6 +54,7 @@ public class BlockBookStand extends BlockInventoryContainerBase {
         LoreHelper.addControlsLore(tooltip, "Open Gui", LoreHelper.Type.USE, true);
         LoreHelper.addControlsLore(tooltip, "Open Inventory", LoreHelper.Type.SNEAK_USE);
         LoreHelper.addControlsLore(tooltip, "Place Book (Copies data from stored book if it exists)", LoreHelper.Type.USE_BOOK);
+        LoreHelper.addControlsLore(tooltip, "Copies the Link Book from the Book Stand to the held one.", LoreHelper.Type.SNEAK_USE_BOOK);
     }
 
     /**

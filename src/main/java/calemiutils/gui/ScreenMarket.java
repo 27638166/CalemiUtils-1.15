@@ -121,13 +121,13 @@ public class ScreenMarket extends GuiScreenBase {
             for (int index = 0; index < market.marketItemsToBuy.size(); index++) {
                 int selectedIndex = index;
                 MarketButton button = buyTab.addButton(index, (btn) -> setSelectedIndex(selectedIndex));
-                if (button != null) addButton(button);
+                if (!button.getRenderedStack().isEmpty() && button != null) addButton(button);
             }
 
             for (int index = 0; index < market.marketItemsToSell.size(); index++) {
                 int selectedIndex = index;
                 MarketButton button = sellTab.addButton(index, (btn) -> setSelectedIndex(selectedIndex));
-                if (button != null) addButton(button);
+                if (!button.getRenderedStack().isEmpty() && button != null) addButton(button);
             }
 
             setBuyMode(market.buyMode);
@@ -264,8 +264,10 @@ public class ScreenMarket extends GuiScreenBase {
 
             int x = (int) ((width / (market.automationMode ? 2.3F : 4)) - xOffset);
 
-            String name = ChatFormatting.UNDERLINE + (StringHelper.printCommas(marketItem.amount * market.purchaseAmount)) + "x " + selectedStack.getDisplayName().getFormattedText();
+            String name = ChatFormatting.UNDERLINE + (StringHelper.printCommas(marketItem.amount * market.purchaseAmount)) + "x " + ChatFormatting.UNDERLINE + TextFormatting.getTextWithoutFormattingCodes(selectedStack.getDisplayName().getFormattedText());
             int nameWidth = minecraft.fontRenderer.getStringWidth(name) - 1;
+
+            activeTab.getMarketButtons().get(market.selectedIndex).renderSelectionBox();
 
             //Renders selected stack.
             ScreenHelper.drawItemStack(itemRenderer, selectedStack, x - 8, yOffset - 2);
@@ -285,6 +287,8 @@ public class ScreenMarket extends GuiScreenBase {
             buyBtn.visible = true;
             buyBtn.setPosition(x - (buyBtn.rect.width / 2), yOffset + 60);
             buyBtn.setMessage(market.buyMode ? "Purchase" : "Sell");
+
+            buyBtn.visible = !market.automationMode;
         }
 
         else {
@@ -297,7 +301,7 @@ public class ScreenMarket extends GuiScreenBase {
         if (market.getBank() != null) {
             int x = (int) (((width / 4) * (market.automationMode ? 2.3F : 3)) + xOffset);
             ScreenHelper.drawItemStack(itemRenderer, new ItemStack(InitItems.BANK.get()), x - 8, yOffset);
-            ScreenHelper.drawCenteredString("Balance " + TextFormatting.GOLD + StringHelper.printCurrency(market.getBank().storedCurrency), x, yOffset + 18, 0, 0xFFFFFF);
+            ScreenHelper.drawCenteredString("Balance: " + TextFormatting.GOLD + StringHelper.printCurrency(market.getBank().storedCurrency), x, yOffset + 18, 0, 0xFFFFFF);
             yOffset += 35;
         }
 
@@ -305,7 +309,7 @@ public class ScreenMarket extends GuiScreenBase {
         if (!getCurrentWalletStack().isEmpty()) {
             int x = (int) (((width / 4) * (market.automationMode ? 2.3F : 3)) + xOffset);
             ScreenHelper.drawItemStack(itemRenderer, getCurrentWalletStack(), x - 8, yOffset);
-            ScreenHelper.drawCenteredString("Balance " + TextFormatting.GOLD + StringHelper.printCurrency(ItemWallet.getBalance(getCurrentWalletStack())), x, yOffset + 18, 0, 0xFFFFFF);
+            ScreenHelper.drawCenteredString("Balance: " + TextFormatting.GOLD + StringHelper.printCurrency(ItemWallet.getBalance(getCurrentWalletStack())), x, yOffset + 18, 0, 0xFFFFFF);
         }
 
         automateBtn.setMessage("Automate: " + (market.automationMode ? "ON" : "OFF"));
@@ -323,8 +327,6 @@ public class ScreenMarket extends GuiScreenBase {
             for (MarketButton button : activeTab.getMarketButtons()) {
                 button.active = true;
             }
-
-            buyBtn.visible = true;
         }
 
         else {
@@ -335,14 +337,16 @@ public class ScreenMarket extends GuiScreenBase {
 
             purchaseAmountDecBtn.visible = false;
             purchaseAmountIncBtn.visible = false;
-            buyBtn.visible = false;
         }
     }
 
     @Override
     public void drawGuiForeground(int mouseX, int mouseY) {
-        ScreenHelper.drawHoveringTextBox(mouseX, mouseY, 100, purchaseAmountDecBtn.rect, "Shift: 16, Ctrl: 32, Shift + Ctrl: 64");
-        ScreenHelper.drawHoveringTextBox(mouseX, mouseY, 100, purchaseAmountIncBtn.rect, "Shift: 16, Ctrl: 32, Shift + Ctrl: 64");
+
+        if (market.getSelectedMarketItem() != null && !market.getSelectedItemStack().isEmpty()) {
+            ScreenHelper.drawHoveringTextBox(mouseX, mouseY, 100, purchaseAmountDecBtn.rect, "Shift: 16, Ctrl: 32, Shift + Ctrl: 64");
+            ScreenHelper.drawHoveringTextBox(mouseX, mouseY, 100, purchaseAmountIncBtn.rect, "Shift: 16, Ctrl: 32, Shift + Ctrl: 64");
+        }
     }
 
     @Override

@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 @OnlyIn(Dist.CLIENT)
 public abstract class ItemStackButton extends Button {
 
-    private ScreenRect rect;
+    protected ScreenRect rect;
     protected final ItemRenderer itemRenderer;
 
     /**

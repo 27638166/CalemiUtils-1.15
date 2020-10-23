@@ -4,6 +4,7 @@ import calemiutils.CalemiUtils;
 import calemiutils.gui.ScreenLinkBook;
 import calemiutils.item.base.ItemBase;
 import calemiutils.tileentity.TileEntityBookStand;
+import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.util.Location;
 import calemiutils.util.UnitChatMessage;
 import calemiutils.util.helper.EntityHelper;
@@ -15,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
@@ -208,23 +208,26 @@ public class ItemLinkBookLocation extends ItemBase {
 
             TileEntityBookStand inv = (TileEntityBookStand) location.getTileEntity();
 
-            //Insert the Link Book into the Book Stand if possible
-            if (InventoryHelper.insertHeldStackIntoSlot(player.getHeldItem(hand), inv.getInventory(), 0, true)) {
-                inv.markForUpdate();
-                return ActionResultType.SUCCESS;
+            //Insert the Link Book into the Book Stand if not crouching.
+            if (!player.isCrouching()) {
+
+                if (InventoryHelper.insertHeldStackIntoSlot(player.getHeldItem(hand), inv.getInventory(), 0, true)) {
+                    inv.markForUpdate();
+                    return ActionResultType.SUCCESS;
+                }
             }
 
-            //If not, copy the data from the Book Stand's Link Book
+            //If so, copy the data from the Book Stand's Link Book
             else {
 
-                ItemStack bookInventory = ((IInventory) location.getTileEntity()).getStackInSlot(0);
+                ItemStack bookInventory = ((TileEntityInventoryBase)location.getTileEntity()).getInventory().getStackInSlot(0);
                 Location linkedLocation = ItemLinkBookLocation.getLinkedLocation(world, bookInventory);
 
                 if (!bookInventory.isEmpty() && linkedLocation != null) {
 
                     bindLocation(heldItem, player, linkedLocation, false);
                     if (bookInventory.hasDisplayName()) bindName(heldItem, bookInventory.getDisplayName().getFormattedText());
-                    if (!world.isRemote) getUnitChatMessage(player).printMessage(TextFormatting.GREEN, "Copied Data from Book Stand");
+                    if (world.isRemote) getUnitChatMessage(player).printMessage(TextFormatting.GREEN, "Copied data from Book Stand");
                     return ActionResultType.SUCCESS;
                 }
             }

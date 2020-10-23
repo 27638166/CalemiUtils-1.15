@@ -1,8 +1,11 @@
 package calemiutils.util.helper;
 
 import calemiutils.config.CUConfig;
+import net.minecraft.util.text.TextFormatting;
 
+import javax.xml.soap.Text;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class StringHelper {
@@ -59,5 +62,30 @@ public class StringHelper {
         }
 
         return list;
+    }
+
+    public static List<TextFormatting> getFormatsFromString(String str) {
+
+        List<TextFormatting> formats = new ArrayList<>();
+
+        for (TextFormatting format : TextFormatting.values()) {
+
+            if (str.contains(format.toString())) {
+                formats.add(format);
+            }
+        }
+
+        return formats;
+    }
+
+    public static String addAllFormats(List<TextFormatting> formats) {
+
+        StringBuilder builder = new StringBuilder();
+
+        for (TextFormatting format : formats) {
+            builder.append(format);
+        }
+
+        return builder.toString();
     }
 }

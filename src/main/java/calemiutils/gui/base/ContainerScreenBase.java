@@ -205,7 +205,7 @@ public abstract class ContainerScreenBase<T extends ContainerBase> extends Conta
                 String name = tileEntitySecurity.getSecurityProfile().getOwnerName();
                 int width = minecraft.fontRenderer.getStringWidth(name) + 7;
 
-                ScreenHelper.drawCappedRect(getScreenX() + (getGuiSizeX() / 2) - (width / 2), getScreenY() + getGuiSizeY() - 1, 0, 116, 0, width, 13, 256, 22);
+                ScreenHelper.drawCappedRect(getScreenX() + (getGuiSizeX() / 2) - (width / 2), getScreenY() + getGuiSizeY() - 1, 0, 218, 0, width, 13, 256, 22);
                 ScreenHelper.drawCenteredString(name, getScreenX() + (getGuiSizeX() / 2) + (width % 2 == 0 ? 0 : 1), getScreenY() + getGuiSizeY() + 2, 50, TEXT_COLOR_GRAY);
                 GL11.glColor3f(1, 1, 1);
             }
@@ -280,7 +280,6 @@ public abstract class ContainerScreenBase<T extends ContainerBase> extends Conta
      * Renders the info icon's hovering text.
      */
     protected void addInfoHoveringText (int mouseX, int mouseY, String... text) {
-
         ScreenRect rect = new ScreenRect(getScreenX() - 13, getScreenY() + leftTabOffset, 13, 15);
         ScreenHelper.drawHoveringTextBox(mouseX, mouseY, 170, rect, text);
     }
@@ -317,7 +316,7 @@ public abstract class ContainerScreenBase<T extends ContainerBase> extends Conta
             int width = minecraft.fontRenderer.getStringWidth(text) + 6;
 
             ScreenHelper.bindGuiTextures();
-            ScreenHelper.drawCappedRect(getScreenX() - width, getScreenY() + leftTabOffset, 0, 116, 10, width, sizeY, 255, 22);
+            ScreenHelper.drawCappedRect(getScreenX() - width, getScreenY() + leftTabOffset, 0, 218, 10, width, sizeY, 255, 22);
 
             if (!text.isEmpty()) {
                 GL11.glPushMatrix();
@@ -342,7 +341,7 @@ public abstract class ContainerScreenBase<T extends ContainerBase> extends Conta
             int width = minecraft.fontRenderer.getStringWidth(text) + sizeAdd + 7;
 
             ScreenHelper.bindGuiTextures();
-            ScreenHelper.drawCappedRect(getScreenX() + getGuiSizeX() - 1, getScreenY() + rightTabOffset, 0, 116, -40, width, sizeY, 256, 22);
+            ScreenHelper.drawCappedRect(getScreenX() + getGuiSizeX() - 1, getScreenY() + rightTabOffset, 0, 218, -40, width, sizeY, 256, 22);
 
             if (!text.isEmpty()) {
                 GL11.glPushMatrix();

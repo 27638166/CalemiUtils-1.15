@@ -1,6 +1,7 @@
 package calemiutils.gui.base;
 
 import calemiutils.config.MarketItemsFile;
+import calemiutils.util.helper.ScreenHelper;
 import calemiutils.util.helper.StringHelper;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -43,8 +44,17 @@ public class MarketButton extends ItemStackButton {
         return MarketItemsFile.getStackFromList(marketList, marketListIndex);
     }
 
+    public void renderSelectionBox () {
+
+        if (this.visible && this.active) {
+            ScreenHelper.bindGuiTextures();
+            ScreenHelper.drawRect(rect.x - 1, rect.y - 1, 0, 91, 0, 19, 19);
+        }
+    }
+
     @Override
     public String[] getTooltip() {
+
         MarketItemsFile.MarketItem marketItem = marketList.get(marketListIndex);
 
         List<String> list = new ArrayList<>();

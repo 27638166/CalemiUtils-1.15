@@ -7,12 +7,14 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ScreenHelper {
 
@@ -39,23 +41,35 @@ public class ScreenHelper {
         GL11.glPushMatrix();
         GL11.glTranslatef(0, 0, zLevel);
 
+        List<String> textToRender = new ArrayList<>();
+
         int maxLength = mc.fontRenderer.getStringWidth(text[0]);
 
         for (String str : text) {
+
+            if (str.length() >= 80) {
+
+                textToRender.add(str.substring(0, str.length() / 2));
+                textToRender.add(StringHelper.addAllFormats(StringHelper.getFormatsFromString(str)) + str.substring(str.length() / 2));
+            }
+
+            else textToRender.add(str);
+        }
+
+        for (String str : textToRender) {
 
             if (mc.fontRenderer.getStringWidth(str) > maxLength) {
                 maxLength = mc.fontRenderer.getStringWidth(str);
             }
         }
 
-        bindGuiTextures();
-        drawCappedRect(x + (centeredString ? - maxLength / 2 : 0), y, 0, 138, 0, maxLength + 5, 13 + ((text.length - 1) * 9), 256, 102);
+        bindTexture("tooltip");
+        drawCappedRect(x + (centeredString ? - maxLength / 2 : 0), y, 0, 0, 0, maxLength + 5, 13 + ((textToRender.size() - 1) * 9), 512, 512);
 
-        for (int i = 0; i < text.length; i++) {
+        GL11.glTranslatef(0, 0, 100);
+        for (int i = 0; i < textToRender.size(); i++) {
 
-            String str = text[i];
-
-            GL11.glTranslatef(0, 0, 100);
+            String str = textToRender.get(i);
             mc.fontRenderer.drawString(ChatFormatting.WHITE + str, x + 3 + (centeredString ? -(int)(mc.fontRenderer.getStringWidth(str) / 2) : 0), y + 3 + (i * 9), 0xFFFFFF);
         }
 
@@ -66,10 +80,17 @@ public class ScreenHelper {
 
     public static void drawCappedRect (int x, int y, int u, int v, int zLevel, int width, int height, int maxWidth, int maxHeight) {
 
-        drawRect(x, y, u, v, zLevel, width - 2, height - 2);
-        drawRect(x + width - 2, y, u + maxWidth - 2, v, zLevel, 2, height - 2);
-        drawRect(x, y + height - 2, u, v + maxHeight - 2, zLevel, width - 2, 2);
-        drawRect(x + width - 2, y + height - 2, u + maxWidth - 2, v + maxHeight - 2, zLevel, 2, 2);
+        //TOP LEFT
+        drawRect(x, y, u, v, zLevel, Math.min(width - 2, maxWidth), Math.min(height - 2, maxHeight));
+
+        //RIGHT
+        if (width <= maxWidth) drawRect(x + width - 2, y, u + maxWidth - 2, v, zLevel, 2, Math.min(height - 2, maxHeight));
+
+        //BOTTOM
+        if (height <= maxHeight) drawRect(x, y + height - 2, u, v + maxHeight - 2, zLevel, Math.min(width - 2, maxWidth), 2);
+
+        //BOTTOM RIGHT
+        if (width <= maxWidth && height <= maxHeight) drawRect(x + width - 2, y + height - 2, u + maxWidth - 2, v + maxHeight - 2, zLevel, 2, 2);
     }
 
     public static void drawRect (int x, int y, int u, int v, int zLevel, int width, int height) {
