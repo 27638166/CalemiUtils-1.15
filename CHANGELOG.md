@@ -1,6 +1,7 @@
 # Changelog
 
 **-----v1.1.2 Hotfix-----**  
+
 **Added** some extra lore for Book Stands.  
 **Added** visual for selected Item in Market  
 
