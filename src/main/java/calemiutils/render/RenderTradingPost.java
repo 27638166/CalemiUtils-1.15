@@ -25,7 +25,7 @@ public class RenderTradingPost extends TileEntityRenderer<TileEntityTradingPost>
     }
 
     @Override
-    public void func_225616_a_ (TileEntityTradingPost te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+    public void render (TileEntityTradingPost te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
 
         if (te.getStackForSale() != null) {
 
@@ -38,8 +38,7 @@ public class RenderTradingPost extends TileEntityRenderer<TileEntityTradingPost>
                 rot %= 360;
             }
 
-            //Push
-            matrixStack.func_227860_a_();
+            matrixStack.push();
 
             float offset = 0;
             float scale = 1;
@@ -49,24 +48,17 @@ public class RenderTradingPost extends TileEntityRenderer<TileEntityTradingPost>
                 scale = 1.5F;
             }
 
-            //Translate
-            matrixStack.func_227861_a_(0.5D, 0.5D + offset, 0.5D);
-            //Rotate
-            matrixStack.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(rot));
-            //Scale
-            matrixStack.func_227862_a_(scale, scale, scale);
+            matrixStack.translate(0.5D, 0.5D + offset, 0.5D);
+            matrixStack.rotate(Vector3f.YP.rotationDegrees(rot));
+            matrixStack.scale(scale, scale, scale);
 
-            //Render Item
             renderItem(stackForSale, partialTicks, matrixStack, buffer, combinedLight);
 
-            //Pop
-            matrixStack.func_227865_b_();
-
-
+            matrixStack.pop();
         }
     }
 
     private void renderItem (ItemStack stack, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight) {
-        Minecraft.getInstance().getItemRenderer().func_229110_a_(stack, ItemCameraTransforms.TransformType.GROUND, combinedLight, OverlayTexture.field_229196_a_, matrixStack, buffer);
+        Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.GROUND, combinedLight, OverlayTexture.NO_OVERLAY, matrixStack, buffer);
     }
 }

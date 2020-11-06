@@ -29,8 +29,8 @@ public class SledgehammerChargeOverlayEvent {
             ClientPlayerEntity player = mc.player;
             ItemStack activeItemStack = player.getActiveItemStack();
 
-            int scaledWidth = mc.func_228018_at_().getScaledWidth();
-            int scaledHeight = mc.func_228018_at_().getScaledHeight();
+            int scaledWidth = mc.getMainWindow().getScaledWidth();
+            int scaledHeight = mc.getMainWindow().getScaledHeight();
             int midX = scaledWidth / 2;
             int midY = scaledHeight / 2;
 

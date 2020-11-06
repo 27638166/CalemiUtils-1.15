@@ -41,22 +41,15 @@ public class CuriosIntegration {
                 ICurio.RenderHelper.translateIfSneaking(matrixStack, livingEntity);
                 ICurio.RenderHelper.rotateIfSneaking(matrixStack, livingEntity);
 
-                matrixStack.func_227860_a_();
+                matrixStack.push();
+                matrixStack.translate(0.26D, 0.85D, 0.0D);
+                matrixStack.rotate(Vector3f.YP.rotationDegrees(90));
+                matrixStack.rotate(Vector3f.XP.rotationDegrees(180));
+                matrixStack.scale(0.5F, 0.5F, 0.9F);
 
-                //Translate
-                matrixStack.func_227861_a_(0.26D, 0.85D, 0.0D);
+                Minecraft.getInstance().getItemRenderer().renderItem(modelStack, ItemCameraTransforms.TransformType.GROUND, combinedLight, OverlayTexture.NO_OVERLAY, matrixStack, buffer);
 
-                //Rotate
-                matrixStack.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(90));
-                matrixStack.func_227863_a_(Vector3f.field_229178_a_.func_229187_a_(180));
-
-                //Scale
-                matrixStack.func_227862_a_(0.5F, 0.5F, 0.9F);
-
-                Minecraft.getInstance().getItemRenderer().func_229110_a_(modelStack, ItemCameraTransforms.TransformType.GROUND, combinedLight, OverlayTexture.field_229196_a_, matrixStack, buffer);
-
-                //Pop
-                matrixStack.func_227865_b_();
+                matrixStack.pop();
             }
 
             @Override

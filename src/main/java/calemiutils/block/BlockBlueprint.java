@@ -32,7 +32,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 public class BlockBlueprint extends BlockColoredBase {
 
     public BlockBlueprint () {
-        super(Block.Properties.create(Material.GLASS).sound(SoundType.STONE).hardnessAndResistance(0.1F).harvestLevel(0).func_226896_b_().variableOpacity());
+        super(Block.Properties.create(Material.GLASS).sound(SoundType.STONE).hardnessAndResistance(0.1F).harvestLevel(0).notSolid().variableOpacity());
     }
 
     /**
@@ -168,23 +168,12 @@ public class BlockBlueprint extends BlockColoredBase {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
-        return 1.0F;
-    }
-
-    @Override
     public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
         return false;
     }
 
     @Override
     public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
         return false;
     }
 }

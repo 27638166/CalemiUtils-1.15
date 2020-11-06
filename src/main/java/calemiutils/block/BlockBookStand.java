@@ -31,8 +31,6 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -44,7 +42,7 @@ public class BlockBookStand extends BlockInventoryContainerBase {
     private static final VoxelShape AABB = Block.makeCuboidShape(3, 0, 3, 13, 12, 13);
 
     public BlockBookStand () {
-        super(Block.Properties.create(Material.WOOD).sound(SoundType.WOOD).hardnessAndResistance(1, 1).harvestLevel(0).func_226896_b_().variableOpacity());
+        super(Block.Properties.create(Material.WOOD).sound(SoundType.WOOD).hardnessAndResistance(1, 1).harvestLevel(0).notSolid().variableOpacity());
         setDefaultState(stateContainer.getBaseState().with(FACING, Direction.NORTH));
     }
 
@@ -58,11 +56,10 @@ public class BlockBookStand extends BlockInventoryContainerBase {
     }
 
     /**
-     * This method functions the same as onBlockActivated().
      * This will handle opening the gui or opening the Link Book's gui.
      */
     @Override
-    public ActionResultType func_225533_a_ (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public ActionResultType onBlockActivated (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
 
         ItemLinkBookLocation book = getBook(world, pos);
         Location location = new Location(world, pos);
@@ -139,23 +136,18 @@ public class BlockBookStand extends BlockInventoryContainerBase {
         return InitTileEntityTypes.BOOK_STAND.get().create();
     }
 
-    @Override
-    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
-        return false;
-    }
-
     /*
         Methods for Block properties
      */
 
     @Override
-    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
+    public BlockState getStateForPlacement (BlockItemUseContext context) {
+        return stateContainer.getBaseState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
     }
 
     @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
+    protected void fillStateContainer (StateContainer.Builder<Block, BlockState> builder) {
+        builder.add(FACING);
     }
 
     /*
@@ -173,23 +165,17 @@ public class BlockBookStand extends BlockInventoryContainerBase {
     }
 
     @Override
+    public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
     public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
         return true;
     }
 
     @Override
-    public BlockState getStateForPlacement (BlockItemUseContext context) {
-        return stateContainer.getBaseState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
-        return 1.0F;
-    }
-
-    @Override
-    protected void fillStateContainer (StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+    public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
+        return false;
     }
 }

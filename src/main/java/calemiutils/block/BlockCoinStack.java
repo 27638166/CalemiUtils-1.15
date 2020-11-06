@@ -1,20 +1,15 @@
 package calemiutils.block;
 
 import calemiutils.block.base.BlockBase;
-import calemiutils.init.InitSounds;
 import calemiutils.util.Location;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Direction;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
@@ -22,11 +17,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeHooks;
 
-import java.util.Iterator;
 import java.util.Random;
 
 public class BlockCoinStack extends BlockBase {
@@ -34,11 +25,11 @@ public class BlockCoinStack extends BlockBase {
     private static final VoxelShape AABB = Block.makeCuboidShape(1, 0, 1, 15, 16, 15);
 
     public BlockCoinStack () {
-        super(Block.Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(1).harvestLevel(3).doesNotBlockMovement().func_226896_b_().variableOpacity());
+        super(Block.Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(1).doesNotBlockMovement().notSolid().variableOpacity());
     }
 
     @Override
-    public void func_225534_a_(BlockState state, ServerWorld serverWorld, BlockPos pos, Random rand) {
+    public void tick(BlockState state, ServerWorld serverWorld, BlockPos pos, Random rand) {
         if (serverWorld.isAreaLoaded(pos, 1)) {
             if (!state.isValidPosition(serverWorld, pos)) {
                 serverWorld.destroyBlock(pos, true);
@@ -88,23 +79,12 @@ public class BlockCoinStack extends BlockBase {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
-        return 1.0F;
-    }
-
-    @Override
     public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
         return false;
     }
 
     @Override
     public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
         return false;
     }
 }

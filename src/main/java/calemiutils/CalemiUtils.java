@@ -111,11 +111,11 @@ public class CalemiUtils {
         MinecraftForge.EVENT_BUS.register(new WalletKeyEvent());
         MinecraftForge.EVENT_BUS.register(new CoinPickupSoundEvent());
 
-        RenderTypeLookup.setRenderLayer(InitItems.BLUEPRINT.get(), RenderType.func_228643_e_());
-        RenderTypeLookup.setRenderLayer(InitItems.IRON_SCAFFOLD.get(), RenderType.func_228643_e_());
-        RenderTypeLookup.setRenderLayer(InitItems.BOOK_STAND.get(), RenderType.func_228643_e_());
-        RenderTypeLookup.setRenderLayer(InitItems.ITEM_STAND.get(), RenderType.func_228643_e_());
-        RenderTypeLookup.setRenderLayer(InitItems.TRADING_POST.get(), RenderType.func_228643_e_());
+        RenderTypeLookup.setRenderLayer(InitItems.BLUEPRINT.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(InitItems.IRON_SCAFFOLD.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(InitItems.BOOK_STAND.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(InitItems.ITEM_STAND.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(InitItems.TRADING_POST.get(), RenderType.getCutout());
 
         ScreenManager.registerFactory(InitContainersTypes.WALLET.get(), ScreenWallet::new);
         ScreenManager.registerFactory(InitContainersTypes.TORCH_PLACER.get(), ScreenTorchPlacer::new);
@@ -140,7 +140,7 @@ public class CalemiUtils {
     @OnlyIn(Dist.CLIENT)
     public static void onTextureStitch(TextureStitchEvent.Pre event) {
 
-        if (event.getMap().func_229223_g_().equals(AtlasTexture.LOCATION_BLOCKS_TEXTURE)) {
+        if (event.getMap().getTextureLocation().equals(AtlasTexture.LOCATION_BLOCKS_TEXTURE)) {
             event.addSprite(EMPTY_WALLET_SLOT);
         }
     }

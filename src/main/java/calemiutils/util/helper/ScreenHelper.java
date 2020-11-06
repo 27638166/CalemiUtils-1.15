@@ -113,14 +113,10 @@ public class ScreenHelper {
         RenderSystem.defaultBlendFunc();
 
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        buffer.func_225582_a_((float) x, (float) maxY, 50);
-        buffer.func_225583_a_(u * pixel, maxV * pixel).endVertex();
-        buffer.func_225582_a_((float) maxX, (float) maxY, 50);
-        buffer.func_225583_a_(maxU * pixel, maxV * pixel).endVertex();
-        buffer.func_225582_a_((float) maxX, (float) y, 50);
-        buffer.func_225583_a_(maxU * pixel, v * pixel).endVertex();
-        buffer.func_225582_a_((float) x, (float) y, 50);
-        buffer.func_225583_a_(u * pixel, v * pixel).endVertex();
+        buffer.pos((float) x, (float) maxY, 50).tex(u * pixel, maxV * pixel).endVertex();
+        buffer.pos((float) maxX, (float) maxY, 50).tex(maxU * pixel, maxV * pixel).endVertex();
+        buffer.pos((float) maxX, (float) y, 50).tex(maxU * pixel, v * pixel).endVertex();
+        buffer.pos((float) x, (float) y, 50).tex(u * pixel, v * pixel).endVertex();
         tessellator.draw();
 
         RenderSystem.disableBlend();
@@ -172,10 +168,10 @@ public class ScreenHelper {
         BufferBuilder bufferbuilder = tessellator.getBuffer();
 
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.func_225582_a_(x, maxY, zLevel).func_227885_a_(red, green, blue, alpha).endVertex();
-        bufferbuilder.func_225582_a_(maxX, maxY, zLevel).func_227885_a_(red, green, blue, alpha).endVertex();
-        bufferbuilder.func_225582_a_(maxX, y, zLevel).func_227885_a_(red, green, blue, alpha).endVertex();
-        bufferbuilder.func_225582_a_(x, y, zLevel).func_227885_a_(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(x, maxY, zLevel).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(maxX, maxY, zLevel).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(maxX, y, zLevel).color(red, green, blue, alpha).endVertex();
+        bufferbuilder.pos(x, y, zLevel).color(red, green, blue, alpha).endVertex();
         tessellator.draw();
 
         RenderSystem.disableBlend();

@@ -17,8 +17,6 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +45,7 @@ public class BlockNetworkCable extends BlockNetworkCableOpaque {
     private static final VoxelShape EASTWEST_AABB = Block.makeCuboidShape(0, 5, 5, 16, 11, 11);
 
     public BlockNetworkCable () {
-        super(Block.Properties.create(Material.WOOD).sound(SoundType.WOOD).hardnessAndResistance(-1.0F, 3600000.0F).harvestLevel(0).func_226896_b_().variableOpacity());
+        super(Block.Properties.create(Material.WOOD).sound(SoundType.WOOD).hardnessAndResistance(-1.0F, 3600000.0F).harvestLevel(0).notSolid().variableOpacity());
         setDefaultState(stateContainer.getBaseState().with(UP, false).with(DOWN, false).with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(DOWNUP, false).with(NORTHSOUTH, false).with(EASTWEST, false));
     }
 
@@ -173,11 +171,6 @@ public class BlockNetworkCable extends BlockNetworkCableOpaque {
     }
 
     @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
     public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
         return true;
     }
@@ -185,11 +178,5 @@ public class BlockNetworkCable extends BlockNetworkCableOpaque {
     @Override
     public boolean canEntitySpawn (BlockState state, IBlockReader world, BlockPos pos, EntityType<?> entityType) {
         return false;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
-        return 1.0F;
     }
 }

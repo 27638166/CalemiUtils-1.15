@@ -44,10 +44,10 @@ public class BlockMarket extends BlockContainerBase {
     }
 
     /**
-     * This method functions the same as onBlockActivated().
      * This will handle opening the guis for options and inventory.
      */
-    public ActionResultType func_225533_a_ (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    @Override
+    public ActionResultType onBlockActivated (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
 
         Location location = new Location(world, pos);
         TileEntity tileEntity = location.getTileEntity();

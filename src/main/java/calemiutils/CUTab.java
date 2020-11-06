@@ -4,9 +4,9 @@ import calemiutils.init.InitItems;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 
-class CUTab extends ItemGroup {
+public class CUTab extends ItemGroup {
 
-    CUTab () {
+    public CUTab () {
         super(CUReference.MOD_ID + ".tabMain");
     }
 

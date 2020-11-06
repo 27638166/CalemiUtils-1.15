@@ -34,7 +34,7 @@ import java.util.List;
 public class BlockScaffold extends BlockBase {
 
     public BlockScaffold () {
-        super(Block.Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(0.1F).harvestLevel(0).harvestTool(ToolType.PICKAXE).func_226896_b_().variableOpacity());
+        super(Block.Properties.create(Material.IRON).sound(SoundType.METAL).hardnessAndResistance(0.1F).harvestLevel(0).harvestTool(ToolType.PICKAXE).notSolid().variableOpacity());
     }
 
     @Override
@@ -47,11 +47,10 @@ public class BlockScaffold extends BlockBase {
     }
 
     /**
-     * This method functions the same as onBlockActivated().
-     * This will handle the teleportation.
+     * Handles teleportation.
      */
     @Override
-    public ActionResultType func_225533_a_ (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public ActionResultType onBlockActivated (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
 
         //Prevents client side.
         if (world.isRemote) {
@@ -212,18 +211,7 @@ public class BlockScaffold extends BlockBase {
     }
 
     @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
     public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
         return true;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
-        return 1.0F;
     }
 }

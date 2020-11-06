@@ -12,11 +12,11 @@ import net.minecraft.item.ItemStack;
 public class ItemPencilColored implements IItemColor {
 
     @Override
-    public int getColor (ItemStack stack, int tintIndex) {
+    public int getColor (ItemStack stack, int tintLayer) {
 
         ItemPencil pencil = (ItemPencil) InitItems.PENCIL.get();
 
-        if (tintIndex == 1) {
+        if (tintLayer == 1) {
             int colorMeta = pencil.getColorId(stack);
             DyeColor dye = DyeColor.byId(colorMeta);
 

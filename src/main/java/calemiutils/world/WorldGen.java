@@ -24,10 +24,10 @@ public class WorldGen {
     private static final BlockState coinStackQuarterState = InitItems.COIN_STACK_QUARTER.get().getDefaultState();
     private static final BlockState coinStackDollarState = InitItems.COIN_STACK_DOLLAR.get().getDefaultState();
 
-    public static final BlockClusterFeatureConfig coinStackPennyConfig = (new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(coinStackPennyState), new SimpleBlockPlacer())).func_227315_a_(64).func_227316_a_(ImmutableSet.of(baseBlock.getBlock())).func_227317_b_().func_227322_d_();
-    public static final BlockClusterFeatureConfig coinStackNickelConfig = (new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(coinStackNickelState), new SimpleBlockPlacer())).func_227315_a_(64).func_227316_a_(ImmutableSet.of(baseBlock.getBlock())).func_227317_b_().func_227322_d_();
-    public static final BlockClusterFeatureConfig coinStackQuarterConfig = (new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(coinStackQuarterState), new SimpleBlockPlacer())).func_227315_a_(64).func_227316_a_(ImmutableSet.of(baseBlock.getBlock())).func_227317_b_().func_227322_d_();
-    public static final BlockClusterFeatureConfig coinStackDollarConfig = (new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(coinStackDollarState), new SimpleBlockPlacer())).func_227315_a_(64).func_227316_a_(ImmutableSet.of(baseBlock.getBlock())).func_227317_b_().func_227322_d_();
+    public static final BlockClusterFeatureConfig coinStackPennyConfig = (new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(coinStackPennyState), new SimpleBlockPlacer())).tries(64).whitelist(ImmutableSet.of(baseBlock.getBlock())).func_227317_b_().build();
+    public static final BlockClusterFeatureConfig coinStackNickelConfig = (new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(coinStackNickelState), new SimpleBlockPlacer())).tries(64).whitelist(ImmutableSet.of(baseBlock.getBlock())).func_227317_b_().build();
+    public static final BlockClusterFeatureConfig coinStackQuarterConfig = (new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(coinStackQuarterState), new SimpleBlockPlacer())).tries(64).whitelist(ImmutableSet.of(baseBlock.getBlock())).func_227317_b_().build();
+    public static final BlockClusterFeatureConfig coinStackDollarConfig = (new BlockClusterFeatureConfig.Builder(new SimpleBlockStateProvider(coinStackDollarState), new SimpleBlockPlacer())).tries(64).whitelist(ImmutableSet.of(baseBlock.getBlock())).func_227317_b_().build();
 
     public static void onCommonSetup () {
 
@@ -35,16 +35,15 @@ public class WorldGen {
 
             if (biome.getCategory() != Biome.Category.THEEND && biome.getCategory() != Biome.Category.NETHER) {
 
-                biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES,
-                        Feature.ORE.func_225566_b_(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE, InitItems.RARITANIUM_ORE.get().getDefaultState(),
+                if (CUConfig.worldGen.raritaniumOreGen.get()) biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES,
+                        Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE, InitItems.RARITANIUM_ORE.get().getDefaultState(),
                                 CUConfig.worldGen.raritaniumVeinSize.get()))
-                                .func_227228_a_(Placement.COUNT_RANGE.func_227446_a_(
-                                        new CountRangeConfig(CUConfig.worldGen.raritaniumVeinsPerChunk.get(), CUConfig.worldGen.raritaniumOreGenMinY.get(), 0, CUConfig.worldGen.raritaniumOreGenMaxY.get()))));
+                                .withPlacement(Placement.COUNT_RANGE.configure(new CountRangeConfig(CUConfig.worldGen.raritaniumVeinsPerChunk.get(), CUConfig.worldGen.raritaniumOreGenMinY.get(), 0, CUConfig.worldGen.raritaniumOreGenMaxY.get()))));
 
-                if (CUConfig.worldGen.coinStackPennyGen.get()) biome.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.field_227248_z_.func_225566_b_(coinStackPennyConfig).func_227228_a_(Placement.CHANCE_RANGE.func_227446_a_(new ChanceRangeConfig((float)(double)CUConfig.worldGen.coinStackPennyRarity.get(), 0, 0, 50))));
-                if (CUConfig.worldGen.coinStackNickelGen.get()) biome.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.field_227248_z_.func_225566_b_(coinStackNickelConfig).func_227228_a_(Placement.CHANCE_RANGE.func_227446_a_(new ChanceRangeConfig((float)(double)CUConfig.worldGen.coinStackNickelRarity.get(), 0, 0, 50))));
-                if (CUConfig.worldGen.coinStackQuarterGen.get()) biome.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.field_227248_z_.func_225566_b_(coinStackQuarterConfig).func_227228_a_(Placement.CHANCE_RANGE.func_227446_a_(new ChanceRangeConfig((float)(double)CUConfig.worldGen.coinStackQuarterRarity.get(), 0, 0, 50))));
-                if (CUConfig.worldGen.coinStackDollarGen.get()) biome.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.field_227248_z_.func_225566_b_(coinStackDollarConfig).func_227228_a_(Placement.CHANCE_RANGE.func_227446_a_(new ChanceRangeConfig((float)(double)CUConfig.worldGen.coinStackDollarRarity.get(), 0, 0, 50))));
+                if (CUConfig.worldGen.coinStackPennyGen.get()) biome.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.FLOWER.withConfiguration(coinStackPennyConfig).withPlacement(Placement.CHANCE_RANGE.configure(new ChanceRangeConfig((float)(double)CUConfig.worldGen.coinStackPennyRarity.get(), 0, 0, 50))));
+                if (CUConfig.worldGen.coinStackNickelGen.get()) biome.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.FLOWER.withConfiguration(coinStackNickelConfig).withPlacement(Placement.CHANCE_RANGE.configure(new ChanceRangeConfig((float)(double)CUConfig.worldGen.coinStackNickelRarity.get(), 0, 0, 50))));
+                if (CUConfig.worldGen.coinStackQuarterGen.get()) biome.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.FLOWER.withConfiguration(coinStackQuarterConfig).withPlacement(Placement.CHANCE_RANGE.configure(new ChanceRangeConfig((float)(double)CUConfig.worldGen.coinStackQuarterRarity.get(), 0, 0, 50))));
+                if (CUConfig.worldGen.coinStackDollarGen.get()) biome.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.FLOWER.withConfiguration(coinStackDollarConfig).withPlacement(Placement.CHANCE_RANGE.configure(new ChanceRangeConfig((float)(double)CUConfig.worldGen.coinStackDollarRarity.get(), 0, 0, 50))));
             }
         });
     }

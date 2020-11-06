@@ -1,7 +1,5 @@
 package calemiutils.block.base;
 
-import calemiutils.config.CUConfig;
-import calemiutils.security.ISecurity;
 import calemiutils.tileentity.base.TileEntityInventoryBase;
 import calemiutils.tileentity.base.TileEntityUpgradable;
 import calemiutils.util.Location;
@@ -63,10 +61,10 @@ public abstract class BlockInventoryContainerBase extends BlockContainerBase {
     }
 
     /**
-     * This method functions the same as onBlockActivated().
      * Opens the gui of the Block.
      */
-    public ActionResultType func_225533_a_ (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    @Override
+    public ActionResultType onBlockActivated (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
 
         //Prevents client side.
         if (world.isRemote) {

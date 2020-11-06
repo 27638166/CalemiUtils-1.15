@@ -41,7 +41,7 @@ public class BlockItemStand extends BlockInventoryContainerBase {
     private static final VoxelShape AABB = Block.makeCuboidShape(1, 0, 1, 15, 16, 15);
 
     public BlockItemStand () {
-        super(Block.Properties.create(Material.ROCK).sound(SoundType.STONE).hardnessAndResistance(1, 1).harvestLevel(1).func_226896_b_().variableOpacity());
+        super(Block.Properties.create(Material.ROCK).sound(SoundType.STONE).hardnessAndResistance(1, 1).harvestLevel(1).notSolid().variableOpacity());
         setDefaultState(stateContainer.getBaseState().with(DISPLAY_ID, 0));
     }
 
@@ -54,10 +54,9 @@ public class BlockItemStand extends BlockInventoryContainerBase {
     }
 
     /**
-     * This method functions the same as onBlockActivated().
      * This will handle opening the guis for options and inventory.
      */
-    public ActionResultType func_225533_a_ (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public ActionResultType onBlockActivated (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
 
         Location location = new Location(world, pos);
         TileEntity tileEntity = location.getTileEntity();
@@ -73,7 +72,7 @@ public class BlockItemStand extends BlockInventoryContainerBase {
         }
 
         else if (heldStack.getItem() != InitItems.SECURITY_WRENCH.get()) {
-            return super.func_225533_a_(state, world, pos, player, hand, result);
+            return super.onBlockActivated(state, world, pos, player, hand, result);
         }
 
         return ActionResultType.SUCCESS;
@@ -131,16 +130,5 @@ public class BlockItemStand extends BlockInventoryContainerBase {
     @Override
     public boolean isNormalCube (BlockState state, IBlockReader world, BlockPos pos) {
         return false;
-    }
-
-    @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
-        return 1.0F;
     }
 }

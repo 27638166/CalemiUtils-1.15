@@ -28,8 +28,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,7 +37,7 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
     private static final VoxelShape AABB = Block.makeCuboidShape(0, 0, 0, 16, 5, 16);
 
     public BlockTradingPost () {
-        super(Block.Properties.create(Material.WOOD).sound(SoundType.WOOD).hardnessAndResistance(-1.0F, 3600000.0F).func_226896_b_().variableOpacity());
+        super(Block.Properties.create(Material.WOOD).sound(SoundType.WOOD).hardnessAndResistance(-1.0F, 3600000.0F).notSolid().variableOpacity());
     }
 
     @Override
@@ -51,11 +49,10 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
     }
 
     /**
-     * This method functions the same as onBlockActivated().
      * This will handle purchasing, selling, and opening the gui.
      */
     @Override
-    public ActionResultType func_225533_a_ (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
+    public ActionResultType onBlockActivated (BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
 
         Location location = new Location(world, pos);
 
@@ -74,11 +71,11 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
             if (!player.isCrouching() && heldStack.getItem() == InitItems.SECURITY_WRENCH.get()) {
 
                 if (tePost.adminMode) {
-                    if (player.isCreative()) return super.func_225533_a_(state, world, pos, player, hand, result);
+                    if (player.isCreative()) return super.onBlockActivated(state, world, pos, player, hand, result);
                     else if (!world.isRemote) message.printMessage(TextFormatting.RED, "Admin Posts can only be opened in creative mode.");
                 }
 
-                else return super.func_225533_a_(state, world, pos, player, hand, result);
+                else return super.onBlockActivated(state, world, pos, player, hand, result);
             }
 
             //Else, if the Player is not crouching and has a Wallet, handle a possible trade.
@@ -299,18 +296,7 @@ public class BlockTradingPost extends BlockInventoryContainerBase {
     }
 
     @Override
-    public boolean func_229869_c_ (BlockState state, IBlockReader world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
     public boolean propagatesSkylightDown (BlockState state, IBlockReader world, BlockPos pos) {
         return true;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public float func_220080_a (BlockState state, IBlockReader world, BlockPos pos) {
-        return 1.0F;
     }
 }
