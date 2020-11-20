@@ -1,6 +1,6 @@
 package calemiutils.inventory;
 
-import calemiutils.init.InitContainersTypes;
+import calemiutils.init.InitContainerTypes;
 import calemiutils.init.InitItems;
 import calemiutils.inventory.base.ContainerBase;
 import calemiutils.inventory.base.SlotFilter;
@@ -15,7 +15,7 @@ public class ContainerTorchPlacer extends ContainerBase {
     }
 
     public ContainerTorchPlacer (final int windowId, final PlayerInventory playerInventory, final TileEntityTorchPlacer tileEntity) {
-        super(InitContainersTypes.TORCH_PLACER.get(), windowId, playerInventory, tileEntity, 8, 119);
+        super(InitContainerTypes.TORCH_PLACER.get(), windowId, playerInventory, tileEntity, 8, 119);
 
         tileEntity.upgradeSlots.add(addSlot(new SlotFilter(tileEntity.getUpgradeInventory(), 0, 178, 7, InitItems.SPEED_UPGRADE.get())));
         tileEntity.upgradeSlots.add(addSlot(new SlotFilter(tileEntity.getUpgradeInventory(), 1, 178, 31, InitItems.RANGE_UPGRADE.get())));

@@ -17,7 +17,9 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.extensions.IForgeBlockState;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.List;
 
@@ -27,11 +29,11 @@ public class Location {
     public int x, y, z;
     private BlockPos blockPos;
 
-    public Location (World world, BlockPos pos) {
+    public Location(World world, BlockPos pos) {
         this(world, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public Location (World world, int x, int y, int z) {
+    public Location(World world, int x, int y, int z) {
 
         this.world = world;
         this.x = x;
@@ -41,19 +43,19 @@ public class Location {
         blockPos = new BlockPos(x, y, z);
     }
 
-    public Location (TileEntity tileEntity) {
+    public Location(TileEntity tileEntity) {
         this(tileEntity.getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
     }
 
-    public Location (Entity entity) {
+    public Location(Entity entity) {
         this(entity.world, entity.getPosition().getX(), entity.getPosition().getY(), entity.getPosition().getZ());
     }
 
-    public Location (Location location, Direction dir) {
+    public Location(Location location, Direction dir) {
         this(location, dir, 1);
     }
 
-    public Location (Location location, Direction dir, int distance) {
+    public Location(Location location, Direction dir, int distance) {
 
         this.world = location.world;
         this.x = location.x + (dir.getXOffset() * distance);
@@ -63,7 +65,7 @@ public class Location {
         blockPos = new BlockPos(x, y, z);
     }
 
-    public Location translate (Direction dir, int distance) {
+    public Location translate(Direction dir, int distance) {
 
         this.x += (dir.getXOffset() * distance);
         this.y += (dir.getYOffset() * distance);
@@ -73,7 +75,7 @@ public class Location {
         return this;
     }
 
-    public Location translate (Location location) {
+    public Location translate(Location location) {
 
         this.x += location.x;
         this.y += location.y;
@@ -82,15 +84,15 @@ public class Location {
         return this;
     }
 
-    public Location copy () {
+    public Location copy() {
         return new Location(this.world, this.x, this.y, this.z);
     }
 
-    public BlockPos getBlockPos () {
+    public BlockPos getBlockPos() {
         return blockPos;
     }
 
-    public IForgeBlockState getForgeBlockState () {
+    public IForgeBlockState getForgeBlockState() {
 
         if (getBlockPos() == null) {
             return null;
@@ -99,7 +101,7 @@ public class Location {
         return world.getBlockState(getBlockPos());
     }
 
-    public BlockState getBlockState () {
+    public BlockState getBlockState() {
 
         if (getForgeBlockState() == null) {
             return null;
@@ -108,7 +110,7 @@ public class Location {
         return getForgeBlockState().getBlockState();
     }
 
-    public Block getBlock () {
+    public Block getBlock() {
 
         if (getBlockState() == null) {
             return null;
@@ -117,23 +119,23 @@ public class Location {
         return getBlockState().getBlock();
     }
 
-    public Material getBlockMaterial () {
+    public Material getBlockMaterial() {
         return getBlock().getMaterial(getBlockState());
     }
 
-    public List<ItemStack> getDrops (PlayerEntity player, ItemStack heldStack) {
+    public List<ItemStack> getDrops(PlayerEntity player, ItemStack heldStack) {
         return Block.getDrops(getBlockState(), (ServerWorld) world, getBlockPos(), null, player, heldStack);
     }
 
-    public int getLightValue () {
+    public int getLightValue() {
         return world.getLight(getBlockPos());
     }
 
-    public TileEntity getTileEntity () {
+    public TileEntity getTileEntity() {
         return world.getTileEntity(getBlockPos());
     }
 
-    public double getDistance (Location location) {
+    public double getDistance(Location location) {
 
         int dx = x - location.x;
         int dy = y - location.y;
@@ -142,51 +144,70 @@ public class Location {
         return Math.sqrt((dx * dx) + (dy * dy) + (dz * dz));
     }
 
-    public void setBlock (Block block) {
+    public void setBlock(Block block) {
         world.setBlockState(getBlockPos(), block.getDefaultState());
     }
 
-    public void setBlock (BlockState state) {
+    public void setBlock(BlockState state) {
         world.setBlockState(getBlockPos(), state.getBlock().getDefaultState());
         world.setBlockState(getBlockPos(), state);
     }
 
-    public void setBlock (BlockState state, PlayerEntity placer) {
+    public void setBlock(BlockState state, PlayerEntity placer) {
         world.setBlockState(getBlockPos(), state, 2);
         state.getBlock().onBlockPlacedBy(world, getBlockPos(), state, placer, new ItemStack(state.getBlock()));
     }
 
-    public void setBlockToAir () {
+    public void setBlockToAir() {
         setBlock(Blocks.AIR);
     }
-    
-    public void breakBlock (PlayerEntity player, ItemStack heldItem) {
-        SoundHelper.playBlockPlaceSound(world, player, getBlockState(), this);
-        if (!world.isRemote && (!player.isCreative())) ItemHelper.spawnStacksAtLocation(world, this, getDrops(player, heldItem));
-        if (!world.isRemote) setBlockToAir();
+
+    public void breakBlock(PlayerEntity player, ItemStack heldItem) {
+
+        boolean forgeStateCanDestroy = getForgeBlockState().canEntityDestroy(player.world, blockPos, player);
+        boolean forgeEntityCanDestroy = ForgeHooks.canEntityDestroy(world, blockPos, player);
+        boolean forgeOnDestroy = ForgeEventFactory.onEntityDestroyBlock(player, blockPos, getBlockState());
+        boolean playerCanHarvest = player.canHarvestBlock(getBlockState());
+        boolean playerCanEdit = player.canPlayerEdit(blockPos, Direction.UP, heldItem);
+
+        if (forgeStateCanDestroy && forgeEntityCanDestroy && forgeOnDestroy && playerCanHarvest && playerCanEdit) {
+
+            if (!world.isRemote) {
+
+                boolean worldDedicatedServer = player.world.getServer().isDedicatedServer();
+                boolean worldBlockProtected = player.world.getServer().isBlockProtected(world, blockPos, player);
+
+                if (!worldDedicatedServer || !worldBlockProtected) {
+                    if (!player.isCreative()) ItemHelper.spawnStacksAtLocation(world, this, getDrops(player, heldItem));
+                    setBlockToAir();
+                }
+            }
+
+            SoundHelper.playBlockPlaceSound(world, player, getBlockState(), this);
+        }
     }
 
-    public boolean isZero () {
+    public boolean isZero() {
         return x == 0 && y == 0 && z == 0;
     }
 
-    public boolean isAirBlock () {
+    public boolean isAirBlock() {
         return getBlock() == Blocks.AIR;
     }
 
-    public boolean isBlockValidForPlacing () {
+    public boolean isBlockValidForPlacing() {
         return getBlockMaterial().isReplaceable() || isAirBlock();
     }
 
-    public boolean isFullCube () {
+    public boolean isFullCube() {
         return getBlock().isOpaqueCube(getBlockState(), world, getBlockPos());
     }
 
-    public boolean doesBlockHaveCollision () {
+    public boolean doesBlockHaveCollision() {
         return getBlock().getCollisionShape(getBlockState(), world, getBlockPos(), ISelectionContext.dummy()) != VoxelShapes.empty();
     }
 
-    public static Location readFromNBT (World world, CompoundNBT nbt) {
+    public static Location readFromNBT(World world, CompoundNBT nbt) {
 
         int x = nbt.getInt("locX");
         int y = nbt.getInt("locY");
@@ -201,14 +222,14 @@ public class Location {
         return null;
     }
 
-    public void writeToNBT (CompoundNBT nbt) {
+    public void writeToNBT(CompoundNBT nbt) {
         nbt.putInt("locX", z);
         nbt.putInt("locY", y);
         nbt.putInt("locZ", z);
     }
 
     @Override
-    public boolean equals (Object obj) {
+    public boolean equals(Object obj) {
 
         if (obj instanceof Location) {
             Location newLoc = (Location) obj;
@@ -219,7 +240,7 @@ public class Location {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "[" + x + ", " + y + ", " + z + "]";
     }
 }

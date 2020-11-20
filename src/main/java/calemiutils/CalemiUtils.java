@@ -66,7 +66,7 @@ public class CalemiUtils {
 
         InitSounds.SOUNDS.register(MOD_EVENT_BUS);
         InitTileEntityTypes.TILE_ENTITY_TYPES.register(MOD_EVENT_BUS);
-        InitContainersTypes.CONTAINER_TYPES.register(MOD_EVENT_BUS);
+        InitContainerTypes.CONTAINER_TYPES.register(MOD_EVENT_BUS);
         InitEnchantments.ENCHANTMENTS.register(MOD_EVENT_BUS);
 
         InitItems.init();
@@ -117,12 +117,12 @@ public class CalemiUtils {
         RenderTypeLookup.setRenderLayer(InitItems.ITEM_STAND.get(), RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(InitItems.TRADING_POST.get(), RenderType.getCutout());
 
-        ScreenManager.registerFactory(InitContainersTypes.WALLET.get(), ScreenWallet::new);
-        ScreenManager.registerFactory(InitContainersTypes.TORCH_PLACER.get(), ScreenTorchPlacer::new);
-        ScreenManager.registerFactory(InitContainersTypes.BOOK_STAND.get(), ScreenOneSlot::new);
-        ScreenManager.registerFactory(InitContainersTypes.ITEM_STAND.get(), ScreenOneSlot::new);
-        ScreenManager.registerFactory(InitContainersTypes.BANK.get(), ScreenBank::new);
-        ScreenManager.registerFactory(InitContainersTypes.TRADING_POST.get(), ScreenTradingPost::new);
+        ScreenManager.registerFactory(InitContainerTypes.WALLET.get(), ScreenWallet::new);
+        ScreenManager.registerFactory(InitContainerTypes.TORCH_PLACER.get(), ScreenTorchPlacer::new);
+        ScreenManager.registerFactory(InitContainerTypes.BOOK_STAND.get(), ScreenOneSlot::new);
+        ScreenManager.registerFactory(InitContainerTypes.ITEM_STAND.get(), ScreenOneSlot::new);
+        ScreenManager.registerFactory(InitContainerTypes.BANK.get(), ScreenBank::new);
+        ScreenManager.registerFactory(InitContainerTypes.TRADING_POST.get(), ScreenTradingPost::new);
 
         ClientRegistry.bindTileEntityRenderer(InitTileEntityTypes.BOOK_STAND.get(), RenderBookStand::new);
         ClientRegistry.bindTileEntityRenderer(InitTileEntityTypes.ITEM_STAND.get(), RenderItemStand::new);

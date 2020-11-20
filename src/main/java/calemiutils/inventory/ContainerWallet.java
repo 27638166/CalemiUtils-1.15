@@ -1,6 +1,6 @@
 package calemiutils.inventory;
 
-import calemiutils.init.InitContainersTypes;
+import calemiutils.init.InitContainerTypes;
 import calemiutils.init.InitItems;
 import calemiutils.inventory.base.ContainerBase;
 import calemiutils.inventory.base.SlotIInventoryFilter;
@@ -24,7 +24,7 @@ public class ContainerWallet extends ContainerBase {
     private final IInventory stackInv;
 
     public ContainerWallet (final int windowID, final PlayerInventory playerInventory, IInventory stackInv, int selectedSlot) {
-        super(InitContainersTypes.WALLET.get(), windowID, playerInventory, null, 8, 94);
+        super(InitContainerTypes.WALLET.get(), windowID, playerInventory, null, 8, 94);
 
         isItemContainer = true;
         size = 1;

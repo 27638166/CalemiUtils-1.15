@@ -47,15 +47,6 @@ public class CUConfig {
         public final ForgeConfigSpec.ConfigValue<Integer> raritaniumOreGenMinY;
         public final ForgeConfigSpec.ConfigValue<Integer> raritaniumOreGenMaxY;
 
-        public final ForgeConfigSpec.ConfigValue<Boolean> coinStackPennyGen;
-        public final ForgeConfigSpec.ConfigValue<Double> coinStackPennyRarity;
-        public final ForgeConfigSpec.ConfigValue<Boolean> coinStackNickelGen;
-        public final ForgeConfigSpec.ConfigValue<Double> coinStackNickelRarity;
-        public final ForgeConfigSpec.ConfigValue<Boolean> coinStackQuarterGen;
-        public final ForgeConfigSpec.ConfigValue<Double> coinStackQuarterRarity;
-        public final ForgeConfigSpec.ConfigValue<Boolean> coinStackDollarGen;
-        public final ForgeConfigSpec.ConfigValue<Double> coinStackDollarRarity;
-
         public CategoryWorldGen (ForgeConfigSpec.Builder builder) {
 
             builder.push("WorldGen");
@@ -65,15 +56,6 @@ public class CUConfig {
             raritaniumVeinSize = builder.comment("Raritanium Vein Size").define("raritaniumVeinSize", 8);
             raritaniumOreGenMinY = builder.comment("Raritanium Ore Min Y").define("raritaniumOreGenMinY", 0);
             raritaniumOreGenMaxY = builder.comment("Raritanium Ore Max Y").define("raritaniumOreGenMaxY", 30);
-
-            coinStackPennyGen = builder.comment("Penny Coin Stack Gen").define("coinStackPennyGen", true);
-            coinStackPennyRarity = builder.comment("Penny Coin Stack Rarity", "The lower the value, the less often it appears.").defineInRange("coinStackPennyRarity", 0.3D, 0D, 10D);
-            coinStackNickelGen = builder.comment("Nickel Coin Stack Gen").define("coinStackNickelGen", true);
-            coinStackNickelRarity = builder.comment("Nickel Coin Stack Rarity", "The lower the value, the less often it appears.").defineInRange("coinStackNickelRarity", 0.2D, 0D, 10D);
-            coinStackQuarterGen = builder.comment("Quarter Coin Stack Gen").define("coinStackQuarterGen", true);
-            coinStackQuarterRarity = builder.comment("Quarter Coin Stack Rarity", "The lower the value, the less often it appears.").defineInRange("coinStackQuarterRarity", 0.1D, 0D, 10D);
-            coinStackDollarGen = builder.comment("Dollar Coin Stack Gen").define("coinStackDollarGen", true);
-            coinStackDollarRarity = builder.comment("Dollar Coin Stack Rarity", "The lower the value, the less often it appears.").defineInRange("coinStackDollarRarity", 0.05D, 0D, 10D);
 
             builder.pop();
         }

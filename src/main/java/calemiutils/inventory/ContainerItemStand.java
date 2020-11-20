@@ -1,6 +1,6 @@
 package calemiutils.inventory;
 
-import calemiutils.init.InitContainersTypes;
+import calemiutils.init.InitContainerTypes;
 import calemiutils.inventory.base.ContainerBase;
 import calemiutils.tileentity.TileEntityItemStand;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,7 +14,7 @@ public class ContainerItemStand extends ContainerBase {
     }
 
     public ContainerItemStand (final int windowId, final PlayerInventory playerInventory, final TileEntityItemStand tileEntity) {
-        super(InitContainersTypes.ITEM_STAND.get(), windowId, playerInventory, tileEntity, 8, 41);
+        super(InitContainerTypes.ITEM_STAND.get(), windowId, playerInventory, tileEntity, 8, 41);
         addSlot(new SlotItemHandler(tileEntity.getInventory(), 0, 80, 18));
     }
 }

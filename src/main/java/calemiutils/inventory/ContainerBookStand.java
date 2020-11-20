@@ -1,6 +1,6 @@
 package calemiutils.inventory;
 
-import calemiutils.init.InitContainersTypes;
+import calemiutils.init.InitContainerTypes;
 import calemiutils.init.InitItems;
 import calemiutils.inventory.base.ContainerBase;
 import calemiutils.inventory.base.SlotFilter;
@@ -15,7 +15,7 @@ public class ContainerBookStand extends ContainerBase {
     }
 
     public ContainerBookStand (final int windowId, final PlayerInventory playerInventory, final TileEntityBookStand tileEntity) {
-        super(InitContainersTypes.BOOK_STAND.get(), windowId, playerInventory, tileEntity, 8, 41);
+        super(InitContainerTypes.BOOK_STAND.get(), windowId, playerInventory, tileEntity, 8, 41);
         tileEntity.containerSlots.set(0, addSlot(new SlotFilter(tileEntity.getInventory(), 0, 80, 18, InitItems.LINK_BOOK_LOCATION.get())));
     }
 }

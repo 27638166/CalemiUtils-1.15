@@ -1,6 +1,6 @@
 package calemiutils.inventory;
 
-import calemiutils.init.InitContainersTypes;
+import calemiutils.init.InitContainerTypes;
 import calemiutils.inventory.base.ContainerBase;
 import calemiutils.tileentity.TileEntityTradingPost;
 import net.minecraft.entity.player.PlayerInventory;
@@ -13,7 +13,7 @@ public class ContainerTradingPost extends ContainerBase {
     }
 
     public ContainerTradingPost (final int windowId, final PlayerInventory playerInventory, final TileEntityTradingPost tileEntity) {
-        super(InitContainersTypes.TRADING_POST.get(), windowId, playerInventory, tileEntity, 8, 150);
+        super(InitContainerTypes.TRADING_POST.get(), windowId, playerInventory, tileEntity, 8, 150);
         addTileEntityStorageInv(tileEntity.getInventory(), 0, 8, 83, 3);
     }
 }
